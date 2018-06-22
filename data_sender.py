@@ -16,6 +16,7 @@ import win32ui
 import win32con
 
 from PIL import Image
+import numpy as np
 
 from threading import Thread
 import socket 
@@ -105,8 +106,8 @@ class screen_capture_thread(Thread):
 
         im = Image.frombuffer('RGB', (bmpinfo['bmWidth'], bmpinfo['bmHeight']), bmpstr, 'raw', 'BGRX', 0, 1)
 
-        self.img = im
-        print("img",im)
+        self.img = np.array(im)
+        print("img",self.img)
 
         # Free Resources
         dcObj.DeleteDC()
