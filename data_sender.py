@@ -70,8 +70,9 @@ class screen_capture_thread(Thread):
         bmpstr = dataBitMap.GetBitmapBits(True)
 
         im = Image.frombuffer('RGB', (bmpinfo['bmWidth'], bmpinfo['bmHeight']), bmpstr, 'raw', 'BGRX', 0, 1)
-
-        self.img = np.array2string(np.array(im), separator=',')
+        buf= StringIO.StringIO()
+        im.save(buf, format= 'PNG')
+        self.img = buf
 
         # Free Resources
         dcObj.DeleteDC()
