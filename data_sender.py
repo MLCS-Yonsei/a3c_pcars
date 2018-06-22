@@ -4,17 +4,17 @@ Basic purpose of this script is to get Pcars data from CREST API and capture the
 and resize it, then send it to REDIS server so that the A3C can take the data.
 To minimize the elapsed time, each process is divided into threads.
 
-글쓴이 : Hwanmoo Yong
+author : Hwanmoo Yong
 '''
 
 import redis
 import json
 import time
 
-import win32gui
-import win32ui
+# import win32gui
+# import win32ui
 
-import Thread
+from threading import Thread
 import socket 
 ''' Getting Local IP of this Computer '''
 local_ip = [ip for ip in socket.gethostbyname_ex(socket.gethostname())[2] if not ip.startswith("127.")][:1][0]
@@ -117,7 +117,7 @@ if __name__ == '__main__':
         sct.start()
 
         ct.join()
-        sct.jojn()
+        sct.join()
 
         if ct.crest_data is not False and sct.img is not None:
             result = {game_data:crest_data,image_data:img}
