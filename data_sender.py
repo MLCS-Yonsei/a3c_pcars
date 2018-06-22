@@ -52,7 +52,7 @@ class crest_thread(Thread):
     def run(self):
         try:
             ''' Try 8080 port to get crest data '''
-            crest_data = self.send_crest_requset('localhost:8080', "crest-monitor", {})
+            crest_data = self.send_crest_requset('http://localhost:8080', "crest-monitor", {})
             gameState = crest_data['gameStates']['mGameState']
 
             if gameState > 1 and 'participants' in crest_data:
@@ -66,7 +66,7 @@ class crest_thread(Thread):
             print(e)
             try:
                 ''' Try 9090 port to get crest data '''
-                crest_data = self.send_crest_requset('localhost:9090', "crest-monitor", {})
+                crest_data = self.send_crest_requset('http://localhost:9090', "crest-monitor", {})
                 gameState = crest_data['gameStates']['mGameState']
 
                 if gameState > 1 and 'participants' in crest_data:
