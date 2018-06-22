@@ -12,6 +12,9 @@ import multiprocessing as mp
 import time
 import json
 
+import redis
+import socket
+
 class pCarsAutoController(mp.Process):
     def __init__(self):
         super(pCarsAutoController,self).__init__()
@@ -39,7 +42,7 @@ class pCarsAutoController(mp.Process):
 
         return PyCWnd1
 
-    def action_parser(this_action):
+    def action_parser(self, this_action):
         if this_action['0'] == True:
             self.move_steer(-1)
         elif this_action['1'] == True:
@@ -184,10 +187,17 @@ class pCarsAutoController(mp.Process):
                         if self.controlState['brake'] == False:
                             self.brakeOff()
 
+''' Getting Local IP of this Computer '''
+local_ip = [ip for ip in socket.gethostbyname_ex(socket.gethostname())[2] if not ip.startswith("127.")][:1][0]
+
+''' Init Redis '''
+r = redis.StrictRedis(host='lab.hwanmoo.kr', port=6379, db=1)
+
+
 if __name__ == '__main__':
     pc = pCarsAutoController()
     while True:
-        message = self.r.hget('pcars_action',local_ip)
+        message = r.hget('pcars_action',local_ip)
 
         if message:
             action = eval(message)

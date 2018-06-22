@@ -40,9 +40,9 @@ class TorcsEnv:
         self.r.hset('pcars_action', target_ip, this_action)
 
         # angle = obs["motionAndDeviceRelated"]["mOrientation"][1]
-        raceState = obs["gameStates"]["mRaceState"]
+        raceState = obs["gameStates"]["RaceState"]
         sp = obs["carState"]["mSpeed"]
-        distance = obs["participants"]["mParticipantInfo"][0]["mCurrentLapDistance"]
+        distance = obs["participants"]["mParticipantInfo"][0]["currentLapDistance"]
         crashState = obs["carDamage"]["mCrashState"]
         tireTerrain = obs["wheelsAndTyres"]["mTerrain"]
 
