@@ -99,7 +99,7 @@ class screen_capture_thread(Thread):
         self.img = cDC
         print("dataBitMap",dataBitMap)
         print("cDC",cDC)
-        exit(0)
+
         # Free Resources
         dcObj.DeleteDC()
         cDC.DeleteDC()
@@ -122,9 +122,9 @@ if __name__ == '__main__':
 
         ct.join()
         sct.join()
-
+        print(sct.img)
         if ct.crest_data is not False and sct.img is not None:
-            result = {game_data:crest_data,image_data:img}
+            result = {'game_data':ct.crest_data,'image_data':sct.img}
         else:
             result = False
         r.hdel('pcars_data',local_ip)
