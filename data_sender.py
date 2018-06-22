@@ -19,6 +19,8 @@ from PIL import Image
 import numpy as np
 
 from threading import Thread
+
+import http
 import socket 
 ''' Getting Local IP of this Computer '''
 local_ip = [ip for ip in socket.gethostbyname_ex(socket.gethostname())[2] if not ip.startswith("127.")][:1][0]
@@ -46,13 +48,13 @@ class crest_thread(Thread):
                 if flag == 'crest-monitor':
                     return data
         except Exception as e:
-            # print("CREST_ERROR on send_crest_request:", e)
+            print("CREST_ERROR on send_crest_request:", e)
             return False
 
     def run(self):
         try:
             ''' Try 8080 port to get crest data '''
-            crest_data = self.send_crest_requset('http://localhost:8080', "crest-monitor", {})
+            crest_data = self.send_crest_requset('localhost:8080', "crest-monitor", {})
             gameState = crest_data['gameStates']['mGameState']
 
             if gameState > 1 and 'participants' in crest_data:
@@ -66,7 +68,7 @@ class crest_thread(Thread):
             print(e)
             try:
                 ''' Try 9090 port to get crest data '''
-                crest_data = self.send_crest_requset('http://localhost:9090', "crest-monitor", {})
+                crest_data = self.send_crest_requset('localhost:9090', "crest-monitor", {})
                 gameState = crest_data['gameStates']['mGameState']
 
                 if gameState > 1 and 'participants' in crest_data:
