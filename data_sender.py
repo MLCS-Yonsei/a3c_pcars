@@ -15,6 +15,8 @@ import win32gui
 import win32ui
 import win32con
 
+import Image
+
 from threading import Thread
 import socket 
 ''' Getting Local IP of this Computer '''
@@ -86,8 +88,9 @@ class screen_capture_thread(Thread):
         hwnd = win32gui.FindWindow(None, windowname)
         
         # Get window properties and take screen capture
-        w = 600
-        h = 480
+        l, t, r, b = win32gui.GetWindowRect(hwnd)
+        w = r - l
+        h = b - t
         wDC = win32gui.GetWindowDC(hwnd)
         dcObj=win32ui.CreateDCFromHandle(wDC)
         cDC=dcObj.CreateCompatibleDC()
@@ -96,9 +99,14 @@ class screen_capture_thread(Thread):
         cDC.SelectObject(dataBitMap)
         cDC.BitBlt((0,0),(w, h) , dcObj, (0,0), win32con.SRCCOPY)
         # dataBitMap.SaveBitmapFile(cDC, bmpfilenamename)
-        self.img = cDC
-        print("dataBitMap",dataBitMap)
-        print("cDC",cDC)
+
+        bmpinfo = dataBitMap.GetInfo()
+        bmpstr = saveBitMap.GetBitmapBits(True)
+
+        im = Image.frombuffer('RGB', (bmpinfo['bmWidth'], bmpinfo['bmHeight']), bmpstr, 'raw', 'BGRX', 0, 1)
+
+        self.img = im
+        print("img",im)
 
         # Free Resources
         dcObj.DeleteDC()
@@ -122,7 +130,7 @@ if __name__ == '__main__':
 
         ct.join()
         sct.join()
-        print(sct.img)
+
         if ct.crest_data is not False and sct.img is not None:
             result = {'game_data':ct.crest_data,'image_data':sct.img}
         else:
