@@ -20,7 +20,7 @@ import numpy as np
 
 from threading import Thread
 
-import http
+import http.client
 import socket 
 ''' Getting Local IP of this Computer '''
 local_ip = [ip for ip in socket.gethostbyname_ex(socket.gethostname())[2] if not ip.startswith("127.")][:1][0]
