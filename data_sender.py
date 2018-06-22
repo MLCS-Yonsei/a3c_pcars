@@ -52,21 +52,21 @@ class crest_thread(Thread):
             return False
 
     def run(self):
-        try:
-            ''' Try 8080 port to get crest data '''
-            crest_data = self.send_crest_requset('localhost:8080', "crest-monitor", {})
-            gameState = crest_data['gameStates']['mGameState']
+        # try:
+        #     ''' Try 8080 port to get crest data '''
+        #     crest_data = self.send_crest_requset('localhost:8080', "crest-monitor", {})
+        #     gameState = crest_data['gameStates']['mGameState']
 
-            if gameState > 1 and 'participants' in crest_data:
-                if 'mParticipantInfo' in crest_data["participants"]:
-                    # 게임 플레이중
-                    self.crest_data = crest_data
-            else:
-                self.crest_data = False
+        #     if gameState > 1 and 'participants' in crest_data:
+        #         if 'mParticipantInfo' in crest_data["participants"]:
+        #             # 게임 플레이중
+        #             self.crest_data = crest_data
+        #     else:
+        #         self.crest_data = False
 
-        except Exception as e:
-            print(e)
-            self.crest_data = False
+        # except Exception as e:
+        #     print(e)
+        #     self.crest_data = False
 
 
 
