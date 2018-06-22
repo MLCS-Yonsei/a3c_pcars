@@ -15,7 +15,7 @@ import win32gui
 import win32ui
 import win32con
 
-import Image
+from PIL import Image
 
 from threading import Thread
 import socket 
