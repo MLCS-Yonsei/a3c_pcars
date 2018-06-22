@@ -63,6 +63,7 @@ class crest_thread(Thread):
                 return False
 
         except Exception as e:
+            print(e)
             try:
                 ''' Try 9090 port to get crest data '''
                 crest_data = self.send_crest_requset('localhost:9090', "crest-monitor", {})
@@ -73,6 +74,7 @@ class crest_thread(Thread):
                         # 게임 플레이중
                         return crest_data
             except Exception as e:
+                print(e)
                 return False
 
 
@@ -107,7 +109,6 @@ class screen_capture_thread(Thread):
         im = Image.frombuffer('RGB', (bmpinfo['bmWidth'], bmpinfo['bmHeight']), bmpstr, 'raw', 'BGRX', 0, 1)
 
         self.img = np.array(im)
-        print("img",self.img)
 
         # Free Resources
         dcObj.DeleteDC()
