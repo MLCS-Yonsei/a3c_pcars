@@ -101,7 +101,7 @@ class screen_capture_thread(Thread):
         # dataBitMap.SaveBitmapFile(cDC, bmpfilenamename)
 
         bmpinfo = dataBitMap.GetInfo()
-        bmpstr = saveBitMap.GetBitmapBits(True)
+        bmpstr = dataBitMap.GetBitmapBits(True)
 
         im = Image.frombuffer('RGB', (bmpinfo['bmWidth'], bmpinfo['bmHeight']), bmpstr, 'raw', 'BGRX', 0, 1)
 
