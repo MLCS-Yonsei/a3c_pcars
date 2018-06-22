@@ -71,7 +71,7 @@ class screen_capture_thread(Thread):
 
         im = Image.frombuffer('RGB', (bmpinfo['bmWidth'], bmpinfo['bmHeight']), bmpstr, 'raw', 'BGRX', 0, 1)
 
-        self.img = np.array(im)
+        self.img = np.array2string(np.array(im), separator=',')
 
         # Free Resources
         dcObj.DeleteDC()
