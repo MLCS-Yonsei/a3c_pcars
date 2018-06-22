@@ -60,24 +60,13 @@ class crest_thread(Thread):
             if gameState > 1 and 'participants' in crest_data:
                 if 'mParticipantInfo' in crest_data["participants"]:
                     # 게임 플레이중
-                    return crest_data
+                    self.crest_data = crest_data
             else:
-                return False
+                self.crest_data = False
 
         except Exception as e:
             print(e)
-            try:
-                ''' Try 9090 port to get crest data '''
-                crest_data = self.send_crest_requset('localhost:9090', "crest-monitor", {})
-                gameState = crest_data['gameStates']['mGameState']
-
-                if gameState > 1 and 'participants' in crest_data:
-                    if 'mParticipantInfo' in crest_data["participants"]:
-                        # 게임 플레이중
-                        return crest_data
-            except Exception as e:
-                print(e)
-                return False
+            self.crest_data = False
 
 
 
