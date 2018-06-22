@@ -387,12 +387,12 @@ def play_training(training=True, load_model=True):
 
         if training:
             #num_workers = multiprocessing.cpu_count()  # Set workers at number of available CPU threads
-            num_workers = 2#4
+            num_workers = 1#4
         else:
             num_workers = 1
 
         worker_ips = [
-            '192.168.0.2',
+            # '192.168.0.2',
             '192.168.0.49'
         ]
 
