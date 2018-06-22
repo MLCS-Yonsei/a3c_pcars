@@ -67,6 +67,7 @@ class crest_thread(Thread):
         # except Exception as e:
         #     print(e)
         #     self.crest_data = False
+        pass
 
 
 
