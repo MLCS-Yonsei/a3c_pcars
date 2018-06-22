@@ -85,6 +85,8 @@ class screen_capture_thread(Thread):
         hwnd = win32gui.FindWindow(None, windowname)
         
         # Get window properties and take screen capture
+        w = 600
+        h = 480
         wDC = win32gui.GetWindowDC(hwnd)
         dcObj=win32ui.CreateDCFromHandle(wDC)
         cDC=dcObj.CreateCompatibleDC()
