@@ -1,16 +1,28 @@
+'''
+This code is for the computer that runs Project Cars in Windows.
+Basic purpose of this script is to get Pcars data from CREST API and capture the game screen
+and resize it, then send it to REDIS server so that the A3C can take the data.
+To minimize the elapsed time, each process is divided into threads.
+
+글쓴이 : Hwanmoo Yong
+'''
+
 import redis
 import json
 import time
 
+import win32gui
+import win32ui
+
+import Thread
 import socket 
 ''' Getting Local IP of this Computer '''
 local_ip = [ip for ip in socket.gethostbyname_ex(socket.gethostname())[2] if not ip.startswith("127.")][:1][0]
 
 ''' Init Redis '''
-# r = redis.StrictRedis(host='lab.hwanmoo.kr', port=6379, db=1)
+r = redis.StrictRedis(host='lab.hwanmoo.kr', port=6379, db=1)
 
-''' CREST API '''
-
+''' CREST Thread '''
 class crest_thread(Thread):        
 
     def __init__(self):
@@ -35,6 +47,7 @@ class crest_thread(Thread):
 
     def run(self):
         try:
+            ''' Try 8080 port to get crest data '''
             crest_data = self.send_crest_requset('localhost:8080', "crest-monitor", {})
             gameState = crest_data['gameStates']['mGameState']
 
@@ -46,8 +59,18 @@ class crest_thread(Thread):
                 return False
 
         except Exception as e:
-            # print("Crest Error on get_crest_data:",e)
-            return False
+            try:
+                ''' Try 9090 port to get crest data '''
+                crest_data = self.send_crest_requset('localhost:9090', "crest-monitor", {})
+                gameState = crest_data['gameStates']['mGameState']
+
+                if gameState > 1 and 'participants' in crest_data:
+                    if 'mParticipantInfo' in crest_data["participants"]:
+                        # 게임 플레이중
+                        return crest_data
+            except Exception as e:
+                return False
+
 
 
 class screen_capture_thread(Thread):        
@@ -57,7 +80,27 @@ class screen_capture_thread(Thread):
         super(screen_capture_thread, self).__init__()
 
     def run(self):
-        pass
+        # Get Focus on project cars window
+        windowname = "Project CARS™"
+        hwnd = win32gui.FindWindow(None, windowname)
+        
+        # Get window properties and take screen capture
+        wDC = win32gui.GetWindowDC(hwnd)
+        dcObj=win32ui.CreateDCFromHandle(wDC)
+        cDC=dcObj.CreateCompatibleDC()
+        # dataBitMap = win32ui.CreateBitmap()
+        # dataBitMap.CreateCompatibleBitmap(dcObj, w, h)
+        cDC.SelectObject(dataBitMap)
+        cDC.BitBlt((0,0),(w, h) , dcObj, (0,0), win32con.SRCCOPY)
+        # dataBitMap.SaveBitmapFile(cDC, bmpfilenamename)
+        self.img = cDC
+        print(self.img)
+
+        # Free Resources
+        dcObj.DeleteDC()
+        cDC.DeleteDC()
+        win32gui.ReleaseDC(hwnd, wDC)
+        win32gui.DeleteObject(dataBitMap.GetHandle())
 
 
 if __name__ == '__main__':
