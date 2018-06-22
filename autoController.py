@@ -39,6 +39,75 @@ class pCarsAutoController(mp.Process):
 
         return PyCWnd1
 
+    def action_parser(this_action):
+        if this_action['0'] == True:
+            self.move_steer(-1)
+        elif this_action['1'] == True:
+            self.move_steer(-7.5)
+        elif this_action['2'] == True:
+            self.move_steer(-5)
+        elif this_action['3'] == True:
+            self.move_steer(-2.5)
+        elif this_action['4'] == True:
+            self.move_steer(0)
+        elif this_action['5'] == True:
+            self.move_steer(2.5)
+        elif this_action['6'] == True:
+            self.move_steer(5)
+        elif this_action['7'] == True:
+            self.move_steer(7.5)
+        elif this_action['8'] == True:
+            self.move_steer(1)
+        elif this_action['9'] == True:
+            self.move_steer(-1)
+            self.accOn()
+            time.sleep(0.6)
+            self.accOff()
+        elif this_action['10'] == True:
+            self.move_steer(-7.5)
+            self.accOn()
+            time.sleep(0.6)
+            self.accOff()
+        elif this_action['11'] == True:
+            self.move_steer(-5)
+            self.accOn()
+            time.sleep(0.6)
+            self.accOff()
+        elif this_action['12'] == True:
+            self.move_steer(-2.5)
+            self.accOn()
+            time.sleep(0.6)
+            self.accOff()
+        elif this_action['13'] == True:
+            self.move_steer(0)
+            self.accOn()
+            time.sleep(0.6)
+            self.accOff()
+        elif this_action['14'] == True:
+            self.move_steer(2.5)
+            self.accOn()
+            time.sleep(0.6)
+            self.accOff()
+        elif this_action['15'] == True:
+            self.move_steer(5)
+            self.accOn()
+            time.sleep(0.6)
+            self.accOff()
+        elif this_action['16'] == True:
+            self.move_steer(7.5)
+            self.accOn()
+            time.sleep(0.6)
+            self.accOff()
+        elif this_action['17'] == True:
+            self.move_steer(1)
+            self.accOn()
+            time.sleep(0.6)
+            self.accOff()
+        elif this_action['18'] == True:
+            self.brakeOn()
+            time.sleep(0.5)
+            self.brakeOff()
+
     def steer_converter(self, n):
         # if n > 1:
         #     n = 1
@@ -116,12 +185,15 @@ class pCarsAutoController(mp.Process):
                             self.brakeOff()
 
 if __name__ == '__main__':
-    print(123)
     pc = pCarsAutoController()
-    pc.move_steer(0.5)
-    pc.accOn()
-    time.sleep(5)
-    exit(0)
+    while True:
+        message = self.r.hget('pcars_action',local_ip)
+
+        if message:
+            action = eval(message)
+            pc.action_parser(action)
+
+            self.r.hdel('pcars_action',local_ip)
 
 
 

@@ -18,6 +18,13 @@ import datetime
 import os
 import signal
 
+''' Init Redis '''
+r = redis.StrictRedis(host='lab.hwanmoo.kr', port=6379, db=1)
+
+''' Getting Local IP of this Computer '''
+local_ip = [ip for ip in socket.gethostbyname_ex(socket.gethostname())[2] if not ip.startswith("127.")][:1][0]
+
+
 class pCarsAutoKiller(mp.Process):
     def __init__(self):
         super(pCarsAutoKiller,self).__init__()
@@ -184,9 +191,19 @@ class pCarsAutoKiller(mp.Process):
 
 if __name__ == '__main__':
     pc = pCarsAutoKiller()
-    pc.run()
-    # while True:
-    #     123
+    while True:
+        message = self.r.hget('pcars_killer',local_ip)
+
+        if message:
+            reset_status = eval(message)
+            if reset_status == "1":
+                pc.restart_type_1()
+            elif reset_status == "2":
+                pc.restart_type_2()
+
+            self.r.hdel('pcars_killer',local_ip)
+
+            
 
 
 
