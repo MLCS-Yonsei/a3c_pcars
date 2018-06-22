@@ -88,14 +88,15 @@ class screen_capture_thread(Thread):
         wDC = win32gui.GetWindowDC(hwnd)
         dcObj=win32ui.CreateDCFromHandle(wDC)
         cDC=dcObj.CreateCompatibleDC()
-        # dataBitMap = win32ui.CreateBitmap()
-        # dataBitMap.CreateCompatibleBitmap(dcObj, w, h)
+        dataBitMap = win32ui.CreateBitmap()
+        dataBitMap.CreateCompatibleBitmap(dcObj, w, h)
         cDC.SelectObject(dataBitMap)
         cDC.BitBlt((0,0),(w, h) , dcObj, (0,0), win32con.SRCCOPY)
         # dataBitMap.SaveBitmapFile(cDC, bmpfilenamename)
         self.img = cDC
-        print(self.img)
-
+        print("dataBitMap",dataBitMap)
+        print("cDC",cDC)
+        exit(0)
         # Free Resources
         dcObj.DeleteDC()
         cDC.DeleteDC()
