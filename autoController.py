@@ -203,7 +203,7 @@ if __name__ == '__main__':
             action = eval(message)
             pc.action_parser(action)
 
-            self.r.hdel('pcars_action',local_ip)
+            r.hdel('pcars_action',local_ip)
 
 
 

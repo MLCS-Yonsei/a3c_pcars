@@ -5,7 +5,7 @@ import win32ui
 import serial
 import serial.tools.list_ports
 
-from utils import send_crest_requset
+# from utils import send_crest_requset
 
 import subprocess 
 import multiprocessing as mp
@@ -17,6 +17,8 @@ import time
 import datetime
 import os
 import signal
+import redis
+import socket
 
 ''' Init Redis '''
 r = redis.StrictRedis(host='lab.hwanmoo.kr', port=6379, db=1)
@@ -108,12 +110,12 @@ class pCarsAutoKiller(mp.Process):
         SendKeys(cmd)
 
         # Wait until game restarts
-        while True:
-            gameData = send_crest_requset(self.target_ip, "crest-monitor", {})
-            gameState = gameData["gameStates"]["mRaceState"]
+        # while True:
+        #     gameData = send_crest_requset(self.target_ip, "crest-monitor", {})
+        #     gameState = gameData["gameStates"]["mRaceState"]
 
-            if gameState == 2:
-                break
+        #     if gameState == 2:
+        #         break
 
         self.ard.close()
         self.connect_arduino()
@@ -145,15 +147,15 @@ class pCarsAutoKiller(mp.Process):
         SendKeys(cmd)
 
         # Wait until game restarts
-        while True:
-            gameData = send_crest_requset(self.target_ip, "crest-monitor", {})
-            raceState = gameData["gameStates"]["mRaceState"]
+        # while True:
+        #     gameData = send_crest_requset(self.target_ip, "crest-monitor", {})
+        #     raceState = gameData["gameStates"]["mRaceState"]
 
-            if raceState < 3:
-                break
+        #     if raceState < 3:
+        #         break
         
         return True
-
+    '''
     def run(self):
         while True:
             if self.status == 'active':
@@ -188,20 +190,21 @@ class pCarsAutoKiller(mp.Process):
                         self.restart_type_1()
 
                     self.prevLapDistance = currentLapDistance
-
+    '''
 if __name__ == '__main__':
     pc = pCarsAutoKiller()
     while True:
-        message = self.r.hget('pcars_killer',local_ip)
+        message = r.hget('pcars_killer',local_ip)
 
         if message:
             reset_status = eval(message)
-            if reset_status == "1":
+
+            if reset_status == 1:
                 pc.restart_type_1()
-            elif reset_status == "2":
+            elif reset_status == 2:
                 pc.restart_type_2()
 
-            self.r.hdel('pcars_killer',local_ip)
+            r.hdel('pcars_killer',local_ip)
 
             
 
