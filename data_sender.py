@@ -62,18 +62,18 @@ class screen_capture_thread(Thread):
             hwnd = win32gui.FindWindow(None, windowname)
             
             # Get window properties and take screen capture
-            l, t, r, b = win32gui.GetWindowRect(hwnd)
+            l, t, _r, b = win32gui.GetWindowRect(hwnd)
 
             target_w = 800
             target_h = 600
 
-            margin_w  = int((r-l-target_w) / 2)
+            margin_w  = int((_r-l-target_w) / 2)
 
             l = l + margin_w
-            r = r - margin_w
+            _r = _r - margin_w
             b = b - margin_w
             t = t + ((b-t-target_h))
-            w = r - l
+            w = _r - l
             h = b - t
 
             with mss.mss() as sct:
@@ -92,8 +92,8 @@ class screen_capture_thread(Thread):
             self.img = base64.b64encode(buf.getvalue()).decode("utf-8")
 
             # Set game_data from pcars udp listener after taking screen capturing
-            if self.listener.data is not False and sct.img is not None:
-                result = {'game_data':self.listener.data,'image_data':sct.img}
+            if self.listener.data is not False and self.img is not None:
+                result = {'game_data':self.listener.data,'image_data':self.img}
             else:
                 result = False
 

@@ -29,7 +29,10 @@ class PCarsStreamReceiver(Thread):
         sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
 
         while True:
-            data = sock.recv(1400)
-            packet = Packet.readFrom(BytesIO(data))
-            for listener in self.listeners:
-                listener.handlePacket(packet)
+            try:
+                data = sock.recv(1400)
+                packet = Packet.readFrom(BytesIO(data))
+                for listener in self.listeners:
+                    listener.handlePacket(packet)
+            except Exception as ex:
+                print("Error in stream.py : ",ex)
