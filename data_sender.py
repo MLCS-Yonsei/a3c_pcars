@@ -10,12 +10,13 @@ author : Hwanmoo Yong
 import redis
 import json
 import time
+from io import BytesIO
 
-import win32gui
-import win32ui
-import win32con
+import mss
+import mss.tools
 
 from PIL import Image
+import base64
 import numpy as np
 
 from threading import Thread
@@ -41,46 +42,86 @@ class PCarsListener(object):
         # See listings in packet.py for packet types and available fields for each
         # print(data._data)
         self.data = data._data
+        # print(self.data)
 
 class screen_capture_thread(Thread):        
 
-    def __init__(self):
+    def __init__(self, listener):
         self.img = None
+        self.listener = listener
         super(screen_capture_thread, self).__init__()
 
     def run(self):
-        # Get Focus on project cars window
-        windowname = "Project CARS™"
-        hwnd = win32gui.FindWindow(None, windowname)
+        try:
+            import win32gui
+            # import win32ui
+            # import win32con
+
+            # Get Focus on project cars window
+            windowname = "Project CARS™"
+            hwnd = win32gui.FindWindow(None, windowname)
+            
+            # Get window properties and take screen capture
+            l, t, r, b = win32gui.GetWindowRect(hwnd)
+
+            target_w = 800
+            target_h = 600
+
+            margin_w  = int((r-l-target_w) / 2)
+
+            l = l + margin_w
+            r = r - margin_w
+            b = b - margin_w
+            t = t + ((b-t-target_h))
+            w = r - l
+            h = b - t
+
+            with mss.mss() as sct:
+                # The screen part to capture
+                monitor = {'top': t, 'left': l, 'width': w, 'height': h}
+
+                # Grab the data
+                sct_img = sct.grab(monitor)
+
+            img = Image.frombytes('RGB', sct_img.size, sct_img.bgra, 'raw', 'BGRX')
+
+            buf= BytesIO()
+            img.save(buf, format= 'PNG')
+            # img.show()
+
+            self.img = base64.b64encode(buf.getvalue()).decode("utf-8")
+
+            # Set game_data from pcars udp listener after taking screen capturing
+            if self.listener.data is not False and sct.img is not None:
+                result = {'game_data':self.listener.data,'image_data':sct.img}
+            else:
+                result = False
+
+            r.hset('pcars_data',local_ip,result)
+            exit(0)
+            
+        except Exception as ex:
+            print("Pcars Screen Capture Error :", ex)
+            exit(0)
         
-        # Get window properties and take screen capture
-        l, t, r, b = win32gui.GetWindowRect(hwnd)
-        w = r - l
-        h = b - t
-        wDC = win32gui.GetWindowDC(hwnd)
-        dcObj=win32ui.CreateDCFromHandle(wDC)
-        cDC=dcObj.CreateCompatibleDC()
-        dataBitMap = win32ui.CreateBitmap()
-        dataBitMap.CreateCompatibleBitmap(dcObj, w, h)
-        cDC.SelectObject(dataBitMap)
-        cDC.BitBlt((0,0),(w, h) , dcObj, (0,0), win32con.SRCCOPY)
-        # dataBitMap.SaveBitmapFile(cDC, bmpfilenamename)
 
-        bmpinfo = dataBitMap.GetInfo()
-        bmpstr = dataBitMap.GetBitmapBits(True)
+def send_data(listener, sct):
+    sct.join()
 
-        im = Image.frombuffer('RGB', (bmpinfo['bmWidth'], bmpinfo['bmHeight']), bmpstr, 'raw', 'BGRX', 0, 1)
-        buf= StringIO.StringIO()
-        im.save(buf, format= 'PNG')
-        self.img = buf
+    # Set game_data from pcars udp listener after taking screen capturing
+    if listener.data is not False and sct.img is not None:
+        result = {'game_data':listener.data,'image_data':sct.img}
+    else:
+        result = False
 
-        # Free Resources
-        dcObj.DeleteDC()
-        cDC.DeleteDC()
-        win32gui.ReleaseDC(hwnd, wDC)
-        win32gui.DeleteObject(dataBitMap.GetHandle())
-        
+    r.hset('pcars_data',local_ip,result)
 
+def start_capture(listener):
+    sct = screen_capture_thread(listener)
+    sct.daemon = True 
+    sct.start()
+
+    return sct
 
 if __name__ == '__main__':
     print('Starting Data Sender.. [A3C on Project Cars]')
@@ -92,24 +133,17 @@ if __name__ == '__main__':
     stream = PCarsStreamReceiver()
     stream.addListener(listener)
     stream.start()
-    
     while True:
         # Taking Screen Capture form Pcars
-        sct = screen_capture_thread()
-        sct.daemon = True 
-        sct.start()
+        '''
+        스크린샷찍는 process가 0.4초정도 걸리므로
+        일단은 귀찮아서 0.08초 단위로 쓰레드를 만들어서 함.
+        코드 수정필요
+        '''
+        interval = 0.08
 
-        sct.join()
-        
-        # Set game_data from pcars udp listener after taking screen capturing
-        if listener.data is not False and sct.img is not None:
-            result = {'game_data':listener.data,'image_data':sct.img}
-        else:
-            result = False
-
-        r.hdel('pcars_data',local_ip)
-        r.hset('pcars_data',local_ip,result)
-        
+        sct = start_capture(listener)
+        time.sleep(interval)
 
         
 

@@ -1,3 +1,7 @@
 build/
 .eggs/
 *.pyc
+
+.egg
+pcars.egg-info/
+*.egg
