@@ -37,8 +37,8 @@ def process_frame(frame):
     r, g, b = frame[:,:,0], frame[:,:,1], frame[:,:,2]  # find r,g,b values
     img_gray = 0.2989 * r + 0.5870 * g + 0.1140 * b  # make rgb to grayscale
     s = np.reshape(img_gray, [np.prod(img_gray.shape)]) / 255.0
-    # print(img_gray.shape)
-    # print(s.shape)
+    print(img_gray.shape)
+    print(s.shape)
     return s
 
 
@@ -261,8 +261,8 @@ class Worker:
             while not coord.should_stop():
                 
                 message = self.r.hget('pcars_data',target_ip)
-                ob, s = self.parse_message(message)
-                if message and 'raceState' in ob:
+                # print(message)
+                if message:
                     
 
                     sess.run(self.update_local_ops)
@@ -279,9 +279,9 @@ class Worker:
                     s = process_frame(s)
 
                     rnn_state = self.local_AC.state_init
-                    print( ob["raceState"])
-                    while not d and 'raceState' in ob and ob["raceState"]=='<RaceState.RACING: 2>' and ob["raceState"]!='<RaceState.INVALID: 0>':# or ob["raceState"]=='<RaceState.RACING: 3>':
-     
+                    # print( ob["raceState"])
+                    while not d and 'raceState' in ob and ob["raceState"]=='<RaceState.RACING: 1>' or ob["raceState"]=='<RaceState.RACING: 2>' or ob["raceState"]=='<RaceState.RACING: 3>':
+                        
                         message = self.r.hget('pcars_data',target_ip)
 
                         self.r.hdel('pcars_data',target_ip)
@@ -425,7 +425,7 @@ def play_training(training=True, load_model=True):
 
         worker_ips = [
             # '192.168.0.2',
-            '192.168.0.56'
+            '192.168.0.49'
         ]
 
         workers = []
