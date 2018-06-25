@@ -86,7 +86,7 @@ class screen_capture_thread(Thread):
             img = Image.frombytes('RGB', sct_img.size, sct_img.bgra, 'raw', 'BGRX')
 
             buf= BytesIO()
-            img.resize((200,150))
+            img = img.resize((200,150))
             img.save(buf, format= 'PNG')
             # img.show()
 
