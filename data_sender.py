@@ -27,7 +27,7 @@ import http.client
 import socket 
 ''' Getting Local IP of this Computer '''
 local_ip = [ip for ip in socket.gethostbyname_ex(socket.gethostname())[2] if not ip.startswith("127.")][:1][0]
-
+print("Local ip",local_ip)
 ''' Init Redis '''
 r = redis.StrictRedis(host='lab.hwanmoo.kr', port=6379, db=1)
 

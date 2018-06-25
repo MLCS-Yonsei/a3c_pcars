@@ -3,6 +3,7 @@ import pywinauto
 
 import win32ui
 import win32gui
+import win32com.client
 
 import serial
 import serial.tools.list_ports
@@ -36,6 +37,9 @@ class pCarsAutoController(mp.Process):
 
     def get_focus(self):
         # Make Pcars window focused
+        shell = win32com.client.Dispatch("WScript.Shell")
+        shell.SendKeys('%')
+        
         PyCWnd1 = win32ui.FindWindow( None, "Project CARS™" )
         PyCWnd1.SetForegroundWindow()
         PyCWnd1.SetFocus()
@@ -46,19 +50,19 @@ class pCarsAutoController(mp.Process):
         if this_action['0'] == True:
             self.move_steer(-1)
         elif this_action['1'] == True:
-            self.move_steer(-7.5)
+            self.move_steer(-0.75)
         elif this_action['2'] == True:
-            self.move_steer(-5)
+            self.move_steer(-0.5)
         elif this_action['3'] == True:
-            self.move_steer(-2.5)
+            self.move_steer(-0.25)
         elif this_action['4'] == True:
             self.move_steer(0)
         elif this_action['5'] == True:
-            self.move_steer(2.5)
+            self.move_steer(0.25)
         elif this_action['6'] == True:
-            self.move_steer(5)
+            self.move_steer(0.5)
         elif this_action['7'] == True:
-            self.move_steer(7.5)
+            self.move_steer(0.75)
         elif this_action['8'] == True:
             self.move_steer(1)
         elif this_action['9'] == True:
@@ -67,17 +71,17 @@ class pCarsAutoController(mp.Process):
             time.sleep(0.6)
             self.accOff()
         elif this_action['10'] == True:
-            self.move_steer(-7.5)
+            self.move_steer(-0.75)
             self.accOn()
             time.sleep(0.6)
             self.accOff()
         elif this_action['11'] == True:
-            self.move_steer(-5)
+            self.move_steer(-0.5)
             self.accOn()
             time.sleep(0.6)
             self.accOff()
         elif this_action['12'] == True:
-            self.move_steer(-2.5)
+            self.move_steer(-0.25)
             self.accOn()
             time.sleep(0.6)
             self.accOff()
@@ -87,17 +91,17 @@ class pCarsAutoController(mp.Process):
             time.sleep(0.6)
             self.accOff()
         elif this_action['14'] == True:
-            self.move_steer(2.5)
+            self.move_steer(0.25)
             self.accOn()
             time.sleep(0.6)
             self.accOff()
         elif this_action['15'] == True:
-            self.move_steer(5)
+            self.move_steer(0.5)
             self.accOn()
             time.sleep(0.6)
             self.accOff()
         elif this_action['16'] == True:
-            self.move_steer(7.5)
+            self.move_steer(0.75)
             self.accOn()
             time.sleep(0.6)
             self.accOff()
