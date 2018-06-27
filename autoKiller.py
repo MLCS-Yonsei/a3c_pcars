@@ -93,6 +93,7 @@ class pCarsAutoKiller(mp.Process):
         return True
 
     def trigger_virtual_esc(self):
+        self.get_focus()
         # Make Pcars window focused
         rect = win32gui.GetWindowRect(win32gui.FindWindow( None, "화상 키보드" ))
         print(rect)
@@ -195,6 +196,7 @@ class pCarsAutoKiller(mp.Process):
 
 if __name__ == '__main__':
     pc = pCarsAutoKiller()
+    pc.trigger_virtual_esc()
     while True:
         message = r.hget('pcars_killer',local_ip)
 
