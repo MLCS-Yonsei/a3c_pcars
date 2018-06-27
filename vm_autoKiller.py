@@ -187,7 +187,8 @@ class pCarsAutoKiller(mp.Process):
 if __name__ == '__main__':
     pc = pCarsAutoKiller()
     ips = [
-        "192.168.0.72"
+        "192.168.0.72",
+        "192.168.0.73"
     ]
     while True:
         for i, local_ip in enumerate(ips):
