@@ -145,6 +145,15 @@ class pCarsAutoKiller(mp.Process):
 
         self.r.hset('pcars_killer',target_ip,"3")
         print("Reset signal Set",target_ip)
+        while True:
+            message = r.hget('pcars_killer',target_ip)
+            if message:
+                if reset_status == 1:
+                    pass
+                elif reset_status == 2:
+                    pass
+                else:
+                    break
         
 
         self.ard.close()
@@ -154,6 +163,15 @@ class pCarsAutoKiller(mp.Process):
 
     def restart_type_2(self, target_ip, vpc_idx):
         self.r.hset('pcars_killer',target_ip,"4")
+        while True:
+            message = r.hget('pcars_killer',target_ip)
+            if message:
+                if reset_status == 1:
+                    pass
+                elif reset_status == 2:
+                    pass
+                else:
+                    break
         # Wait for session results screen shows up
         # time.sleep(9)
         # self.get_focus(vpc_idx)
