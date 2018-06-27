@@ -182,7 +182,7 @@ class Worker:
         self.summary_writer_play = tf.summary.FileWriter("play_" + str(self.number))
 
         ''' Init Redis '''
-        self.r = redis.StrictRedis(host='lab.hwanmoo.kr', port=6379, db=1)
+        self.r = redis.StrictRedis(host='redis.hwanmoo.kr', port=6379, db=1)
 
         # Create the local copy of the network and the tensorflow op to copy global params to local network
         self.local_AC = AC_Network(s_size, a_size, self.name, trainer, continuous)
