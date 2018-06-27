@@ -109,7 +109,7 @@ class pCarsAutoKiller(mp.Process):
         # pywinauto.mouse.release(button='left', coords=(x+30, y))
 
     def restart_type_1(self):
-        self.trigger_virtual_esc()
+        # self.trigger_virtual_esc()
 
         time.sleep(0.5)
         self.get_focus()
