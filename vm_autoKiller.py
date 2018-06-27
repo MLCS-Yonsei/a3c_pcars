@@ -61,7 +61,7 @@ class pCarsAutoKiller(mp.Process):
                 break
         try:
             self.ard = serial.Serial(port,9600,timeout=5)
-        else:
+        except:
             self.ard = None
             print("No Arduino Found")
             exit(0)
