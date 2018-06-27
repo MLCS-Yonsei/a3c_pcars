@@ -148,29 +148,30 @@ class pCarsAutoKiller(mp.Process):
         return True
 
     def restart_type_2(self, target_ip, vpc_idx):
+        self.r.hset('pcars_killer',target_ip,"4")
         # Wait for session results screen shows up
-        time.sleep(9)
-        self.get_focus(vpc_idx)
-        # Move to bottom of the menu
-        cmd = '{UP}'
-        for i in range(1,6):
-            SendKeys(cmd)
+        # time.sleep(9)
+        # self.get_focus(vpc_idx)
+        # # Move to bottom of the menu
+        # cmd = '{UP}'
+        # for i in range(1,6):
+        #     SendKeys(cmd)
 
-        # Restart Btn is located at second bottom of the menu
-        cmd = '{DOWN}'
-        SendKeys(cmd)
+        # # Restart Btn is located at second bottom of the menu
+        # cmd = '{DOWN}'
+        # SendKeys(cmd)
 
-        # Hit Return
-        cmd = '{ENTER}'
-        SendKeys(cmd)
+        # # Hit Return
+        # cmd = '{ENTER}'
+        # SendKeys(cmd)
 
-        # Wait for confirmation popup shows up
-        time.sleep(0.2)
-        cmd = '{DOWN}'
-        SendKeys(cmd)
+        # # Wait for confirmation popup shows up
+        # time.sleep(0.2)
+        # cmd = '{DOWN}'
+        # SendKeys(cmd)
 
-        cmd = '{ENTER}'
-        SendKeys(cmd)
+        # cmd = '{ENTER}'
+        # SendKeys(cmd)
 
         # Wait until game restarts
         # while True:
@@ -188,20 +189,20 @@ if __name__ == '__main__':
     ips = [
         "192.168.0.72"
     ]
-    # while True:
-    #     for i, local_ip in enumerate(ips):
-    #         message = r.hget('pcars_killer',local_ip)
+    while True:
+        for i, local_ip in enumerate(ips):
+            message = r.hget('pcars_killer',local_ip)
 
-    #         if message:
-    #             reset_status = eval(message)
+            if message:
+                reset_status = eval(message)
 
-    #             if reset_status == 1:
-    #                 pc.restart_type_1(local_ip,i)
-    #             elif reset_status == 2:
-    #                 pc.restart_type_2(i)
+                if reset_status == 1:
+                    pc.restart_type_1(local_ip,i)
+                elif reset_status == 2:
+                    pc.restart_type_2(local_ip,i)
 
-    #             r.hdel('pcars_killer',local_ip)
-    pc.restart_type_2(ips[0], 0)
+                r.hdel('pcars_killer',local_ip)
+    # pc.restart_type_2(ips[0], 0)
 
             
 

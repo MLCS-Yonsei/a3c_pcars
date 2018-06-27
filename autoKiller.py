@@ -206,7 +206,7 @@ if __name__ == '__main__':
             print(reset_status)
             if reset_status == 3:
                 pc.restart_type_1()
-            elif reset_status == 2:
+            elif reset_status == 4:
                 pc.restart_type_2()
 
             r.hdel('pcars_killer',local_ip)
