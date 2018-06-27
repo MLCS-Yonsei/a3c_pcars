@@ -141,11 +141,11 @@ if __name__ == '__main__':
     stream.start()
 
 
-    pac = pCarsAutoController()
-    pac.run()
+    # pac = pCarsAutoController()
+    # pac.run()
 
-    pkr = pCarsAutoKiller()
-    pkr.run()
+    # pkr = pCarsAutoKiller()
+    # pkr.run()
     while True:
         # Taking Screen Capture form Pcars
         '''
