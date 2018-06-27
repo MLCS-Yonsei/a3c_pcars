@@ -95,6 +95,7 @@ class pCarsAutoKiller(mp.Process):
     def trigger_virtual_esc(self):
         # Make Pcars window focused
         rect = win32gui.GetWindowRect(win32gui.FindWindow( None, "화상 키보드" ))
+        print(rect)
         x = rect[0]
         y = rect[1]
         w = rect[2] - x
@@ -141,7 +142,6 @@ class pCarsAutoKiller(mp.Process):
         # self.ard.close()
         # self.connect_arduino()
 
-        self.get_focus()
         return True
 
     def restart_type_2(self):
