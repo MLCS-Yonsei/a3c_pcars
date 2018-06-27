@@ -30,7 +30,7 @@ class PcarsEnv:
         self.initial_run = True
         self.prevLapDistance = 0
 
-        self.r = redis.StrictRedis(host='lab.hwanmoo.kr', port=6379, db=1)
+        self.r = redis.StrictRedis(host='redis.hwanmoo.kr', port=6379, db=1)
 
    
     def step_discrete(self, u, obs, target_ip):
