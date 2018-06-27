@@ -201,7 +201,7 @@ if __name__ == '__main__':
     #                 pc.restart_type_2(i)
 
     #             r.hdel('pcars_killer',local_ip)
-    pc.restart_type_1(ips[0], 1)
+    pc.restart_type_1(ips[0], 0)
 
             
 
