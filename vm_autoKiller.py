@@ -37,7 +37,7 @@ class pCarsAutoKiller(mp.Process):
         super(pCarsAutoKiller,self).__init__()
         #self.queue = que
 
-        self.get_focus()
+        self.get_focus(0)
         self.status = 'active'
 
         self.target_ip = 'localhost:8080'
@@ -185,22 +185,23 @@ class pCarsAutoKiller(mp.Process):
 
 if __name__ == '__main__':
     pc = pCarsAutoKiller()
-    ips = [
-        "192.168.0.72"
-    ]
-    while True:
-        for i, local_ip in enumerate(ips):
-            message = r.hget('pcars_killer',local_ip)
+    # ips = [
+    #     "192.168.0.72"
+    # ]
+    # while True:
+    #     for i, local_ip in enumerate(ips):
+    #         message = r.hget('pcars_killer',local_ip)
 
-            if message:
-                reset_status = eval(message)
+    #         if message:
+    #             reset_status = eval(message)
 
-                if reset_status == 1:
-                    pc.restart_type_1(i)
-                elif reset_status == 2:
-                    pc.restart_type_2(i)
+    #             if reset_status == 1:
+    #                 pc.restart_type_1(i)
+    #             elif reset_status == 2:
+    #                 pc.restart_type_2(i)
 
-                r.hdel('pcars_killer',local_ip)
+    #             r.hdel('pcars_killer',local_ip)
+    pc.restart_type_1(0)
 
             
 
