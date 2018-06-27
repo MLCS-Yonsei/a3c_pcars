@@ -69,7 +69,9 @@ class pCarsAutoKiller(mp.Process):
 
     def get_focus(self, vpc_idx):
         # Make Pcars window focused
-        PyCWnd1 = win32ui.FindWindow( None, "DESKTOP-FOKU7V8의 V" + str(vpc_idx+1) + " - 가상 컴퓨터 연결" )
+        target_name = "DESKTOP-FOKU7V8의 V" + str(vpc_idx+1) + " - 가상 컴퓨터 연결"
+        print(target_name)
+        PyCWnd1 = win32ui.FindWindow( None, target_name )
         PyCWnd1.SetForegroundWindow()
         PyCWnd1.SetFocus()
 
