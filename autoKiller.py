@@ -37,7 +37,7 @@ class pCarsAutoKiller(mp.Process):
 
         self.target_ip = 'localhost:8080'
         
-        self.connect_arduino()
+        # self.connect_arduino()
         self.prevLapDistance = 0
 
         ''' Getting Local IP of this Computer '''
