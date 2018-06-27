@@ -37,7 +37,7 @@ class pCarsAutoKiller(mp.Process):
         super(pCarsAutoKiller,self).__init__()
         #self.queue = que
 
-        self.get_focus(0)
+
         self.status = 'active'
 
         self.target_ip = 'localhost:8080'
