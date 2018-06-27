@@ -197,7 +197,7 @@ class pCarsAutoKiller(mp.Process):
 
 if __name__ == '__main__':
     pc = pCarsAutoKiller()
-    pc.trigger_virtual_esc()
+
     while True:
         message = r.hget('pcars_killer',local_ip)
 
