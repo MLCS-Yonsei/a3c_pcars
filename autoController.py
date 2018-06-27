@@ -31,9 +31,12 @@ class pCarsAutoController(mp.Process):
             'steer': 0
         }
 
-        # self.svrsock = socket(AF_INET, SOCK_DGRAM)
-        # self.svrsock.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
-        # self.svrsock.bind(('192.168.0.49', 54545))               #로컬호스트에 5001포트로 바인딩
+        ''' Getting Local IP of this Computer '''
+        self.local_ip = [ip for ip in socket.gethostbyname_ex(socket.gethostname())[2] if not ip.startswith("127.")][:1][0]
+        print("Local IP for AutoController: ",self.local_ip)
+        ''' Init Redis '''
+        self.r = redis.StrictRedis(host='redis.hwanmoo.kr', port=6379, db=1)
+        print("Redis connected for AutoController: ",self.r)
 
     def get_focus(self):
         # Make Pcars window focused
@@ -48,72 +51,100 @@ class pCarsAutoController(mp.Process):
 
     def action_parser(self, this_action):
         if this_action['0'] == True:
-            self.move_steer(-1)
-        elif this_action['1'] == True:
-            self.move_steer(-0.75)
-        elif this_action['2'] == True:
-            self.move_steer(-0.5)
-        elif this_action['3'] == True:
-            self.move_steer(-0.25)
-        elif this_action['4'] == True:
-            self.move_steer(0)
-        elif this_action['5'] == True:
-            self.move_steer(0.25)
-        elif this_action['6'] == True:
-            self.move_steer(0.5)
-        elif this_action['7'] == True:
-            self.move_steer(0.75)
-        elif this_action['8'] == True:
-            self.move_steer(1)
-        elif this_action['9'] == True:
+            self.brakeOff()
             self.move_steer(-1)
             self.accOn()
-            time.sleep(0.6)
+        elif this_action['1'] == True:
+            self.brakeOff()
+            self.move_steer(-1)
+            self.accOff()
+        elif this_action['2'] == True:
+            self.brakeOff()
+            self.move_steer(-0.75)
+            self.accOn()
+        elif this_action['3'] == True:
+            self.brakeOff()
+            self.move_steer(-0.75)
+            self.accOff()
+        elif this_action['4'] == True:
+            self.brakeOff()
+            self.move_steer(-0.5)
+            self.accOn()
+        elif this_action['5'] == True:
+            self.brakeOff()
+            self.move_steer(-0.5)
+            self.accOff()
+        elif this_action['6'] == True:
+            self.brakeOff()
+            self.move_steer(-0.25)
+            self.accOn()
+        elif this_action['7'] == True:
+            self.brakeOff()
+            self.move_steer(-0.25)
+            self.accOff()
+        elif this_action['8'] == True:
+            self.brakeOff()
+            self.move_steer(0)
+            self.accOn()
+        elif this_action['9'] == True:
+            self.brakeOff()
+            self.move_steer(0)
             self.accOff()
         elif this_action['10'] == True:
-            self.move_steer(-0.75)
-            self.accOn()
-            time.sleep(0.6)
-            self.accOff()
-        elif this_action['11'] == True:
-            self.move_steer(-0.5)
-            self.accOn()
-            time.sleep(0.6)
-            self.accOff()
-        elif this_action['12'] == True:
-            self.move_steer(-0.25)
-            self.accOn()
-            time.sleep(0.6)
-            self.accOff()
-        elif this_action['13'] == True:
-            self.move_steer(0)
-            self.accOn()
-            time.sleep(0.6)
-            self.accOff()
-        elif this_action['14'] == True:
+            self.brakeOff()
             self.move_steer(0.25)
             self.accOn()
-            time.sleep(0.6)
+        elif this_action['11'] == True:
+            self.brakeOff()
+            self.move_steer(0.25)
             self.accOff()
-        elif this_action['15'] == True:
+        elif this_action['12'] == True:
+            self.brakeOff()
             self.move_steer(0.5)
             self.accOn()
-            time.sleep(0.6)
+        elif this_action['13'] == True:
+            self.brakeOff()
+            self.move_steer(0.5)
             self.accOff()
-        elif this_action['16'] == True:
+        elif this_action['14'] == True:
+            self.brakeOff()
             self.move_steer(0.75)
             self.accOn()
-            time.sleep(0.6)
+        elif this_action['15'] == True:
+            self.brakeOff()
+            self.move_steer(0.75)
             self.accOff()
-        elif this_action['17'] == True:
+        elif this_action['16'] == True:
+            self.brakeOff()
             self.move_steer(1)
             self.accOn()
-            time.sleep(0.6)
-            self.accOff()
-        elif this_action['18'] == True:
-            self.brakeOn()
-            time.sleep(0.5)
+        elif this_action['17'] == True:
             self.brakeOff()
+            self.move_steer(1)
+            self.accOff()
+        
+        elif this_action['18'] == True:
+            self.accOff()
+            self.brakeOn()
+            self.move_steer(-1)
+        elif this_action['19'] == True:
+            self.accOff()
+            self.brakeOn()
+            self.move_steer(-0.5)
+        elif this_action['20'] == True:
+            self.accOff()
+            self.brakeOn()
+            self.move_steer(0)
+        elif this_action['21'] == True:
+            self.accOff()
+            self.brakeOn()
+            self.move_steer(0.5)
+        elif this_action['22'] == True:
+            self.accOff()
+            self.brakeOn()
+            self.move_steer(1)
+
+            
 
     def steer_converter(self, n):
         # if n > 1:
@@ -128,6 +159,8 @@ class pCarsAutoController(mp.Process):
         w = rect[2] - x
         h = rect[3] - y
         zero = [x + int(w/2), y + int(h/2)]
+
+        w = w-16 # Margin for window border
         d = int(w/2 * n)
 
         t = [zero[0] + d, zero[1]]
@@ -161,42 +194,19 @@ class pCarsAutoController(mp.Process):
 
     def run(self):
         while True:
-            if self.status == 'active':
-                gameData = send_crest_requset(self.target_ip, "crest-monitor", {})
+            message = self.r.hget('pcars_action',self.local_ip)
 
-                # parse Game Data
-                gameState = gameData["gameStates"]["mGameState"]
-                if gameState > 1:
-                    s, addr = self.svrsock.recvfrom(4096)
+            if message:
+                action = eval(message)
+                self.action_parser(action)
 
-                    if s == b'Connect':
-                        print('Connected')
-                        self.svrsock.sendto('OK'.encode(),addr)
-                    else:
-                        print(s.decode())
-                        self.controlState = json.loads(s.decode())
-                        n = self.controlState['steer']
-
-                        self.move_steer(n)
-                        
-                        if self.controlState['acc'] == True:
-                            self.accOn()
-                        
-                        if self.controlState['acc'] == False:
-                            self.accOff()
-
-                        if self.controlState['brake'] == True:
-                            self.brakeOn()
-                        
-                        if self.controlState['brake'] == False:
-                            self.brakeOff()
+                self.r.hdel('pcars_action',self.local_ip)
 
 ''' Getting Local IP of this Computer '''
 local_ip = [ip for ip in socket.gethostbyname_ex(socket.gethostname())[2] if not ip.startswith("127.")][:1][0]
 
 ''' Init Redis '''
 r = redis.StrictRedis(host='lab.hwanmoo.kr', port=6379, db=1)
-
 
 if __name__ == '__main__':
     pc = pCarsAutoController()

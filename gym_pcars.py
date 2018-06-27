@@ -34,63 +34,68 @@ class PcarsEnv:
 
    
     def step_discrete(self, u, obs, target_ip):
-        j=0 
-        this_action = self.agent_to_torcs_discrete(u)
+        if 'raceState' in obs:
+            try:
+                j=0 
+                this_action = self.agent_to_torcs_discrete(u)
+                terminate_status = False
 
-        # Steering
-        self.r.hset('pcars_action', target_ip, this_action)
+                # Steering
+                self.r.hset('pcars_action', target_ip, this_action)
 
-        # angle = obs["motionAndDeviceRelated"]["mOrientation"][1]
-        
-        if "raceState" in obs and obs["raceState"] =='<RaceState.RACING: 2>' and obs["raceState"] != '<RaceState.INVALID: 0>':
-            raceState = obs["raceState"].replace('<RaceState.RACING: ','')
-            raceState = raceState.replace('>','')#;print(type(raceState))
-            #raceState = int(raceState)
-            if raceState == '3':
-                reward = -200
-                self.reset_pcars_2(target_ip)
+                # angle = obs["motionAndDeviceRelated"]["mOrientation"][1]
+                
+                raceState = [int(s) for s in obs["raceState"].split('>')[0].split() if s.isdigit()][0]
+                #raceState = int(raceState)
+                if raceState == 3:
+                    reward = -300
+                    self.reset_pcars_2(target_ip)
+                    terminate_status = True
 
-            sp = obs["speed"]
-            distance = obs["participants"][0]["currentLapDistance"]
-            crashState = obs["crashState"]
-            tireTerrain = obs["tyres"]
+                sp = obs["speed"]
+                distance = obs["participants"][0]["currentLapDistance"]
+                crashState = obs["crashState"]
+                
 
-            progress = sp * distance + sp * sp
-            reward = progress / 10
-         
-            if distance == 0 and obs['brake'] == 1:
-                reward = -200
-                self.reset_pcars(target_ip)
+                progress = sp * distance + sp * sp
+                reward = progress / 10
+            
+                if distance == 0 and obs['brake'] == 1:
+                    reward = -200
 
-            for i in range(4):
-                if tireTerrain[i]['terrain'] == 7 :  # Episode is terminated if the car is out of track
-                    j+=1;print(tireTerrain[i]['terrain'])
-            if j >= 3:
-                reward = -200; j = 0
-                self.reset_pcars(target_ip)
-       
-            if crashState > 1:
-                reward = -200
-                self.reset_pcars(target_ip)
+                if "tyres" in obs:
+                    tireTerrain = obs["tyres"]
+                    for i in range(4):
+                        if tireTerrain[i]['terrain'] != 0 :  # Episode is terminated if the car is out of track
+                            j+=1
+                    if j >= 3:
+                        reward = -200; j = 0
 
-            #if sp < 0.01:
-            #    reward = -200
-            #    self.reset_pcars(target_ip)
-            if self.prevLapDistance != 0 and self.prevLapDistance != 78 and abs(self.prevLapDistance - distance) < 1:
-                reward = -200;print(self.prevLapDistance, distance)
-                self.reset_pcars(target_ip)
+                if crashState > 1:
+                    reward = -200
 
-            #if self.prevLapDistance != 0 and distance != 0 and distance <= self.prevLapDistance:  # Episode is terminated if the agent runs backward
-            #    reward = -200
-            #    self.reset_pcars(target_ip)
-        
-            self.prevLapDistance = distance
-            self.time_step += 1
+                #if sp < 0.01:
+                #    reward = -200
+                #    self.reset_pcars(target_ip)
+                if self.prevLapDistance != 0 and self.prevLapDistance != 78 and abs(self.prevLapDistance - distance) < 1:
+                    reward = -200;print("backward:",self.prevLapDistance, distance)
 
-            print(reward)
-            return obs, reward, {}
-        else:
-            pass
+                #if self.prevLapDistance != 0 and distance != 0 and distance <= self.prevLapDistance:  # Episode is terminated if the agent runs backward
+                #    reward = -200
+                #    self.reset_pcars(target_ip)
+            
+                self.prevLapDistance = distance
+                self.time_step += 1
+
+                print("reward:86:",reward)
+                if reward == -200:
+                    print("Restarting")
+                    self.reset_pcars(target_ip)
+                    terminate_status = True
+
+                return obs, reward, {}, terminate_status
+            except Exception as ex:
+                print("Error on step_discrete:",ex)
    
     def reset_pcars(self,target_ip):
         self.r.hset('pcars_killer',target_ip,"1")
@@ -118,5 +123,9 @@ class PcarsEnv:
         torcs_action.update({'16': u[16]})
         torcs_action.update({'17': u[17]})
         torcs_action.update({'18': u[18]})
+        torcs_action.update({'19': u[19]})
+        torcs_action.update({'20': u[20]})
+        torcs_action.update({'21': u[21]})
+        torcs_action.update({'22': u[22]})
 
         return torcs_action

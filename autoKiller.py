@@ -40,7 +40,12 @@ class pCarsAutoKiller(mp.Process):
         self.connect_arduino()
         self.prevLapDistance = 0
 
-        self.run()
+        ''' Getting Local IP of this Computer '''
+        self.local_ip = [ip for ip in socket.gethostbyname_ex(socket.gethostname())[2] if not ip.startswith("127.")][:1][0]
+        print("Local IP for AutoKiller: ",self.local_ip)
+        ''' Init Redis '''
+        self.r = redis.StrictRedis(host='redis.hwanmoo.kr', port=6379, db=1)
+        print("Redis connected for AutoKiller: ",self.r)
 
     def connect_arduino(self):
         # Scan for arduino ports
@@ -59,7 +64,7 @@ class pCarsAutoKiller(mp.Process):
         PyCWnd1.SetForegroundWindow()
         PyCWnd1.SetFocus()
 
-    def trigger_esc(self):
+    def trigger_arduino_esc(self):
         
         # Make Pcars focused just in case
         self.get_focus()
@@ -80,11 +85,22 @@ class pCarsAutoKiller(mp.Process):
             # if gameState == 3:
             #     break
 
-        
         return True
 
+    def trigger_virtual_esc(self):
+        # Make Pcars window focused
+        rect = win32gui.GetWindowRect(win32gui.FindWindow( None, "화상 키보드" ))
+        x = rect[0]
+        y = rect[1]
+        w = rect[2] - x
+        h = rect[3] - y
+        
+        # pywinauto.mouse.click(button='left', coords=(x+30, y+160))
+        pywinauto.mouse.press(button='left', coords=(x+30, y+160))
+        pywinauto.mouse.release(button='left', coords=(x+30, y))
+
     def restart_type_1(self):
-        self.trigger_esc()
+        self.trigger_virtual_esc()
 
         time.sleep(0.5)
         self.get_focus()
@@ -155,42 +171,20 @@ class pCarsAutoKiller(mp.Process):
         #         break
         
         return True
-    '''
     def run(self):
         while True:
-            if self.status == 'active':
-                gameData = send_crest_requset(self.target_ip, "crest-monitor", {})
+            message = self.r.hget('pcars_killer',self.local_ip)
 
-                # parse Game Data
-                gameState = gameData["gameStates"]["mGameState"]
+            if message:
+                reset_status = eval(message)
 
-                if gameState > 1:
-                    raceState = gameData["gameStates"]["mRaceState"]
-                    crashState = gameData["carDamage"]["mCrashState"]
-                    tireTerrain = gameData["wheelsAndTyres"]["mTerrain"]
-                    
-                    lapLength = gameData["eventInformation"]["mTrackLength"] # 랩 길이
-                    
-                    egoInfo = gameData["participants"]["mParticipantInfo"][0]
-                    lapCompleted = egoInfo["mLapsCompleted"]
-                    currentLapDistance = egoInfo["mCurrentLapDistance"] + lapLength * lapCompleted
-                    
-                    # Case
-                    if raceState == 3:
-                        print(1)
-                        self.restart_type_2()
-                    elif crashState > 1:
-                        print(2)
-                        self.restart_type_1()
-                    elif self.prevLapDistance != 0 and currentLapDistance != 0 and currentLapDistance <= self.prevLapDistance:
-                        print(3)
-                        self.restart_type_1()
-                    elif tireTerrain.count(0) != 4:
-                        print(4)
-                        self.restart_type_1()
+                if reset_status == 1:
+                    self.restart_type_1()
+                elif reset_status == 2:
+                    self.restart_type_2()
 
-                    self.prevLapDistance = currentLapDistance
-    '''
+                self.r.hdel('pcars_killer',self.local_ip)
+
 if __name__ == '__main__':
     pc = pCarsAutoKiller()
     while True:

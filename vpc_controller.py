@@ -25,11 +25,15 @@ from pcars_stream.src.pcars.stream import PCarsStreamReceiver
 
 import http.client
 import socket 
+
+from autoController import pCarsAutoController
+from autoKiller import pCarsAutoKiller
+
 ''' Getting Local IP of this Computer '''
 local_ip = [ip for ip in socket.gethostbyname_ex(socket.gethostname())[2] if not ip.startswith("127.")][:1][0]
 print("Local ip",local_ip)
 ''' Init Redis '''
-r = redis.StrictRedis(host='lab.hwanmoo.kr', port=6379, db=1)
+r = redis.StrictRedis(host='redis.hwanmoo.kr', port=6379, db=1)
 
 ''' CREST Thread '''
 class PCarsListener(object):
@@ -130,6 +134,13 @@ if __name__ == '__main__':
     Listening Pcars UDP port 
     Make sure to set udp setting in the game option as 1
     '''
+
+    pac = pCarsAutoController()
+    pac.run()
+
+    pkr = pCarsAutoKiller()
+    pkr.run()
+
     listener = PCarsListener()
     stream = PCarsStreamReceiver()
     stream.addListener(listener)
