@@ -42,7 +42,7 @@ class pCarsAutoKiller(mp.Process):
 
         self.target_ip = 'localhost:8080'
         
-        # self.connect_arduino()
+        self.connect_arduino()
         self.prevLapDistance = 0
 
         ''' Getting Local IP of this Computer '''
@@ -59,8 +59,12 @@ class pCarsAutoKiller(mp.Process):
             if "Arduino" in p[1]:
                 port = p[0]
                 break
-
-        self.ard = serial.Serial(port,9600,timeout=5)
+        try:
+            self.ard = serial.Serial(port,9600,timeout=5)
+        else:
+            self.ard = None
+            print("No Arduino Found")
+            exit(0)
         time.sleep(2)
 
     def get_focus(self, vpc_idx):
