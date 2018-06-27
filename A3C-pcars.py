@@ -452,7 +452,8 @@ def play_training(training=True, load_model=True):
 
         worker_ips = [
             # '192.168.0.2',
-            '192.168.0.72'
+            '192.168.0.72',
+            '192.168.0.73'
         ]
 
         workers = []
