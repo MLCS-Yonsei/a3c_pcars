@@ -274,7 +274,7 @@ class Worker:
                         raceState = [int(s) for s in ob["raceState"].split('>')[0].split() if s.isdigit()][0]
 
                         if raceState == 2 or raceState == 3 and gameState == 2:
-                            print("Starting Episode", episode_count)
+                            print("Starting Episode", episode_count, target_ip)
                             sess.run(self.update_local_ops)
                             episode_buffer = []
                             episode_values = []
