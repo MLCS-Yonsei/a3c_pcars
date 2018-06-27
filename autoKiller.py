@@ -203,7 +203,7 @@ if __name__ == '__main__':
 
         if message:
             reset_status = eval(message)
-            print(reset_status)
+
             if reset_status == 3:
                 pc.restart_type_1()
             elif reset_status == 4:
