@@ -198,7 +198,7 @@ if __name__ == '__main__':
     while True:
         for i, local_ip in enumerate(ips):
             message = r.hget('pcars_killer',local_ip)
-
+            print(message,i)
             if message:
                 reset_status = eval(message)
                 print(reset_status)
