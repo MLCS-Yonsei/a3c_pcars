@@ -158,6 +158,7 @@ class pCarsAutoKiller(mp.Process):
         
 
         self.ard.close()
+        time.sleep(2)
         self.connect_arduino()
 
         return True
