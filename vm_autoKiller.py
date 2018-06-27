@@ -144,7 +144,7 @@ class pCarsAutoKiller(mp.Process):
         # SendKeys(cmd)
 
         self.r.hset('pcars_killer',target_ip,"3")
-
+        print("Reset signal Set",target_ip)
         
 
         self.ard.close()
