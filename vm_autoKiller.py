@@ -148,6 +148,7 @@ class pCarsAutoKiller(mp.Process):
         while True:
             message = r.hget('pcars_killer',target_ip)
             if message:
+                reset_status = eval(message)
                 if reset_status == 1:
                     pass
                 elif reset_status == 2:
@@ -166,6 +167,7 @@ class pCarsAutoKiller(mp.Process):
         while True:
             message = r.hget('pcars_killer',target_ip)
             if message:
+                reset_status = eval(message)
                 if reset_status == 1:
                     pass
                 elif reset_status == 2:
