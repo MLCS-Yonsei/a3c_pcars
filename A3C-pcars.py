@@ -263,7 +263,7 @@ class Worker:
             while not coord.should_stop():
                 # try:
                 message = self.r.hget('pcars_data',target_ip)
-
+                print(message)
                 if message:
 
                     self.r.hdel('pcars_data',target_ip)
@@ -453,8 +453,7 @@ def play_training(training=True, load_model=True):
 
         worker_ips = [
             # '192.168.0.2',
-            # '192.168.0.56',
-            '172.28.66.129'
+            '192.168.0.72'
         ]
 
         workers = []
@@ -497,8 +496,8 @@ if __name__ == "__main__":
         os.makedirs('./frames')
 
     if len(sys.argv) == 1:  # run from PyCharm
-        play_training(training=True, load_model=True)
+        play_training(training=True, load_model=False)
     elif sys.argv[1] == "1":  # lunch from Terminal and specify 0 or 1 as arguments
-        play_training(training=True, load_model=True)
+        play_training(training=True, load_model=False)
     elif sys.argv[1] == "0":
         play_training(training=False, load_model=True)
