@@ -1,6 +1,7 @@
 from pywinauto.application import Application
 from pywinauto.keyboard import SendKeys
 import win32ui
+import win32gui
 
 import serial
 import serial.tools.list_ports
