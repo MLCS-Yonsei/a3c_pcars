@@ -206,7 +206,7 @@ class pCarsAutoController(mp.Process):
 local_ip = [ip for ip in socket.gethostbyname_ex(socket.gethostname())[2] if not ip.startswith("127.")][:1][0]
 
 ''' Init Redis '''
-r = redis.StrictRedis(host='lab.hwanmoo.kr', port=6379, db=1)
+r = redis.StrictRedis(host='redis.hwanmoo.kr', port=6379, db=1)
 
 if __name__ == '__main__':
     pc = pCarsAutoController()
