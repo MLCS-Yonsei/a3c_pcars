@@ -101,7 +101,7 @@ class pCarsAutoKiller(mp.Process):
         y = rect[1]
         w = rect[2] - x
         h = rect[3] - y
-        pywinauto.mouse.click(button='left', coords=(x+30, y+90))
+        pywinauto.mouse.move(coords=(x+30, y+0))
         time.sleep(1)
         pywinauto.mouse.press(button='left', coords=(x+30, y+90))
         pywinauto.mouse.release(button='left', coords=(x+30, y))
