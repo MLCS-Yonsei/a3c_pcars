@@ -147,7 +147,7 @@ class pCarsAutoKiller(mp.Process):
 
         return True
 
-    def restart_type_2(self, vpc_idx):
+    def restart_type_2(self, target_ip, vpc_idx):
         # Wait for session results screen shows up
         time.sleep(9)
         self.get_focus(vpc_idx)
@@ -201,7 +201,7 @@ if __name__ == '__main__':
     #                 pc.restart_type_2(i)
 
     #             r.hdel('pcars_killer',local_ip)
-    pc.restart_type_1(ips[0], 0)
+    pc.restart_type_2(ips[0], 0)
 
             
 
