@@ -138,8 +138,10 @@ class pCarsAutoKiller(mp.Process):
         #     if gameState == 2:
         #         break
 
-        self.ard.close()
-        self.connect_arduino()
+        # self.ard.close()
+        # self.connect_arduino()
+
+        self.get_focus()
         return True
 
     def restart_type_2(self):
