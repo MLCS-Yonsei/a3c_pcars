@@ -102,9 +102,9 @@ class pCarsAutoKiller(mp.Process):
         w = rect[2] - x
         h = rect[3] - y
         
-        pywinauto.mouse.move(coords=(x+30, y+160))
+        pywinauto.mouse.move(coords=(x+30, y+80))
         time.sleep(1)
-        pywinauto.mouse.press(button='left', coords=(x+30, y+160))
+        pywinauto.mouse.press(button='left', coords=(x+30, y+80))
         pywinauto.mouse.release(button='left', coords=(x+30, y))
 
     def restart_type_1(self):
