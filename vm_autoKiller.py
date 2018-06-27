@@ -198,7 +198,7 @@ if __name__ == '__main__':
 
             if message:
                 reset_status = eval(message)
-
+                print(reset_status)
                 if reset_status == 1:
                     pc.restart_type_1(local_ip,i)
                 elif reset_status == 2:
