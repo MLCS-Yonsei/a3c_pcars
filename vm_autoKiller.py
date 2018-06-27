@@ -124,6 +124,7 @@ class pCarsAutoKiller(mp.Process):
 
         # Restart Btn is located at second bottom of the menu
         cmd = '{UP}'
+        print(cmd)
         SendKeys(cmd)
 
         # Hit Return
