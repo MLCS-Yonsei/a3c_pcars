@@ -135,16 +135,17 @@ if __name__ == '__main__':
     Make sure to set udp setting in the game option as 1
     '''
 
+    listener = PCarsListener()
+    stream = PCarsStreamReceiver()
+    stream.addListener(listener)
+    stream.start()
+
+
     pac = pCarsAutoController()
     pac.run()
 
     pkr = pCarsAutoKiller()
     pkr.run()
-
-    listener = PCarsListener()
-    stream = PCarsStreamReceiver()
-    stream.addListener(listener)
-    stream.start()
     while True:
         # Taking Screen Capture form Pcars
         '''
