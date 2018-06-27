@@ -263,7 +263,6 @@ class Worker:
             while not coord.should_stop():
                 # try:
                 message = self.r.hget('pcars_data',target_ip)
-                print(message)
                 if message:
 
                     self.r.hdel('pcars_data',target_ip)
