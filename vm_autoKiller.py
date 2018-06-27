@@ -112,7 +112,7 @@ class pCarsAutoKiller(mp.Process):
         pywinauto.mouse.press(button='left', coords=(x-5, y+90))
         # pywinauto.mouse.release(button='left', coords=(x+30, y))
 
-    def restart_type_1(self, vpc_idx):
+    def restart_type_1(self, target_ip, vpc_idx):
         self.trigger_arduino_esc(vpc_idx)
 
         # time.sleep(0.5)
