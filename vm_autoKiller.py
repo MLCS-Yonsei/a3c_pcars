@@ -225,10 +225,19 @@ if __name__ == '__main__':
                 print(reset_status)
                 if reset_status == 1:
                     pc.restart_type_1(local_ip,i)
+                    del_stat = True
                 elif reset_status == 2:
                     pc.restart_type_2(local_ip,i)
+                    del_stat = True
+                elif reset_status == 3:
+                    del_stat = False
+                elif reset_status == 4:
+                    del_stat = False
+                else:
+                    del_stat = True
 
-                r.hdel('pcars_killer',local_ip)
+                if del_stat:
+                    r.hdel('pcars_killer',local_ip)
     # pc.restart_type_2(ips[0], 0)
 
             
