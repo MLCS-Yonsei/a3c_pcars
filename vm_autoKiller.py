@@ -120,29 +120,6 @@ class pCarsAutoKiller(mp.Process):
     def restart_type_1(self, target_ip, vpc_idx):
         self.trigger_arduino_esc(vpc_idx)
 
-        # time.sleep(0.5)
-        # self.get_focus(vpc_idx)
-        # # Move to bottom of the menu
-        # cmd = '{DOWN}'
-        # for i in range(1,11):
-        #     SendKeys(cmd)
-
-        # # Restart Btn is located at second bottom of the menu
-        # cmd = '{UP}'
-        # SendKeys(cmd)
-
-        # # Hit Return
-        # cmd = '{ENTER}'
-        # SendKeys(cmd)
-
-        # # Wait for confirmation popup shows up
-        # time.sleep(0.2)
-        # cmd = '{DOWN}'
-        # SendKeys(cmd)
-
-        # cmd = '{ENTER}'
-        # SendKeys(cmd)
-
         self.r.hset('pcars_killer',target_ip,"3")
         print("Reset signal Set",target_ip)
         while True:
@@ -194,10 +171,10 @@ if __name__ == '__main__':
                 print(reset_status)
                 if reset_status == 1:
                     pc.restart_type_1(local_ip,i)
-                    del_stat = True
+                    del_stat = False
                 elif reset_status == 2:
                     pc.restart_type_2(local_ip,i)
-                    del_stat = True
+                    del_stat = False
                 elif reset_status == 3:
                     del_stat = False
                 elif reset_status == 4:
