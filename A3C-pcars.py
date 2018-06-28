@@ -297,7 +297,7 @@ class Worker:
 
                                 while self.restarting:
                                     while True:
-                                        message = self.r.hget('pcars_killer',local_ip)
+                                        message = self.r.hget('pcars_killer',target_ip)
 
                                         if message:
                                             reset_status = eval(message)
