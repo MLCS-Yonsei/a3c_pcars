@@ -76,9 +76,10 @@ class pCarsAutoKiller(mp.Process):
         PyCWnd1.SetFocus()
 
     def defocus(self):
-        target_name = "명령 프롬프트"
+        target_name = "제목없음 - 메모장"
         print(target_name)
-        PyCWnd1 = pywinauto.findwindows.find_windows(title_re = r'명령 프롬프트', class_name='Window')[0]
+        PyCWnd1 = win32ui.FindWindow( None, target_name )
+
         PyCWnd1.SetForegroundWindow()
         PyCWnd1.SetFocus()
 
