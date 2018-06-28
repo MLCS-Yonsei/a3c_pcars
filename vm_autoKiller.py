@@ -149,9 +149,9 @@ class pCarsAutoKiller(mp.Process):
             message = r.hget('pcars_killer',target_ip)
             if message:
                 reset_status = eval(message)
-                if reset_status == 1:
+                if reset_status == 3:
                     pass
-                elif reset_status == 2:
+                elif reset_status == 4:
                     pass
                 else:
                     break
@@ -169,43 +169,12 @@ class pCarsAutoKiller(mp.Process):
             message = r.hget('pcars_killer',target_ip)
             if message:
                 reset_status = eval(message)
-                if reset_status == 1:
+                if reset_status == 3:
                     pass
-                elif reset_status == 2:
+                elif reset_status == 4:
                     pass
                 else:
                     break
-        # Wait for session results screen shows up
-        # time.sleep(9)
-        # self.get_focus(vpc_idx)
-        # # Move to bottom of the menu
-        # cmd = '{UP}'
-        # for i in range(1,6):
-        #     SendKeys(cmd)
-
-        # # Restart Btn is located at second bottom of the menu
-        # cmd = '{DOWN}'
-        # SendKeys(cmd)
-
-        # # Hit Return
-        # cmd = '{ENTER}'
-        # SendKeys(cmd)
-
-        # # Wait for confirmation popup shows up
-        # time.sleep(0.2)
-        # cmd = '{DOWN}'
-        # SendKeys(cmd)
-
-        # cmd = '{ENTER}'
-        # SendKeys(cmd)
-
-        # Wait until game restarts
-        # while True:
-        #     gameData = send_crest_requset(self.target_ip, "crest-monitor", {})
-        #     raceState = gameData["gameStates"]["mRaceState"]
-
-        #     if raceState < 3:
-        #         break
         
         return True
 

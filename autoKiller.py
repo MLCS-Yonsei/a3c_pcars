@@ -181,19 +181,19 @@ class pCarsAutoKiller(mp.Process):
         #         break
         
         return True
-    def run(self):
-        while True:
-            message = self.r.hget('pcars_killer',self.local_ip)
+    # def run(self):
+    #     while True:
+    #         message = self.r.hget('pcars_killer',self.local_ip)
 
-            if message:
-                reset_status = eval(message)
+    #         if message:
+    #             reset_status = eval(message)
 
-                if reset_status == 1:
-                    self.restart_type_1()
-                elif reset_status == 2:
-                    self.restart_type_2()
+    #             if reset_status == 1:
+    #                 self.restart_type_1()
+    #             elif reset_status == 2:
+    #                 self.restart_type_2()
 
-                self.r.hdel('pcars_killer',self.local_ip)
+    #             self.r.hdel('pcars_killer',self.local_ip)
 
 if __name__ == '__main__':
     pc = pCarsAutoKiller()
