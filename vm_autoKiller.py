@@ -82,12 +82,16 @@ class pCarsAutoKiller(mp.Process):
     def defocus(self):
         target_name = "제목 없음 - 메모장"
         print(target_name)
-        PyCWnd1 = win32ui.FindWindow( None, target_name )
+        app = application.Application()
 
-        shell = win32com.client.Dispatch("WScript.Shell")
-        shell.SendKeys('%')
-        PyCWnd1.SetForegroundWindow()
-        PyCWnd1.SetFocus()
+        app.connect(title_re=".*%s.*" % target_name)
+
+        # Access app's window object
+        app_dialog = app.top_window_()
+
+        app_dialog.Minimize()
+        app_dialog.Restore()
+        app_dialog.SetFocus()
 
     def trigger_arduino_esc(self, vpc_idx):
         
