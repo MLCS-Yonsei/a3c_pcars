@@ -88,7 +88,7 @@ class pCarsAutoKiller(mp.Process):
         w = rect[2] - x
         h = rect[3] - y
         
-        pywinauto.mouse.click(button='left', coords=(x=40, y+5))
+        pywinauto.mouse.click(button='left', coords=(x+40, y+5))
 
     def trigger_arduino_esc(self, vpc_idx):
         
