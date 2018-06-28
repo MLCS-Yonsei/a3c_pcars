@@ -293,7 +293,28 @@ class Worker:
 
                             while not d:
                                 # 자동 재시작 프로세스 중 머무르는 루프
+                                # 시간 체크해서 일정시간 이상 머무르면 리셋 시그널 보낼것
+
                                 while self.restarting:
+                                    while True:
+                                        message = r.hget('pcars_killer',local_ip)
+
+                                        if message:
+                                            reset_status = eval(message)
+
+                                            if reset_status == 1:
+                                                pass
+                                            elif reset_status == 2:
+                                                pass
+                                            elif reset_status == 3:
+                                                pass
+                                            elif reset_status == 4:
+                                                pass
+                                            else:
+                                                break
+                                        else:
+                                            break
+
                                     message = self.r.hget('pcars_data',target_ip)
 
                                     if message:
