@@ -82,7 +82,7 @@ class pCarsAutoKiller(mp.Process):
         target_name = "제목 없음 - 메모장"
         print(target_name)
         rect = win32gui.GetWindowRect(win32gui.FindWindow( None, target_name ))
-
+        print(rect)
         x = rect[0]
         y = rect[1]
         w = rect[2] - x
