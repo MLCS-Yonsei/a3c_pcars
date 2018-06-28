@@ -82,7 +82,7 @@ class pCarsAutoKiller(mp.Process):
     def defocus(self):
         target_name = "제목 없음 - 메모장"
         print(target_name)
-        app = application.Application()
+        app = Application()
 
         app.connect(title_re=".*%s.*" % target_name)
 
