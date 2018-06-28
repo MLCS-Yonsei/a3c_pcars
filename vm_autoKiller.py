@@ -75,6 +75,13 @@ class pCarsAutoKiller(mp.Process):
         PyCWnd1.SetForegroundWindow()
         PyCWnd1.SetFocus()
 
+    def defocus(self):
+        target_name = "명령 프롬프트 - python vm_autoKiller.py"
+        print(target_name)
+        PyCWnd1 = win32ui.FindWindow( None, target_name )
+        PyCWnd1.SetForegroundWindow()
+        PyCWnd1.SetFocus()
+
     def trigger_arduino_esc(self, vpc_idx):
         
         # Make Pcars focused just in case
@@ -95,7 +102,7 @@ class pCarsAutoKiller(mp.Process):
 
             # if gameState == 3:
             #     break
-
+        self.defocus()
         return True
 
     def trigger_virtual_esc(self):
@@ -113,6 +120,7 @@ class pCarsAutoKiller(mp.Process):
         pywinauto.mouse.click(button='left', coords=(x-5, y+90))
         pywinauto.mouse.press(button='left', coords=(x-5, y+90))
         # pywinauto.mouse.release(button='left', coords=(x+30, y))
+        self.defocus()
 
     def restart_type_1(self, target_ip, vpc_idx):
         self.trigger_arduino_esc(vpc_idx)
