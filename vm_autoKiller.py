@@ -74,6 +74,8 @@ class pCarsAutoKiller(mp.Process):
         PyCWnd1 = win32ui.FindWindow( None, target_name )
         try:
             PyCWnd1.SetForegroundWindow()
+        except:
+            pass
         PyCWnd1.SetFocus()
 
     def defocus(self):
@@ -82,6 +84,8 @@ class pCarsAutoKiller(mp.Process):
         PyCWnd1 = win32ui.FindWindow( None, target_name )
         try:
             PyCWnd1.SetForegroundWindow()
+        except:
+            pass
         PyCWnd1.SetFocus()
 
     def trigger_arduino_esc(self, vpc_idx):
