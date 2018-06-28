@@ -81,12 +81,14 @@ class pCarsAutoKiller(mp.Process):
     def defocus(self):
         target_name = "제목 없음 - 메모장"
         print(target_name)
-        PyCWnd1 = win32ui.FindWindow( None, target_name )
-        try:
-            PyCWnd1.SetForegroundWindow()
-        except:
-            pass
-        PyCWnd1.SetFocus()
+        rect = win32gui.GetWindowRect(win32gui.FindWindow( None, target_name ))
+
+        x = rect[0]
+        y = rect[1]
+        w = rect[2] - x
+        h = rect[3] - y
+        
+        pywinauto.mouse.click(button='left', coords=(x=40, y+5))
 
     def trigger_arduino_esc(self, vpc_idx):
         
