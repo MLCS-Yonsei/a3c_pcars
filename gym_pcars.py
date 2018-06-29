@@ -33,6 +33,7 @@ class PcarsEnv:
         self.prevPosition = None
         self.grid_line = np.load('grid_line.npz')['results']
         self.r = redis.StrictRedis(host='redis.hwanmoo.kr', port=6379, db=1)
+        self.reward = 0
 
    
     def step_discrete(self, u, obs, target_ip):
@@ -50,7 +51,7 @@ class PcarsEnv:
             raceState = [int(s) for s in obs["raceState"].split('>')[0].split() if s.isdigit()][0]
             #raceState = int(raceState)
             if raceState == 3:
-                reward = -300
+                self.reward = -300
                 self.reset_pcars_2(target_ip)
                 terminate_status = True
 
@@ -75,10 +76,10 @@ class PcarsEnv:
                     cos_a = np.dot(v_e/la.norm(v_e),v_r/la.norm(v_r))
 
                     progress = sp*(cos_a - d)
-                    reward = progress / 10
+                    self.reward = progress / 10
                 
                     if distance == 0 and obs['brake'] == 1:
-                        reward = -200
+                        self.reward = -200
 
                     if "tyres" in obs:
                         tireTerrain = obs["tyres"]
@@ -86,16 +87,16 @@ class PcarsEnv:
                             if tireTerrain[i]['terrain'] != 0 :  # Episode is terminated if the car is out of track
                                 j+=1
                         if j >= 3:
-                            reward = -200; j = 0
+                            self.reward = -200; j = 0
 
                     if crashState > 1:
-                        reward = -200
+                        self.reward = -200
 
                     #if sp < 0.01:
                     #    reward = -200
                     #    self.reset_pcars(target_ip)
                     if self.prevLapDistance != 0 and self.prevLapDistance != 78 and (distance - self.prevLapDistance) < 1:
-                        reward = -200;print("backward:",self.prevLapDistance, distance)
+                        self.reward = -200;print("backward:",self.prevLapDistance, distance)
 
                     #if self.prevLapDistance != 0 and distance != 0 and distance <= self.prevLapDistance:  # Episode is terminated if the agent runs backward
                     #    reward = -200
@@ -103,27 +104,27 @@ class PcarsEnv:
                     if len(position) == 20:
                         position = position[1:].append(distance)
                         if abs(position[0]-position[50]) < 10:
-                            reward = -200
+                            self.reward = -200
                     else:
                         position.append(distance)
             
             else:
-                reward = sp*sp
+                self.reward = sp*sp
 
             self.prevPosition = cur_position
             self.prevLapDistance = distance
             self.time_step += 1
 
             if distance == 65535:
-                reward = -200
+                self.reward = -200
 
-            print("reward:86:",reward,target_ip)
-            if reward == -200:
+            print("reward:86:",self.reward,target_ip)
+            if self.reward == -200:
                 print("Restarting")
                 self.reset_pcars(target_ip)
                 terminate_status = True
 
-            return obs, reward, {}, terminate_status
+            return obs, self.reward, {}, terminate_status
 
    
     def reset_pcars(self,target_ip):
