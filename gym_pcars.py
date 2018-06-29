@@ -107,7 +107,7 @@ class PcarsEnv:
                     self.prevLapDistance = distance
                     self.time_step += 1
 
-                print("reward:86:",reward)
+                print("reward:86:",reward,target_ip)
                 if reward == -200:
                     print("Restarting")
                     self.reset_pcars(target_ip)
