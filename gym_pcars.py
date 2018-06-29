@@ -98,8 +98,7 @@ class PcarsEnv:
             self.prevLapDistance = self.distance
             self.time_step += 1
 
-            if self.position is not None:
-                
+            if self.distance > 0:
                 if len(self.position) == 20:
 
                     self.position = self.position[1:]
