@@ -30,7 +30,7 @@ class PcarsEnv:
         self.torcs_proc = None
         self.initial_run = True
         self.prevLapDistance = 0
-
+        self.grid_line = np.load('grid_line.npz')['results']
         self.r = redis.StrictRedis(host='redis.hwanmoo.kr', port=6379, db=1)
 
    
@@ -60,9 +60,9 @@ class PcarsEnv:
                 
                 # Reward 
                 if distance != 0:
-                    d = la.norm(ref[int(distance)]-distance)
+                    d = la.norm(self.grid_line[int(distance)]-distance)
                     v_e = distance - self.prevLapDistance
-                    v_r = ref[int(distance)] - ref[int(distance)-1]
+                    v_r = self.grid_line[int(distance)] - self.grid_line[int(distance)-1]
                     cos_a = np.dot(v_e/la.norm(v_e),v_r/la.norm(v_r))
 
                     progress = sp*(cos_a - d)
