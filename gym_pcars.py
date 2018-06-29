@@ -102,10 +102,9 @@ class PcarsEnv:
                 
                 if len(self.position) == 20:
 
-                    self.position = self.position[1:].append(self.distance)
-                    print(self.position[0])
-                    print(self.position[19])
-                    print(abs(0))
+                    self.position = self.position[1:]
+                    self.position.append(self.distance)
+                    print(self.position)
                     if abs(self.position[0]-self.position[19]) < 10:
                         self.reward = -200
                 else:
