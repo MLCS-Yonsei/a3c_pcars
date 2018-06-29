@@ -57,7 +57,7 @@ class PcarsEnv:
                 distance = obs["participants"][0]["currentLapDistance"]
                 crashState = obs["crashState"]
 
-                
+                print("Distance",distance)
                 # Reward 
                 if distance != 0:
                     d = la.norm(self.grid_line[int(distance)]-distance)
@@ -91,9 +91,9 @@ class PcarsEnv:
                     #if self.prevLapDistance != 0 and distance != 0 and distance <= self.prevLapDistance:  # Episode is terminated if the agent runs backward
                     #    reward = -200
                     #    self.reset_pcars(target_ip)
-                    if len(position) == 50:
+                    if len(position) == 20:
                         position = position[1:].append(distance)
-                        if abs(position[0]-position[50]) < 50:
+                        if abs(position[0]-position[50]) < 10:
                             reward = -200
                     else:
                         position.append(distance)
