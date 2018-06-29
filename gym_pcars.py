@@ -36,7 +36,7 @@ class PcarsEnv:
     def step_discrete(self, u, obs, target_ip):
         if 'raceState' in obs:
             try:
-                j=0 
+                j=0; position=[]
                 this_action = self.agent_to_torcs_discrete(u)
                 terminate_status = False
 
@@ -83,7 +83,12 @@ class PcarsEnv:
                 #if self.prevLapDistance != 0 and distance != 0 and distance <= self.prevLapDistance:  # Episode is terminated if the agent runs backward
                 #    reward = -200
                 #    self.reset_pcars(target_ip)
-            
+                if len(position) == 50:
+                    position = position[1:].append(distance)
+                    if abs(position[0]-position[50]) < 50:
+                        reward = -200
+                else:
+                    position.append(distance)
                 self.prevLapDistance = distance
                 self.time_step += 1
 
