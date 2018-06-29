@@ -83,7 +83,7 @@ class PcarsEnv:
                     #if sp < 0.01:
                     #    reward = -200
                     #    self.reset_pcars(target_ip)
-                    if self.prevLapDistance != 0 and self.prevLapDistance != 78 and (self.distance - self.prevLapDistance) < 1:
+                    if self.prevLapDistance != 0 and self.prevLapDistance != 78 and (self.distance - self.prevLapDistance) < 0:
                         self.reward = -200;print("backward:",self.prevLapDistance, self.distance)
 
                     #if self.prevLapDistance != 0 and distance != 0 and distance <= self.prevLapDistance:  # Episode is terminated if the agent runs backward
@@ -100,8 +100,7 @@ class PcarsEnv:
 
             if self.distance > 0:
                 if len(self.position) == 20:
-
-                    self.position = self.position[1:]
+                    del self.position[0]
                     self.position.append(self.distance)
                     print(self.position)
                     if abs(self.position[0]-self.position[19]) < 10:
