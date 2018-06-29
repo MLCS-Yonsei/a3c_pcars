@@ -98,12 +98,13 @@ class PcarsEnv:
             self.prevLapDistance = self.distance
             self.time_step += 1
 
-            if len(self.position) == 20:
-                self.position = self.position[1:].append(self.distance)
-                if abs(self.position[0]-self.position[19]) < 10:
-                    self.reward = -200
-            else:
-                self.position.append(self.distance)
+            if self.position is not None:
+                if len(self.position) == 20:
+                    self.position = self.position[1:].append(self.distance)
+                    if abs(self.position[0]-self.position[19]) < 10:
+                        self.reward = -200
+                else:
+                    self.position.append(self.distance)
 
             if self.distance == 0 and obs['brake'] == 1:
                 self.reward = -200
