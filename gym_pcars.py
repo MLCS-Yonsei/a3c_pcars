@@ -68,9 +68,6 @@ class PcarsEnv:
             print("Distance",self.distance)
             # Reward 
             if self.distance != 0 and self.distance != 65535:
-                print(type(self.grid_line[int(self.distance)]))
-                print(cur_position)
-
                 if self.prevPosition is not None:
                     d = la.norm(self.grid_line[int(self.distance)]-cur_position)
                     v_e = cur_position - self.prevLapDistance
