@@ -55,7 +55,7 @@ class PcarsEnv:
                 sp = obs["speed"]
                 distance = obs["participants"][0]["currentLapDistance"]
                 crashState = obs["crashState"]
-                
+                d = np.sqrt(sum((ref[int(distance)]-distance)**2))
 
                 progress = sp * distance + sp * sp
                 reward = progress / 10
