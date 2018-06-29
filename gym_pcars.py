@@ -30,10 +30,12 @@ class PcarsEnv:
         self.torcs_proc = None
         self.initial_run = True
         self.prevLapDistance = 0
+        self.distance = 0
         self.prevPosition = None
         self.grid_line = np.load('grid_line.npz')['results']
         self.r = redis.StrictRedis(host='redis.hwanmoo.kr', port=6379, db=1)
         self.reward = 0
+        self.position = []
 
    
     def step_discrete(self, u, obs, target_ip):
@@ -56,66 +58,68 @@ class PcarsEnv:
                 terminate_status = True
 
             sp = obs["speed"]
-            distance = obs["participants"][0]["currentLapDistance"]
+            self.distance = obs["participants"][0]["currentLapDistance"]
             crashState = obs["crashState"]
             cur_position_x = obs["participants"][0]["worldPositionX"]
             cur_position_y = obs["participants"][0]["worldPositionY"]
             cur_position_z = obs["participants"][0]["worldPositionZ"]
             cur_position = np.array([cur_position_x,cur_position_y,cur_position_z])
 
-            print("Distance",distance)
+            print("Distance",self.distance)
             # Reward 
-            if distance != 0 and distance != 65535:
-                print(type(self.grid_line[int(distance)]))
+            if self.distance != 0 and self.distance != 65535:
+                print(type(self.grid_line[int(self.distance)]))
                 print(cur_position)
 
                 if self.prevPosition is not None:
-                    d = la.norm(self.grid_line[int(distance)]-cur_position)
+                    d = la.norm(self.grid_line[int(self.distance)]-cur_position)
                     v_e = cur_position - self.prevLapDistance
-                    v_r = self.grid_line[int(distance)] - self.grid_line[int(distance)-1]
+                    v_r = self.grid_line[int(self.distance)] - self.grid_line[int(self.distance)-1]
                     cos_a = np.dot(v_e/la.norm(v_e),v_r/la.norm(v_r))
 
                     progress = sp*(cos_a - d)
                     self.reward = progress / 10
                 
-                    if distance == 0 and obs['brake'] == 1:
-                        self.reward = -200
-
-                    if "tyres" in obs:
-                        tireTerrain = obs["tyres"]
-                        for i in range(4):
-                            if tireTerrain[i]['terrain'] != 0 :  # Episode is terminated if the car is out of track
-                                j+=1
-                        if j >= 3:
-                            self.reward = -200; j = 0
-
-                    if crashState > 1:
-                        self.reward = -200
-
                     #if sp < 0.01:
                     #    reward = -200
                     #    self.reset_pcars(target_ip)
-                    if self.prevLapDistance != 0 and self.prevLapDistance != 78 and (distance - self.prevLapDistance) < 1:
-                        self.reward = -200;print("backward:",self.prevLapDistance, distance)
+                    if self.prevLapDistance != 0 and self.prevLapDistance != 78 and (self.distance - self.prevLapDistance) < 1:
+                        self.reward = -200;print("backward:",self.prevLapDistance, self.distance)
 
                     #if self.prevLapDistance != 0 and distance != 0 and distance <= self.prevLapDistance:  # Episode is terminated if the agent runs backward
                     #    reward = -200
                     #    self.reset_pcars(target_ip)
-                    if len(position) == 20:
-                        position = position[1:].append(distance)
-                        if abs(position[0]-position[50]) < 10:
-                            self.reward = -200
-                    else:
-                        position.append(distance)
+                    
             
             else:
                 self.reward = sp*sp
 
             self.prevPosition = cur_position
-            self.prevLapDistance = distance
+            self.prevLapDistance = self.distance
             self.time_step += 1
 
-            if distance == 65535:
+            if len(self.position) == 20:
+                self.position = self.position[1:].append(self.distance)
+                if abs(self.position[0]-self.position[19]) < 10:
+                    self.reward = -200
+            else:
+                self.position.append(self.distance)
+
+            if self.distance == 0 and obs['brake'] == 1:
+                self.reward = -200
+
+            if "tyres" in obs:
+                tireTerrain = obs["tyres"]
+                for i in range(4):
+                    if tireTerrain[i]['terrain'] != 0 :  # Episode is terminated if the car is out of track
+                        j+=1
+                if j >= 3:
+                    self.reward = -200; j = 0
+
+            if crashState > 1:
+                self.reward = -200
+
+            if self.distance == 65535:
                 self.reward = -200
 
             print("reward:86:",self.reward,target_ip)
@@ -134,6 +138,7 @@ class PcarsEnv:
         self.r.hset('pcars_killer',target_ip,"2")
 
     def agent_to_torcs_discrete(self, u):
+        # if self.distance != 0:
         torcs_action = {'0': u[0]}
         torcs_action.update({'1': u[1]})
         torcs_action.update({'2': u[2]})
@@ -157,5 +162,9 @@ class PcarsEnv:
         torcs_action.update({'20': u[20]})
         torcs_action.update({'21': u[21]})
         torcs_action.update({'22': u[22]})
+        # else:
+        #     for i in range(23):
+        #         torcs_action.update({str(i): u[8]})
+
 
         return torcs_action
