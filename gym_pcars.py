@@ -11,6 +11,7 @@ import os
 import subprocess
 import time
 import signal
+from numpy import linalg as la
 #from DDPG import utils
 #from DDPG import autoController
 #import win32ui
@@ -55,9 +56,14 @@ class PcarsEnv:
                 sp = obs["speed"]
                 distance = obs["participants"][0]["currentLapDistance"]
                 crashState = obs["crashState"]
-                d = np.sqrt(sum((ref[int(distance)]-distance)**2))
 
-                progress = sp * distance + sp * sp
+                # Reward 
+                d = la.norm(ref[int(distance)]-distance)
+                v_e = distance - self.prevLapDistance
+                v_r = ref[int(distance)] - ref[int(distance)-1]
+                cos_a = np.dot(v_e/la.norm(v_e),v_r/la.norm(v_r))
+
+                progress = sp*(cos_a - d)
                 reward = progress / 10
             
                 if distance == 0 and obs['brake'] == 1:
@@ -77,7 +83,7 @@ class PcarsEnv:
                 #if sp < 0.01:
                 #    reward = -200
                 #    self.reset_pcars(target_ip)
-                if self.prevLapDistance != 0 and self.prevLapDistance != 78 and abs(self.prevLapDistance - distance) < 1:
+                if self.prevLapDistance != 0 and self.prevLapDistance != 78 and (distance - self.prevLapDistance) < 1:
                     reward = -200;print("backward:",self.prevLapDistance, distance)
 
                 #if self.prevLapDistance != 0 and distance != 0 and distance <= self.prevLapDistance:  # Episode is terminated if the agent runs backward
