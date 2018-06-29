@@ -64,7 +64,7 @@ class PcarsEnv:
 
                 print("Distance",distance)
                 # Reward 
-                if distance != 0:
+                if distance != 0 and distance != 65535:
                     print(type(self.grid_line[int(distance)]))
                     print(cur_position)
 
@@ -113,6 +113,9 @@ class PcarsEnv:
                 self.prevPosition = cur_position
                 self.prevLapDistance = distance
                 self.time_step += 1
+
+                if distance == 65535:
+                    reward = -200
 
                 print("reward:86:",reward,target_ip)
                 if reward == -200:
