@@ -57,46 +57,55 @@ class PcarsEnv:
                 distance = obs["participants"][0]["currentLapDistance"]
                 crashState = obs["crashState"]
 
+                
                 # Reward 
-                d = la.norm(ref[int(distance)]-distance)
-                v_e = distance - self.prevLapDistance
-                v_r = ref[int(distance)] - ref[int(distance)-1]
-                cos_a = np.dot(v_e/la.norm(v_e),v_r/la.norm(v_r))
+                if distance != 0:
+                    d = la.norm(ref[int(distance)]-distance)
+                    v_e = distance - self.prevLapDistance
+                    v_r = ref[int(distance)] - ref[int(distance)-1]
+                    cos_a = np.dot(v_e/la.norm(v_e),v_r/la.norm(v_r))
 
-                progress = sp*(cos_a - d)
-                reward = progress / 10
-            
-                if distance == 0 and obs['brake'] == 1:
-                    reward = -200
-
-                if "tyres" in obs:
-                    tireTerrain = obs["tyres"]
-                    for i in range(4):
-                        if tireTerrain[i]['terrain'] != 0 :  # Episode is terminated if the car is out of track
-                            j+=1
-                    if j >= 3:
-                        reward = -200; j = 0
-
-                if crashState > 1:
-                    reward = -200
-
-                #if sp < 0.01:
-                #    reward = -200
-                #    self.reset_pcars(target_ip)
-                if self.prevLapDistance != 0 and self.prevLapDistance != 78 and (distance - self.prevLapDistance) < 1:
-                    reward = -200;print("backward:",self.prevLapDistance, distance)
-
-                #if self.prevLapDistance != 0 and distance != 0 and distance <= self.prevLapDistance:  # Episode is terminated if the agent runs backward
-                #    reward = -200
-                #    self.reset_pcars(target_ip)
-                if len(position) == 50:
-                    position = position[1:].append(distance)
-                    if abs(position[0]-position[50]) < 50:
+                    progress = sp*(cos_a - d)
+                    reward = progress / 10
+                
+                    if distance == 0 and obs['brake'] == 1:
                         reward = -200
+
+                    if "tyres" in obs:
+                        tireTerrain = obs["tyres"]
+                        for i in range(4):
+                            if tireTerrain[i]['terrain'] != 0 :  # Episode is terminated if the car is out of track
+                                j+=1
+                        if j >= 3:
+                            reward = -200; j = 0
+
+                    if crashState > 1:
+                        reward = -200
+
+                    #if sp < 0.01:
+                    #    reward = -200
+                    #    self.reset_pcars(target_ip)
+                    if self.prevLapDistance != 0 and self.prevLapDistance != 78 and (distance - self.prevLapDistance) < 1:
+                        reward = -200;print("backward:",self.prevLapDistance, distance)
+
+                    #if self.prevLapDistance != 0 and distance != 0 and distance <= self.prevLapDistance:  # Episode is terminated if the agent runs backward
+                    #    reward = -200
+                    #    self.reset_pcars(target_ip)
+                    if len(position) == 50:
+                        position = position[1:].append(distance)
+                        if abs(position[0]-position[50]) < 50:
+                            reward = -200
+                    else:
+                        position.append(distance)
+
+                    self.prevLapDistance = distance
+                    self.time_step += 1
+                
                 else:
-                    position.append(distance)
-                self.prevLapDistance = distance
-                self.time_step += 1
+                    reward = sp*sp
+
+                    self.prevLapDistance = distance
+                    self.time_step += 1
 
                 print("reward:86:",reward)
                 if reward == -200:
