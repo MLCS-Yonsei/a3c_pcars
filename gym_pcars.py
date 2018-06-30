@@ -79,7 +79,7 @@ class PcarsEnv:
             if self.distance != 0 and self.distance != 65535:
                 if self.prevPosition is not None:
                     d = la.norm(ref_position-cur_position)
-                    v_e = cur_position - self.prevLapDistance
+                    v_e = cur_position - self.prevPosition
                     v_r = ref_position - self.ref_prevPosition
                     cos_a = np.dot(v_e/la.norm(v_e),v_r/la.norm(v_r))
 
