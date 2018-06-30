@@ -34,10 +34,10 @@ class PcarsEnv:
         self.prevPosition = None
         self.ref_prevPosition = None
         self.grid_line = np.load('grid_line.npz')['a']
-        self.xp = np.linspace(0,4832,4833)
-        self.fp_x = self.grid_line[:,0]
-        self.fp_y = self.grid_line[:,1]
-        self.fp_z = self.grid_line[:,2]
+        self.xp = self.grid_line[:,0]
+        self.fp_x = self.grid_line[:,1]
+        self.fp_y = self.grid_line[:,2]
+        self.fp_z = self.grid_line[:,3]
         self.r = redis.StrictRedis(host='redis.hwanmoo.kr', port=6379, db=1)
         self.reward = 0
         self.position = []
