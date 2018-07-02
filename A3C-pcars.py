@@ -302,6 +302,7 @@ class Worker:
                                         if message:
                                             reset_status = eval(message)
 
+                                            # autoKiller에서 처리중
                                             if reset_status == 1:
                                                 pass
                                             elif reset_status == 2:
@@ -312,6 +313,7 @@ class Worker:
                                                 pass
                                             else:
                                                 break
+                                                
                                         else:
                                             break
 
@@ -322,14 +324,20 @@ class Worker:
                                         self.r.hdel('pcars_data',target_ip)
                                         ob, s = self.parse_message(message)
 
-                                        if 'raceState' in ob and 'gameState' in ob:
+                                        if 'raceState' in ob and 'gameState' in ob and 'participants' in ob:
 
                                             gameState = [int(s) for s in ob["gameState"].split('>')[0].split() if s.isdigit()][0]
                                             raceState = [int(s) for s in ob["raceState"].split('>')[0].split() if s.isdigit()][0]
+                                            lap_distance = ob["participants"][0]["currentLapDistance"]
 
-                                            if gameState != 2:
+                                            if gameState != 2 and lap_distance > 0:
+                                                self.r.hdel('pcars_force_acc', target_ip)
                                                 self.restarting = False
                                                 break
+
+                                            if lap_distance == 0:
+                                                # 가속 시그널
+                                                self.r.hset('pcars_force_acc', target_ip, True)
                                         
                                 message = self.r.hget('pcars_data',target_ip)
 

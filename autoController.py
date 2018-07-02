@@ -212,6 +212,13 @@ if __name__ == '__main__':
     pc = pCarsAutoController()
     while True:
         message = r.hget('pcars_action',local_ip)
+        force_acc = r.hget('pcars_force_acc', local_ip)
+
+        if force_acc:
+            if force_acc == True:
+                pc.accOn()
+                
+                r.hdel('pcars_force_acc',local_ip)
 
         if message:
             action = eval(message)
