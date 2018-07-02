@@ -32,7 +32,12 @@ class PcarsEnv:
         self.prevLapDistance = 0
         self.distance = 0
         self.prevPosition = None
-        self.grid_line = np.load('grid_line.npz')['results']
+        self.ref_prevPosition = None
+        self.grid_line = np.load('grid_line.npz')['a']
+        self.xp = self.grid_line[:,0]
+        self.fp_x = self.grid_line[:,1]
+        self.fp_y = self.grid_line[:,2]
+        self.fp_z = self.grid_line[:,3]
         self.r = redis.StrictRedis(host='redis.hwanmoo.kr', port=6379, db=1)
         self.reward = 0
         self.position = []
@@ -64,14 +69,18 @@ class PcarsEnv:
             cur_position_y = obs["participants"][0]["worldPositionY"]
             cur_position_z = obs["participants"][0]["worldPositionZ"]
             cur_position = np.array([cur_position_x,cur_position_y,cur_position_z])
+            ref_position_x = np.interp(cur_position_x, self.xp, self.fp_x)
+            ref_position_y = np.interp(cur_position_y, self.xp, self.fp_y)
+            ref_position_z = np.interp(cur_position_z, self.xp, self.fp_z)
+            ref_position = np.array([ref_position_x,ref_position_y,ref_position_z])
 
             print("Distance",self.distance)
             # Reward 
             if self.distance != 0 and self.distance != 65535:
                 if self.prevPosition is not None:
-                    d = la.norm(self.grid_line[int(self.distance)]-cur_position)
-                    v_e = cur_position - self.prevLapDistance
-                    v_r = self.grid_line[int(self.distance)] - self.grid_line[int(self.distance)-1]
+                    d = la.norm(ref_position-cur_position)
+                    v_e = cur_position - self.prevPosition
+                    v_r = ref_position - self.ref_prevPosition
                     cos_a = np.dot(v_e/la.norm(v_e),v_r/la.norm(v_r))
 
                     progress = sp*(cos_a - d)
@@ -94,6 +103,7 @@ class PcarsEnv:
             self.prevPosition = cur_position
             self.prevLapDistance = self.distance
             self.time_step += 1
+            self.ref_prevPosition = ref_position
 
             if self.distance > 0:
                 if len(self.position) == 20:
