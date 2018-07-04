@@ -150,6 +150,7 @@ class PcarsEnv:
 
    
     def reset_pcars(self,target_ip):
+        print("Killer:",target_ip)
         self.r.hset('pcars_killer',target_ip,"1")
 
     def reset_pcars_2(self,target_ip):

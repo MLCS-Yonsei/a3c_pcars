@@ -200,10 +200,10 @@ if __name__ == '__main__':
 
     while True:
         message = r.hget('pcars_killer',local_ip)
-
+        r.hdel('pcars_killer',local_ip)
         if message:
             reset_status = eval(message)
-
+            print(reset_status)
             if reset_status == 1:
                 pc.restart_type_1()
                 del_stat = True
@@ -217,8 +217,7 @@ if __name__ == '__main__':
             else:
                 del_stat = True
 
-            if del_stat:
-                r.hdel('pcars_killer',local_ip)
+                
             
 
             

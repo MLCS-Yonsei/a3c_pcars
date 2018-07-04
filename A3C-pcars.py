@@ -254,7 +254,8 @@ class Worker:
                             d = False
 
                             s = process_frame(s)
-
+                            print("Killer:",self.r.hget('pcars_killer','192.168.0.2'), 'LEFT')
+                            print("Killer:",self.r.hget('pcars_killer','192.168.0.52'), 'RIGHT')
                             # For creating gifs
                             to_gif = np.reshape(s, (150, 200)) * 255
                             episode_frames.append(to_gif)
@@ -446,17 +447,17 @@ def play_training(training=True, load_model=True):
         # trainer = tf.train.RMSPropOptimizer(learning_rate=1e-4, decay=0.99, epsilon=1)
         trainer = tf.train.AdamOptimizer(learning_rate=1e-4)
         master_network = AC_Network(s_size, a_size, 'global', None, False)
+	
+        worker_ips = [
+                '192.168.0.2',
+                '192.168.0.52'
+        ]
 
         if training:
             #num_workers = multiprocessing.cpu_count()  # Set workers at number of available CPU threads
-            num_workers = 1#4
+            num_workers = len(worker_ips)
         else:
-            num_workers = 2
-
-        worker_ips = [
-            # '192.168.0.2',
-            '192.168.0.49'
-        ]
+            num_workers = len(worker_ips)
 
         workers = []
         for i in range(num_workers):
