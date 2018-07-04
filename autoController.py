@@ -212,7 +212,7 @@ r = redis.StrictRedis(host='redis.hwanmoo.kr', port=6379, db=1)
 if __name__ == '__main__':
     pc = pCarsAutoController()
     while True:
-        message = r.hget('pcars_action',local_ip)
+        message = r.hget('pcars_action'+local_ip,local_ip)
         force_acc = r.hget('pcars_force_acc', local_ip)
 
         if force_acc:
@@ -226,7 +226,7 @@ if __name__ == '__main__':
             action = eval(message)
             pc.action_parser(action)
 
-            r.hdel('pcars_action',local_ip)
+            r.hdel('pcars_action'+local_ip,local_ip)
 
 
 

@@ -136,10 +136,10 @@ class pCarsAutoKiller(mp.Process):
     def restart_type_1(self, target_ip, vpc_idx):
         self.trigger_arduino_esc(vpc_idx)
 
-        self.r.hset('pcars_killer',target_ip,"3")
+        self.r.hset('pcars_killer'+target_ip,target_ip,"3")
         print("Reset signal Set",target_ip)
         while True:
-            message = r.hget('pcars_killer',target_ip)
+            message = r.hget('pcars_killer'+target_ip,target_ip)
             if message:
                 reset_status = eval(message)
                 if reset_status == 3:
@@ -157,9 +157,9 @@ class pCarsAutoKiller(mp.Process):
         return True
 
     def restart_type_2(self, target_ip, vpc_idx):
-        self.r.hset('pcars_killer',target_ip,"4")
+        self.r.hset('pcars_killer'+target_ip,target_ip,"4")
         while True:
-            message = r.hget('pcars_killer',target_ip)
+            message = r.hget('pcars_killer'+target_ip,target_ip)
             if message:
                 reset_status = eval(message)
                 if reset_status == 3:
@@ -180,7 +180,7 @@ if __name__ == '__main__':
     ]
     while True:
         for i, local_ip in enumerate(ips):
-            message = r.hget('pcars_killer',local_ip)
+            message = r.hget('pcars_killer'+local_ip,local_ip)
 
             if message:
                 reset_status = eval(message)
@@ -199,7 +199,7 @@ if __name__ == '__main__':
                     del_stat = True
 
                 if del_stat:
-                    r.hdel('pcars_killer',local_ip)
+                    r.hdel('pcars_killer'+local_ip,local_ip)
     # pc.restart_type_2(ips[0], 0)
 
             

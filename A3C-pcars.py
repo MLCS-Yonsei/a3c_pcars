@@ -232,10 +232,10 @@ class Worker:
         with sess.as_default(), sess.graph.as_default():
             while not coord.should_stop():
                 # try:
-                message = self.r.hget('pcars_data',target_ip)
+                message = self.r.hget('pcars_data'+target_ip,target_ip)
                 if message:
 
-                    self.r.hdel('pcars_data',target_ip)
+                    self.r.hdel('pcars_data'+target_ip,target_ip)
                     ob, s = self.parse_message(message)
 
                     if 'raceState' in ob and 'gameState' in ob:
@@ -254,8 +254,7 @@ class Worker:
                             d = False
 
                             s = process_frame(s)
-                            print("Killer:",self.r.hget('pcars_killer','192.168.0.2'), 'LEFT')
-                            print("Killer:",self.r.hget('pcars_killer','192.168.0.52'), 'RIGHT')
+                            
                             # For creating gifs
                             to_gif = np.reshape(s, (150, 200)) * 255
                             episode_frames.append(to_gif)
@@ -265,10 +264,11 @@ class Worker:
                             while not d:
                                 # 자동 재시작 프로세스 중 머무르는 루프
                                 # 시간 체크해서 일정시간 이상 머무르면 리셋 시그널 보낼것
-
+                                # print("Killer:",self.r.hget('pcars_killer','192.168.0.2'), 'LEFT')
+                                # print("Killer:",self.r.hget('pcars_killer','192.168.0.52'), 'RIGHT')
                                 while self.restarting:
                                     while True:
-                                        message = self.r.hget('pcars_killer',target_ip)
+                                        message = self.r.hget('pcars_killer'+target_ip,target_ip)
 
                                         if message:
                                             reset_status = eval(message)
@@ -289,11 +289,11 @@ class Worker:
                                             break
 
                                     
-                                    message = self.r.hget('pcars_data',target_ip)
+                                    message = self.r.hget('pcars_data'+target_ip,target_ip)
 
                                     if message:
                                         
-                                        self.r.hdel('pcars_data',target_ip)
+                                        self.r.hdel('pcars_data'+target_ip,target_ip)
                                         ob, s = self.parse_message(message)
 
                                         if 'raceState' in ob and 'gameState' in ob and 'participants' in ob:
@@ -308,11 +308,11 @@ class Worker:
                                                 break
 
 
-                                message = self.r.hget('pcars_data',target_ip)
+                                message = self.r.hget('pcars_data'+target_ip,target_ip)
 
                                 if message:
                                     
-                                    self.r.hdel('pcars_data',target_ip)
+                                    self.r.hdel('pcars_data'+target_ip,target_ip)
                                     ob, s = self.parse_message(message)
 
                                     if 'raceState' in ob and 'gameState' in ob and 'participants' in ob:
@@ -343,7 +343,7 @@ class Worker:
                                             r = reward/1000
                                             
                                             if not d:
-                                                message = self.r.hget('pcars_data',target_ip)
+                                                message = self.r.hget('pcars_data'+target_ip,target_ip)
                                                 if message:
                                                     ob, s1 = self.parse_message(message)
                                                     s1 = process_frame(s1)

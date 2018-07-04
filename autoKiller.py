@@ -199,8 +199,8 @@ if __name__ == '__main__':
     pc = pCarsAutoKiller()
 
     while True:
-        message = r.hget('pcars_killer',local_ip)
-        r.hdel('pcars_killer',local_ip)
+        message = r.hget('pcars_killer'+local_ip,local_ip)
+        r.hdel('pcars_killer'+local_ip,local_ip)
         if message:
             reset_status = eval(message)
             print(reset_status)

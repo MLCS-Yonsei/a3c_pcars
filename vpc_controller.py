@@ -102,7 +102,7 @@ class screen_capture_thread(Thread):
             else:
                 result = False
 
-            r.hset('pcars_data',local_ip,result)
+            r.hset('pcars_data'+local_ip,local_ip,result)
             exit(0)
             
         except Exception as ex:
@@ -119,7 +119,7 @@ def send_data(listener, sct):
     else:
         result = False
 
-    r.hset('pcars_data',local_ip,result)
+    r.hset('pcars_data'+local_ip,local_ip,result)
 
 def start_capture(listener):
     sct = screen_capture_thread(listener)

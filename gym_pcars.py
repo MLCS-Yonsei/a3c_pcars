@@ -51,7 +51,7 @@ class PcarsEnv:
             terminate_status = False
             # print(u, this_action)
             # Steering
-            self.r.hset('pcars_action', target_ip, this_action)
+            self.r.hset('pcars_action'+target_ip, target_ip, this_action)
 
             # angle = obs["motionAndDeviceRelated"]["mOrientation"][1]
             
@@ -150,11 +150,11 @@ class PcarsEnv:
 
    
     def reset_pcars(self,target_ip):
-        print("Killer:",target_ip)
-        self.r.hset('pcars_killer',target_ip,"1")
+        print("KILLER", target_ip)
+        self.r.hset('pcars_killer'+target_ip,target_ip,"1")
 
     def reset_pcars_2(self,target_ip):
-        self.r.hset('pcars_killer',target_ip,"2")
+        self.r.hset('pcars_killer'+target_ip,target_ip,"2")
 
     def agent_to_torcs_discrete(self, u):
         # if self.distance != 0:
