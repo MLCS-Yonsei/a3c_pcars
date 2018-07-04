@@ -203,7 +203,7 @@ if __name__ == '__main__':
 
         if message:
             reset_status = eval(message)
-
+            print(reset_status)
             if reset_status == 1:
                 pc.restart_type_1()
                 del_stat = True
