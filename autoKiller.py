@@ -142,8 +142,8 @@ class pCarsAutoKiller(mp.Process):
         #     if gameState == 2:
         #         break
 
-        # self.ard.close()
-        # self.connect_arduino()
+        self.ard.close()
+        self.connect_arduino()
 
         return True
 
@@ -200,7 +200,7 @@ if __name__ == '__main__':
 
     while True:
         message = r.hget('pcars_killer'+local_ip,local_ip)
-        r.hdel('pcars_killer'+local_ip,local_ip)
+        
         if message:
             reset_status = eval(message)
             print(reset_status)
@@ -216,6 +216,8 @@ if __name__ == '__main__':
             #     del_stat = False
             else:
                 del_stat = True
+
+            r.hdel('pcars_killer'+local_ip,local_ip)
 
                 
             
