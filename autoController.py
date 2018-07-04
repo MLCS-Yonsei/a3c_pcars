@@ -215,6 +215,7 @@ if __name__ == '__main__':
         force_acc = r.hget('pcars_force_acc', local_ip)
 
         if force_acc:
+            print(force_acc)
             if force_acc == True:
                 pc.accOn()
                 
