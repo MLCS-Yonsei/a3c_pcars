@@ -217,6 +217,7 @@ if __name__ == '__main__':
         if force_acc:
 
             if eval(force_acc) == True:
+                print(123)
                 pc.accOn()
                 
                 r.hdel('pcars_force_acc',local_ip)
