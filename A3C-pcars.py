@@ -30,6 +30,7 @@ def update_target_graph(from_scope, to_scope):
 
 def rgb2gray(rgb):
     return np.dot(rgb[...,:3], [0.2989, 0.5870, 0.1140]) 
+    
 # Processes Doom screen image to produce cropped and resized image.
 def process_frame(frame):
     # s = frame[10:-10, 30:-30] #Get the frame quadratic 120 - 20 and 160 - 60
@@ -91,28 +92,11 @@ class AC_Network:
             rnn_out = tf.reshape(lstm_outputs, [-1, 256])
 
             # Output layers for policy and value estimations
-            if not continuous:
-                self.discrete_policy = slim.fully_connected(rnn_out, a_size,
-                                                            activation_fn=tf.nn.softmax,
-                                                            weights_initializer=normalized_columns_initializer(0.01),
-                                                            biases_initializer=None)
-            else:
-                self.variance = slim.fully_connected(rnn_out, 1,  # 1 action instead of 3 actions
-                                                     activation_fn=None,
-                                                     weights_initializer=normalized_columns_initializer(0.01),
-                                                     biases_initializer=None)
-                self.mean = slim.fully_connected(rnn_out, 1,  # 1 action instead of 3 actions
-                                                 activation_fn=None,
-                                                 weights_initializer=normalized_columns_initializer(0.01),
-                                                 biases_initializer=None)
-                self.variance = tf.squeeze(self.variance)
-                self.variance = tf.nn.softplus(self.variance) + 1e-5
-                self.normal_dist = tf.contrib.distributions.Normal(self.mean, self.variance)
-                self.actions = self.normal_dist._sample_n(1)
-                # self.actions = [tf.clip_by_value(self.actions[0][0][0], -1, 1),
-                #                 tf.clip_by_value(self.actions[0][0][1], 0, 1),
-                #                 tf.clip_by_value(self.actions[0][0][2], 0, 1)]
-                self.actions = [tf.clip_by_value(self.actions[0][0][0], -1, 1)]  # 1 action instead of 3 actions
+            self.discrete_policy = slim.fully_connected(rnn_out, a_size,
+                                                        activation_fn=tf.nn.softmax,
+                                                        weights_initializer=normalized_columns_initializer(0.01),
+                                                        biases_initializer=None)
+        
 
             self.value = slim.fully_connected(rnn_out, 1,
                                               activation_fn=None,
@@ -124,36 +108,16 @@ class AC_Network:
                 self.target_v = tf.placeholder(shape=[None], dtype=tf.float32)
                 self.advantages = tf.placeholder(shape=[None], dtype=tf.float32)
 
-                if not continuous:
-                    self.actions = tf.placeholder(shape=[None], dtype=tf.int32)
-                    self.actions_onehot = tf.one_hot(self.actions, a_size, dtype=tf.float32)
+                self.actions = tf.placeholder(shape=[None], dtype=tf.int32)
+                self.actions_onehot = tf.one_hot(self.actions, a_size, dtype=tf.float32)
 
-                    self.responsible_outputs = tf.reduce_sum(self.discrete_policy * self.actions_onehot, [1])
+                self.responsible_outputs = tf.reduce_sum(self.discrete_policy * self.actions_onehot, [1])
 
-                    self.entropy_loss = - tf.reduce_sum(self.discrete_policy * tf.log(self.discrete_policy))
-                    self.policy_loss = -tf.reduce_sum(tf.log(self.responsible_outputs) * self.advantages)
-                    self.value_loss = 0.5 * tf.reduce_sum(tf.square(self.target_v - tf.reshape(self.value, [-1])))
+                self.entropy_loss = - tf.reduce_sum(self.discrete_policy * tf.log(self.discrete_policy))
+                self.policy_loss = -tf.reduce_sum(tf.log(self.responsible_outputs) * self.advantages)
+                self.value_loss = 0.5 * tf.reduce_sum(tf.square(self.target_v - tf.reshape(self.value, [-1])))
 
-                    self.loss = 0.5 * self.value_loss + self.policy_loss - self.entropy_loss * 0.01
-                else:
-                    self.steer = tf.placeholder(shape=[None], dtype=tf.float32)
-                    # self.accelerate = tf.placeholder(shape=[None], dtype=tf.float32)
-                    # self.brake = tf.placeholder(shape=[None], dtype=tf.float32)
-
-                    epsilon = 1e-10
-                    # actions = tf.stack([self.steer, self.accelerate, self.brake], axis=1)  # 3 actions
-                    actions = tf.stack([self.steer], axis=1)  # steering only
-                    entropy = tf.reduce_sum(tf.log(self.variance + epsilon))
-                    self.entropy_loss = -tf.reduce_sum(entropy)
-
-                    squared_difference = tf.squared_difference(actions, self.mean)
-                    squared_distance = tf.reduce_sum(squared_difference / (self.variance + epsilon), axis=1)
-
-                    self.policy_loss = -tf.reduce_sum((entropy + squared_distance) * self.advantages)
-
-                    self.value_loss = tf.reduce_sum(tf.squared_difference(self.target_v, self.value))
-
-                    self.loss = (self.policy_loss + 0.5 * self.value_loss + 1e-4 * self.entropy_loss)
+                self.loss = 0.5 * self.value_loss + self.policy_loss - self.entropy_loss * 0.01
 
                 # Get gradients from local network using local losses
                 local_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope)
@@ -481,7 +445,7 @@ def play_training(training=True, load_model=True):
 
         worker_ips = [
             # '192.168.0.2',
-            '192.168.0.56'
+            '192.168.0.49'
         ]
 
         workers = []

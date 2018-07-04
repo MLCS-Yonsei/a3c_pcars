@@ -33,7 +33,7 @@ class PcarsEnv:
         self.distance = 0
         self.prevPosition = None
         self.ref_prevPosition = None
-        self.grid_line = np.load('grid_line.npz')['a']
+        self.grid_line = np.load('grid_line.npz')['results']
         self.xp = self.grid_line[:,0]
         self.fp_x = self.grid_line[:,1]
         self.fp_y = self.grid_line[:,2]
