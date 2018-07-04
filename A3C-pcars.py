@@ -39,8 +39,13 @@ def process_frame(frame):
     # s = np.reshape(s, [np.prod(s.shape)]) / 255.0 #make it one tuple size 7056 and makes values between 0-1 by dividing 255
     # r, g, b = frame[:,:,0], frame[:,:,1], frame[:,:,2]  # find r,g,b values
     # img_gray = 0.2989 * r + 0.5870 * g + 0.1140 * b  # make rgb to grayscale
-    img_gray = rgb2gray(frame)
-    s = np.reshape(img_gray, [np.prod(img_gray.shape)]) / 255.0
+    # img_gray = rgb2gray(frame)
+    img = Image.fromarray(frame, 'RGB')
+    img = img.convert("L")
+    
+    s = np.asarray(img, dtype="uint8")
+
+    s = np.reshape(s, [np.prod(s.shape)]) / 255.0
 
     return s
 
@@ -251,7 +256,7 @@ class Worker:
                             s = process_frame(s)
 
                             # For creating gifs
-                            to_gif = np.reshape(s, (200, 150)) * 255
+                            to_gif = np.reshape(s, (150, 200)) * 255
                             episode_frames.append(to_gif)
                             
                             rnn_state = self.local_AC.state_init
@@ -311,8 +316,8 @@ class Worker:
 
                                     if 'raceState' in ob and 'gameState' in ob and 'participants' in ob:
 
-                                        gameState = [int(s) for s in ob["gameState"].split('>')[0].split() if s.isdigit()][0]
-                                        raceState = [int(s) for s in ob["raceState"].split('>')[0].split() if s.isdigit()][0]
+                                        gameState = [int(st) for st in ob["gameState"].split('>')[0].split() if st.isdigit()][0]
+                                        raceState = [int(st) for st in ob["raceState"].split('>')[0].split() if st.isdigit()][0]
                                         lap_distance = ob["participants"][0]["currentLapDistance"]
                                         
                                         if (raceState == 2 or raceState == 3) and gameState == 2:
@@ -344,7 +349,8 @@ class Worker:
                                                 else:
                                                     s1 = s
 
-                                                to_gif1 = np.reshape(s1, (200, 150)) * 255
+                                                to_gif1 = np.reshape(s1, (150, 200)) * 255
+
                                                 episode_frames.append(to_gif1)
 
                                             else:

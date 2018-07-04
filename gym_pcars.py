@@ -49,7 +49,7 @@ class PcarsEnv:
             j=0; position=[]
             this_action = self.agent_to_torcs_discrete(u)
             terminate_status = False
-
+            # print(u, this_action)
             # Steering
             self.r.hset('pcars_action', target_ip, this_action)
 
@@ -78,12 +78,12 @@ class PcarsEnv:
             # Reward 
             if self.distance != 0 and self.distance != 65535:
                 if self.prevPosition is not None:
-                    d = la.norm(ref_position-cur_position)
+                    d = la.norm(ref_position-cur_position) / 5
                     v_e = cur_position - self.prevPosition
                     v_r = ref_position - self.ref_prevPosition
                     cos_a = np.dot(v_e/la.norm(v_e),v_r/la.norm(v_r))
 
-                    progress = sp*(cos_a - d)
+                    progress = (sp/200)*(cos_a - d)
                     self.reward = progress / 10
                 
                     #if sp < 0.01:
@@ -100,7 +100,7 @@ class PcarsEnv:
                     
             
             else:
-                self.reward = sp*sp
+                self.reward = sp*sp / 1000
 
             self.prevPosition = cur_position
             self.prevLapDistance = self.distance
