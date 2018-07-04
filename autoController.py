@@ -162,7 +162,8 @@ class pCarsAutoController(mp.Process):
 
         w = w-16 # Margin for window border
         d = int(w/2 * n)
-
+        print(n)
+        print(zero[0] + d)
         t = [zero[0] + d, zero[1]]
 
         return t
@@ -217,7 +218,6 @@ if __name__ == '__main__':
         if force_acc:
 
             if eval(force_acc) == True:
-                print(123)
                 pc.accOn()
                 
                 r.hdel('pcars_force_acc',local_ip)

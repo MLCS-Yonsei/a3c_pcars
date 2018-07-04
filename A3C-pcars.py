@@ -17,6 +17,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 import base64
 from io import BytesIO
 from PIL import Image
+import time
 # Copies one set of variables to another.
 # Used to set worker network parameters to those of global network.
 def update_target_graph(from_scope, to_scope):
@@ -281,6 +282,7 @@ class Worker:
                                         else:
                                             break
 
+                                    
                                     message = self.r.hget('pcars_data',target_ip)
 
                                     if message:
@@ -294,37 +296,12 @@ class Worker:
                                             raceState = [int(s) for s in ob["raceState"].split('>')[0].split() if s.isdigit()][0]
                                             lap_distance = ob["participants"][0]["currentLapDistance"]
 
-                                            if gameState != 2 and lap_distance > 0:
+                                            if gameState != 2:
                                                 self.r.hdel('pcars_force_acc', target_ip)
                                                 self.restarting = False
                                                 break
 
-                                            if lap_distance == 0:
-                                                # 가속 시그널
-                                                self.r.hset('pcars_force_acc', target_ip, True)
-                                
-                                while True:
-                                    message = self.r.hget('pcars_data',target_ip)
 
-                                    if message:
-
-                                        self.r.hdel('pcars_data',target_ip)
-                                        ob, s = self.parse_message(message)
-
-                                        if 'raceState' in ob and 'gameState' in ob and 'participants' in ob:
-
-                                            gameState = [int(s) for s in ob["gameState"].split('>')[0].split() if s.isdigit()][0]
-                                            raceState = [int(s) for s in ob["raceState"].split('>')[0].split() if s.isdigit()][0]
-                                            lap_distance = ob["participants"][0]["currentLapDistance"]
-
-                                            if raceState == 2 or raceState == 3 and gameState == 2:
-                                                if lap_distance == 0:
-                                                    # 가속 시그널
-                                                    self.r.hset('pcars_force_acc', target_ip, True)
-                                                else:
-                                                    self.r.hdel('pcars_force_acc', target_ip)
-                                                    break
-                                    
                                 message = self.r.hget('pcars_data',target_ip)
 
                                 if message:
@@ -338,7 +315,11 @@ class Worker:
                                         raceState = [int(s) for s in ob["raceState"].split('>')[0].split() if s.isdigit()][0]
                                         lap_distance = ob["participants"][0]["currentLapDistance"]
                                         
-                                        if raceState == 2 or raceState == 3 and gameState == 2:
+                                        if (raceState == 2 or raceState == 3) and gameState == 2:
+                                            # if lap_distance == 0:
+                                            #     self.r.hset('pcars_force_acc', target_ip, True)
+                                            #     time.sleep(0.5)
+                                            #     self.r.hdel('pcars_force_acc', target_ip)
                                             
                                             s = process_frame(s)
                                             # Take an action using probabilities from policy network output.
