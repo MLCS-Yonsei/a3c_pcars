@@ -123,7 +123,8 @@ class PcarsEnv:
 
             if self.distance == 0:
                 if "gear" in obs:
-                    self.reward = -200
+                    if int(obs["gear"]) == 15:
+                        self.reward = -200
 
             if self.distance == 0 and obs['brake'] == 1:
                 self.reward = -200
