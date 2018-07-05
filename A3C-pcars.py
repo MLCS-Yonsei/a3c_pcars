@@ -329,13 +329,13 @@ class Worker:
                                         lap_distance = ob["participants"][0]["currentLapDistance"]
                                         raceStateFlags = ob['raceStateFlags']
                                         # print("123",gameState, raceState, raceStateFlags)
-                                        if int(raceStateFlags) == 44:
-                                            # 세션 종료
-                                            self.r.hset('pcars_killer'+target_ip,target_ip,"3")
-                                            self.restarting = True
-                                            break
+                                        # if int(raceStateFlags) == 44:
+                                        #     # 세션 종료
+                                        #     self.r.hset('pcars_killer'+target_ip,target_ip,"3")
+                                        #     self.restarting = True
+                                        #     break
 
-                                        elif (raceState == 2 or raceState == 3) and gameState == 2:
+                                        if (raceState == 2 or raceState == 3) and gameState == 2:
                                             s = process_frame(s)
                                             # Take an action using probabilities from policy network output.
 
@@ -377,7 +377,7 @@ class Worker:
                                             print("episode ", episode_count, " step count :",episode_step_count)
                                             # If the episode hasn't ended, but the experience buffer is full, then we
                                             # make an update step using that experience rollout.
-                                            if training and len(episode_buffer) == 100 and d is not True:  #batch to 100 30 before 
+                                            if training and len(episode_buffer) == 30 and d is not True:  #batch to 100 30 before 
                                                 # Since we don't know what the true final return is, we "bootstrap" from our current
                                                 # value estimation
                                                 v1 = sess.run(self.local_AC.value,
