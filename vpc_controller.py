@@ -97,7 +97,7 @@ class screen_capture_thread(Thread):
             self.img = base64.b64encode(buf.getvalue()).decode("utf-8")
 
             # Set game_data from pcars udp listener after taking screen capturing
-            if self.listener.data is not False and self.img is not None:
+            if self.listener.data is not False and self.listener.data is not None and self.img is not None:
                 result = {'game_data':self.listener.data,'image_data':self.img}
             else:
                 result = False
