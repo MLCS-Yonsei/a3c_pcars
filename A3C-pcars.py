@@ -235,10 +235,10 @@ class Worker:
                 # try:
                 message = self.r.hget('pcars_data'+target_ip,target_ip)
                 if message:
-
+                    print(message)
                     self.r.hdel('pcars_data'+target_ip,target_ip)
                     ob, s = self.parse_message(message)
-                    print(message)
+                    
                     if 'raceState' in ob and 'gameState' in ob:
 
                         gameState = [int(s) for s in ob["gameState"].split('>')[0].split() if s.isdigit()][0]
