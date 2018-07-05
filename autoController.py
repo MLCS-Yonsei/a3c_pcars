@@ -168,7 +168,7 @@ class pCarsAutoController(mp.Process):
         return t
 
     def move_steer(self, n):
-        # self.controlState['steer'] = n
+        self.controlState['steer'] = n
         t = self.steer_converter(n)
         pywinauto.mouse.move(coords=(t[0], t[1]))
 

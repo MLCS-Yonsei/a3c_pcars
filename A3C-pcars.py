@@ -296,7 +296,7 @@ class Worker:
                                             gameState = [int(s) for s in ob["gameState"].split('>')[0].split() if s.isdigit()][0]
                                             raceState = [int(s) for s in ob["raceState"].split('>')[0].split() if s.isdigit()][0]
                                             lap_distance = ob["participants"][0]["currentLapDistance"]
-                                            raceStateFlags = ob['game_data']['raceStateFlags']
+                                            raceStateFlags = ob['raceStateFlags']
 
                                             if (raceState == 2 or raceState == 3) and gameState == 2 and raceState != 44:
                                                 self.r.hdel('pcars_force_acc', target_ip)
@@ -315,7 +315,7 @@ class Worker:
                                         gameState = [int(st) for st in ob["gameState"].split('>')[0].split() if st.isdigit()][0]
                                         raceState = [int(st) for st in ob["raceState"].split('>')[0].split() if st.isdigit()][0]
                                         lap_distance = ob["participants"][0]["currentLapDistance"]
-                                        raceStateFlags = ob['game_data']['raceStateFlags']
+                                        raceStateFlags = ob['raceStateFlags']
 
                                         if int(raceStateFlags) == 44:
                                             # 세션 종료
