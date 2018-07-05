@@ -5,3 +5,9 @@ build/
 .egg
 pcars.egg-info/
 *.egg
+*.gif
+*.local
+*.meta
+*.index
+*.data-00000-of-00001
+model/checkpoint
