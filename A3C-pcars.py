@@ -267,28 +267,23 @@ class Worker:
                                 # print("Killer:",self.r.hget('pcars_killer','192.168.0.2'), 'LEFT')
                                 # print("Killer:",self.r.hget('pcars_killer','192.168.0.52'), 'RIGHT')
                                 while self.restarting:
-                                    while True:
-                                        message = self.r.hget('pcars_killer'+target_ip,target_ip)
+                                    message = self.r.hget('pcars_killer'+target_ip,target_ip)
 
-                                        if message:
-                                            reset_status = eval(message)
+                                    if message:
+                                        reset_status = eval(message)
 
-                                            # autoKiller에서 처리중
-                                            if reset_status == 1:
-                                                pass
-                                            elif reset_status == 2:
-                                                pass
-                                            elif reset_status == 3:
-                                                pass
-                                            elif reset_status == 4:
-                                                pass
-                                            else:
-                                                break
-                                                
+                                        # autoKiller에서 처리중
+                                        if reset_status == 1:
+                                            pass
+                                        elif reset_status == 2:
+                                            pass
+                                        elif reset_status == 3:
+                                            pass
+                                        elif reset_status == 4:
+                                            pass
                                         else:
                                             break
 
-                                    
                                     message = self.r.hget('pcars_data'+target_ip,target_ip)
 
                                     if message:
@@ -301,12 +296,12 @@ class Worker:
                                             gameState = [int(s) for s in ob["gameState"].split('>')[0].split() if s.isdigit()][0]
                                             raceState = [int(s) for s in ob["raceState"].split('>')[0].split() if s.isdigit()][0]
                                             lap_distance = ob["participants"][0]["currentLapDistance"]
+                                            raceStateFlags = ob['game_data']['raceStateFlags']
 
-                                            if gameState != 2:
+                                            if (raceState == 2 or raceState == 3) and gameState == 2 and raceState != 44:
                                                 self.r.hdel('pcars_force_acc', target_ip)
                                                 self.restarting = False
                                                 break
-
 
                                 message = self.r.hget('pcars_data'+target_ip,target_ip)
 
@@ -320,13 +315,16 @@ class Worker:
                                         gameState = [int(st) for st in ob["gameState"].split('>')[0].split() if st.isdigit()][0]
                                         raceState = [int(st) for st in ob["raceState"].split('>')[0].split() if st.isdigit()][0]
                                         lap_distance = ob["participants"][0]["currentLapDistance"]
-                                        
-                                        if (raceState == 2 or raceState == 3) and gameState == 2:
-                                            # if lap_distance == 0:
-                                            #     self.r.hset('pcars_force_acc', target_ip, True)
-                                            #     time.sleep(0.5)
-                                            #     self.r.hdel('pcars_force_acc', target_ip)
-                                            
+                                        raceStateFlags = ob['game_data']['raceStateFlags']
+
+                                        if int(raceStateFlags) == 44:
+                                            # 세션 종료
+                                            self.r.hset('pcars_killer'+target_ip,target_ip,"3")
+                                            self.restarting = True
+                                            break
+
+                                        elif (raceState == 2 or raceState == 3) and gameState == 2 and raceStateFlags != 44:
+
                                             s = process_frame(s)
                                             # Take an action using probabilities from policy network output.
 
@@ -449,8 +447,8 @@ def play_training(training=True, load_model=True):
         master_network = AC_Network(s_size, a_size, 'global', None, False)
 	
         worker_ips = [
-                '192.168.0.2',
-                '192.168.0.52'
+                '192.168.0.49',
+                '192.168.0.56'
         ]
 
         if training:
