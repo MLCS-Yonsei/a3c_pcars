@@ -31,6 +31,7 @@ class PcarsEnv:
         self.initial_run = True
         self.prevLapDistance = 0
         self.distance = 0
+        self.brake_cnt = 0
         self.prevPosition = None
         self.ref_prevPosition = None
         self.grid_line = np.load('grid_line.npz')['results']
@@ -131,7 +132,9 @@ class PcarsEnv:
                         self.reward = -200
 
             if self.distance == 0 and obs['brake'] == 1:
-                self.reward = -200
+                self.brake_cnt = self.brake_cnt + 1
+                if self.brake_cnt > 30:
+                    self.reward = -200
 
             if "tyres" in obs:
                 tireTerrain = obs["tyres"]
@@ -150,6 +153,7 @@ class PcarsEnv:
             print("reward:86:",self.reward,target_ip)
             if self.reward == -200:
                 print("Restarting")
+                self.brake_cnt = 0
                 self.position = []
                 self.distance = 0
                 self.time_step = 0
