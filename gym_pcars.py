@@ -81,7 +81,8 @@ class PcarsEnv:
                     d = la.norm(ref_position-cur_position) / 5
                     v_e = cur_position - self.prevPosition
                     v_r = ref_position - self.ref_prevPosition
-                    cos_a = np.dot(v_e/la.norm(v_e),v_r/la.norm(v_r))
+
+                    cos_a = np.dot(v_e,v_r) / 20
 
                     progress = (sp/200)*(cos_a - d)
                     self.reward = progress / 10
@@ -89,10 +90,11 @@ class PcarsEnv:
                     #if sp < 0.01:
                     #    reward = -200
                     #    self.reset_pcars(target_ip)
-                    if self.prevLapDistance != 0 and self.prevLapDistance != 78 and (self.distance - self.prevLapDistance) < 0:
-                        self.prevLapDistance = 0
-                        self.reward = -200
-                        print("backward:",self.prevLapDistance, self.distance)
+                    
+                    # if self.prevLapDistance != 0 and self.prevLapDistance != 78 and (self.distance - self.prevLapDistance) < 0:
+                    #     self.prevLapDistance = 0
+                    #     self.reward = -200
+                    #     print("backward:",self.prevLapDistance, self.distance)
 
                     #if self.prevLapDistance != 0 and distance != 0 and distance <= self.prevLapDistance:  # Episode is terminated if the agent runs backward
                     #    reward = -200
@@ -100,7 +102,7 @@ class PcarsEnv:
                     
             
             else:
-                self.reward = sp*sp / 1000
+                self.reward = sp*sp / 10
 
             self.prevPosition = cur_position
             self.prevLapDistance = self.distance

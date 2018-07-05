@@ -179,7 +179,7 @@ class Worker:
         self.value_plus = np.asarray(values.tolist() + [bootstrap_value])
         advantages = rewards + gamma * self.value_plus[1:] - self.value_plus[:-1]
         advantages = discount(advantages, gamma)
-
+        print(advantages)
         # Update the global network using gradients from loss
         # Generate network statistics to periodically save
         rnn_state = self.local_AC.state_init
@@ -234,6 +234,7 @@ class Worker:
             while not coord.should_stop():
                 # try:
                 message = self.r.hget('pcars_data'+target_ip,target_ip)
+
                 if message:
 
                     self.r.hdel('pcars_data'+target_ip,target_ip)
@@ -301,6 +302,7 @@ class Worker:
                                             raceStateFlags = ob['raceStateFlags']
                                             # print("Restarting")
                                             # print(gameState, raceState, raceStateFlags)
+                                            # print("R",gameState, raceState, raceStateFlags)
                                             if gameState != 2 or raceState == 1:
                                                 self.r.hdel('pcars_force_acc', target_ip)
                                                 self.restarting = False
@@ -316,7 +318,7 @@ class Worker:
                                 message = self.r.hget('pcars_data'+target_ip,target_ip)
 
                                 if message:
-                                    
+
                                     self.r.hdel('pcars_data'+target_ip,target_ip)
                                     ob, s = self.parse_message(message)
 
@@ -326,7 +328,7 @@ class Worker:
                                         raceState = [int(st) for st in ob["raceState"].split('>')[0].split() if st.isdigit()][0]
                                         lap_distance = ob["participants"][0]["currentLapDistance"]
                                         raceStateFlags = ob['raceStateFlags']
-                                        # print(gameState, raceState, raceStateFlags)
+                                        # print("123",gameState, raceState, raceStateFlags)
                                         if int(raceStateFlags) == 44:
                                             # 세션 종료
                                             self.r.hset('pcars_killer'+target_ip,target_ip,"3")
@@ -347,7 +349,8 @@ class Worker:
                                             
                                             _, reward, info, d = self.env.step_discrete(self.actions[a_t], ob, target_ip)
 
-                                            r = reward/1000
+                                            # r = reward/1000
+                                            r = reward
                                             
                                             if not d:
                                                 message = self.r.hget('pcars_data'+target_ip,target_ip)
@@ -389,6 +392,13 @@ class Worker:
                                                 print("break by d", d)
                                                 self.restarting = True
                                                 break
+                                        else:
+                                            t2 = datetime.now()
+                                            delta = t2 - t1
+                                            if delta.seconds > 20:
+                                                t1 = datetime.now()
+                                                print("Force reset")
+                                                self.r.hset('pcars_killer'+target_ip,target_ip,"1")
                                             
                        
                             self.episode_rewards.append(episode_reward)
@@ -456,8 +466,8 @@ def play_training(training=True, load_model=True):
         master_network = AC_Network(s_size, a_size, 'global', None, False)
 	
         worker_ips = [
-                '192.168.0.2',
-                '192.168.0.52',
+                # '192.168.0.2',
+                # '192.168.0.52',
                 '192.168.0.49',
                 '192.168.0.56'
         ]
@@ -508,8 +518,8 @@ if __name__ == "__main__":
         os.makedirs('./frames')
 
     if len(sys.argv) == 1:  # run from PyCharm
-        play_training(training=True, load_model=False)
+        play_training(training=True, load_model=True)
     elif sys.argv[1] == "1":  # lunch from Terminal and specify 0 or 1 as arguments
-        play_training(training=True, load_model=False)
+        play_training(training=True, load_model=True)
     elif sys.argv[1] == "0":
         play_training(training=False, load_model=True)
