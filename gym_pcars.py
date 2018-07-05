@@ -29,29 +29,34 @@ class PcarsEnv:
     def __init__(self, port=3101):
         self.torcs_proc = None
         self.initial_run = True
+        self.r = redis.StrictRedis(host='redis.hwanmoo.kr', port=6379, db=1)
+
+        # Variables
+        self.position = []
         self.prevLapDistance = 0
         self.distance = 0
         self.brake_cnt = 0
         self.prevPosition = None
         self.ref_prevPosition = None
+
+        # Grid Line
         self.grid_line = np.load('grid_line.npz')['results']
         self.xp = self.grid_line[:,0]
         self.fp_x = self.grid_line[:,1]
         self.fp_y = self.grid_line[:,2]
         self.fp_z = self.grid_line[:,3]
-        self.r = redis.StrictRedis(host='redis.hwanmoo.kr', port=6379, db=1)
-        self.reward = 0
-        self.position = []
 
+        self.reward = 0
    
     def step_discrete(self, u, obs, target_ip):
         if 'raceState' in obs:
 
-            j=0; position=[]
+            j=0
+            position=[]
             this_action = self.agent_to_torcs_discrete(u)
             terminate_status = False
-            # print(u, this_action)
-            # Steering
+
+            # Send Action Signal
             self.r.hset('pcars_action'+target_ip, target_ip, this_action)
 
             # angle = obs["motionAndDeviceRelated"]["mOrientation"][1]
@@ -105,10 +110,14 @@ class PcarsEnv:
             else:
                 if self.prevPosition is not None:
                     v_e = cur_position - self.prevPosition
-                    v_r = ref_position - self.ref_prevPosition
-                    cos_a = np.dot(v_e,v_r) / 20
-
-                    self.reward = sp*cos_a
+                    v_r = ref_position
+                    
+                    cos_a = np.dot(v_e,v_r) / 1500
+                    if cos_a != 0:
+                        print("cosa", cos_a,v_e,v_r)
+                        self.reward = (sp/200)*cos_a
+                    else:
+                        self.reward = sp*sp
                 else : 
                     self.reward = sp*sp
 
@@ -135,13 +144,13 @@ class PcarsEnv:
                         self.brake_cnt = self.brake_cnt + 1
 
                         if self.brake_cnt > 30:
-                            print("too much brakes")
+                            print("too much brakes", target_ip)
                             self.reward = -200
 
             if self.distance == 0 and obs['brake'] == 1:
                 self.brake_cnt = self.brake_cnt + 1
                 if self.brake_cnt > 30:
-                    print("too much brakes")
+                    print("too much brakes", target_ip)
                     self.reward = -200
 
             if "tyres" in obs:
@@ -150,13 +159,16 @@ class PcarsEnv:
                     if tireTerrain[i]['terrain'] != 0 :  # Episode is terminated if the car is out of track
                         j+=1
                 if j >= 2:
+                    print("Tyre out", target_ip)
                     self.reward = -200; j = 0
 
             if crashState > 1:
+                print("Crash!", target_ip)
                 self.reward = -200
 
-            if self.distance == 65535:
-                self.reward = -200
+            # if self.distance == 65535:
+            #     print("Bad Distance", target_ip)
+            #     self.reward = -200
 
             print("reward:86:",self.reward,target_ip)
             if self.reward == -200:
