@@ -103,11 +103,14 @@ class PcarsEnv:
                     
             
             else:
-                v_e = cur_position - self.prevPosition
-                v_r = ref_position - self.ref_prevPosition
-                cos_a = np.dot(v_e,v_r) / 20
+                if self.prevPosition is not None:
+                    v_e = cur_position - self.prevPosition
+                    v_r = ref_position - self.ref_prevPosition
+                    cos_a = np.dot(v_e,v_r) / 20
 
-                self.reward = sp*cos_a
+                    self.reward = sp*cos_a
+                else : 
+                    self.reward = sp*sp
 
             self.prevPosition = cur_position
             self.prevLapDistance = self.distance
