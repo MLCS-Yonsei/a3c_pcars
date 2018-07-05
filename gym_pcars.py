@@ -136,7 +136,7 @@ class PcarsEnv:
 
             if self.distance == 0 and obs['brake'] == 1:
                 self.brake_cnt = self.brake_cnt + 1
-                if self.brake_cnt > 30:
+                if self.brake_cnt > 300:
                     self.reward = -200
 
             if "tyres" in obs:
