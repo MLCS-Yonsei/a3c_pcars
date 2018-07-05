@@ -132,7 +132,11 @@ class PcarsEnv:
             if self.distance == 0:
                 if "gear" in obs:
                     if int(obs["gear"]) == 15:
-                        self.reward = -200
+                        self.brake_cnt = self.brake_cnt + 1
+
+                        if self.brake_cnt > 20000:
+                            print("too much brakes")
+                            self.reward = -200
 
             if self.distance == 0 and obs['brake'] == 1:
                 self.brake_cnt = self.brake_cnt + 1
