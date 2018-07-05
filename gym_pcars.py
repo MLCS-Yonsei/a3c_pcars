@@ -90,7 +90,7 @@ class PcarsEnv:
                     #if sp < 0.01:
                     #    reward = -200
                     #    self.reset_pcars(target_ip)
-                    
+
                     # if self.prevLapDistance != 0 and self.prevLapDistance != 78 and (self.distance - self.prevLapDistance) < 0:
                     #     self.prevLapDistance = 0
                     #     self.reward = -200
@@ -120,6 +120,10 @@ class PcarsEnv:
                         self.reward = -200
                 else:
                     self.position.append(self.distance)
+
+            if self.distance == 0:
+                if "gear" in obs:
+                    self.reward = -200
 
             if self.distance == 0 and obs['brake'] == 1:
                 self.reward = -200
