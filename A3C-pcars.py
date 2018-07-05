@@ -18,7 +18,6 @@ import base64
 from io import BytesIO
 from PIL import Image
 import time
-
 from datetime import datetime
 
 
@@ -81,38 +80,25 @@ class AC_Network:
             self.conv2 = slim.conv2d(activation_fn=tf.nn.elu,
                                      inputs=self.conv1, num_outputs=32,
                                      kernel_size=[4, 8], stride=[1, 6], padding='VALID')
-            self.conv3 = slim.conv2d(activation_fn=tf.nn.elu,
-                                     inputs=self.conv1, num_outputs=32,
-                                     kernel_size=[4, 8], stride=[1, 6], padding='VALID')
-            hidden = slim.fully_connected(slim.flatten(self.conv3), 256, activation_fn=tf.nn.elu)
-
-            self.racing_action = tf.placeholder(shape=[None, a_size], dtype=tf.float32, name="Racing_action")
-            self.racing_speed = tf.placeholder(shape=[None, 1], dtype=tf.float32, name="Racing_speed")
-            hidden = tf.concat([hidden, np.ones(23)[np.newaxis,:], np.ones(1)[np.newaxis,:]], 1)
+            hidden = slim.fully_connected(slim.flatten(self.conv2), 256, activation_fn=tf.nn.elu)
 
             # Recurrent network for temporal dependencies
-            lstm_cell = tf.contrib.rnn.BasicLSTMCell(256+a_size+1, state_is_tuple=True)
-
+            lstm_cell = tf.contrib.rnn.BasicLSTMCell(256, state_is_tuple=True)
             c_init = np.zeros((1, lstm_cell.state_size.c), np.float32)
             h_init = np.zeros((1, lstm_cell.state_size.h), np.float32)
-
             self.state_init = [c_init, h_init]  # initial state of the rnn
             c_in = tf.placeholder(tf.float32, [1, lstm_cell.state_size.c])
             h_in = tf.placeholder(tf.float32, [1, lstm_cell.state_size.h])
-
             self.state_in = (c_in, h_in)
             rnn_in = tf.expand_dims(hidden, [0])
-            # print(rnn_in)
-            # exit(0)
             step_size = tf.shape(self.imageIn)[:1]
             state_in = tf.contrib.rnn.LSTMStateTuple(c_in, h_in)
             lstm_outputs, lstm_state = tf.nn.dynamic_rnn(
-                lstm_cell, (rnn_in), initial_state=state_in, sequence_length=step_size,
+                lstm_cell, rnn_in, initial_state=state_in, sequence_length=step_size,
                 time_major=False)
-
             lstm_c, lstm_h = lstm_state
             self.state_out = (lstm_c[:1, :], lstm_h[:1, :])
-            rnn_out = tf.reshape(lstm_outputs, [-1, 256+a_size+1])
+            rnn_out = tf.reshape(lstm_outputs, [-1, 256])
 
             # Output layers for policy and value estimations
             self.discrete_policy = slim.fully_connected(rnn_out, a_size,
@@ -184,7 +170,6 @@ class Worker:
         rollout = np.array(rollout)
         observations = rollout[:, 0]
         actions = np.asarray(rollout[:, 1].tolist())
-        print(observations)
         rewards = rollout[:, 2]
         next_observations = rollout[:, 3]
         values = rollout[:, 5]
@@ -200,14 +185,22 @@ class Worker:
         # Update the global network using gradients from loss
         # Generate network statistics to periodically save
         rnn_state = self.local_AC.state_init
-
-        feed_dict = {self.local_AC.target_v: discounted_rewards,
-                        self.local_AC.inputs: np.vstack(observations),
-                        self.local_AC.actions: actions,
-                        self.local_AC.advantages: advantages,
-                        self.local_AC.state_in[0]: rnn_state[0],
-                        self.local_AC.state_in[1]: rnn_state[1]}
-    
+        if not self.continuous:
+            feed_dict = {self.local_AC.target_v: discounted_rewards,
+                         self.local_AC.inputs: np.vstack(observations),
+                         self.local_AC.actions: actions,
+                         self.local_AC.advantages: advantages,
+                         self.local_AC.state_in[0]: rnn_state[0],
+                         self.local_AC.state_in[1]: rnn_state[1]}
+        else:
+            feed_dict = {self.local_AC.target_v: discounted_rewards,
+                         self.local_AC.inputs: np.vstack(observations),
+                         self.local_AC.steer: actions[:, 0],
+                         # self.local_AC.accelerate: actions[:, 1],
+                         # self.local_AC.brake: actions[:, 2],
+                         self.local_AC.advantages: advantages,
+                         self.local_AC.state_in[0]: rnn_state[0],
+                         self.local_AC.state_in[1]: rnn_state[1]}
         v_l, p_l, e_l, loss_f, g_n, v_n, _ = sess.run([self.local_AC.value_loss,
                                                        self.local_AC.policy_loss,
                                                        self.local_AC.entropy_loss,
@@ -391,7 +384,7 @@ class Worker:
                                             print("episode ", episode_count, " step count :",episode_step_count)
                                             # If the episode hasn't ended, but the experience buffer is full, then we
                                             # make an update step using that experience rollout.
-                                            if training and len(episode_buffer) == 5 and d is not True:  #batch to 100 30 before 
+                                            if training and len(episode_buffer) == 80 and d is not True:  #batch to 100 30 before 
                                                 # Since we don't know what the true final return is, we "bootstrap" from our current
                                                 # value estimation
                                                 v1 = sess.run(self.local_AC.value,
@@ -480,10 +473,10 @@ def play_training(training=True, load_model=True):
         master_network = AC_Network(s_size, a_size, 'global', None, False)
 	
         worker_ips = [
-                # '192.168.0.2',
-                # '192.168.0.52',
+                '192.168.0.2',
+                '192.168.0.52',
                 '192.168.0.49',
-                '192.168.0.56'
+                # '192.168.0.56'
         ]
 
         if training:
@@ -532,8 +525,8 @@ if __name__ == "__main__":
         os.makedirs('./frames')
 
     if len(sys.argv) == 1:  # run from PyCharm
-        play_training(training=True, load_model=False)
+        play_training(training=True, load_model=True)
     elif sys.argv[1] == "1":  # lunch from Terminal and specify 0 or 1 as arguments
-        play_training(training=True, load_model=False)
+        play_training(training=True, load_model=True)
     elif sys.argv[1] == "0":
         play_training(training=False, load_model=True)
