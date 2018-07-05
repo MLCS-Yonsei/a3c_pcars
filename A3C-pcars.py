@@ -18,6 +18,7 @@ import base64
 from io import BytesIO
 from PIL import Image
 import time
+from datetime import datetime
 # Copies one set of variables to another.
 # Used to set worker network parameters to those of global network.
 def update_target_graph(from_scope, to_scope):
@@ -266,6 +267,7 @@ class Worker:
                                 # 시간 체크해서 일정시간 이상 머무르면 리셋 시그널 보낼것
                                 # print("Killer:",self.r.hget('pcars_killer','192.168.0.2'), 'LEFT')
                                 # print("Killer:",self.r.hget('pcars_killer','192.168.0.52'), 'RIGHT')
+                                t1 = datetime.now()
                                 while self.restarting:
                                     while True:
                                         message = self.r.hget('pcars_killer'+target_ip,target_ip)
@@ -306,6 +308,13 @@ class Worker:
                                                 self.r.hdel('pcars_force_acc', target_ip)
                                                 self.restarting = False
                                                 break
+                                    
+                                    t2 = datetime.now()
+                                    delta = t2 - t1
+                                    if delta.seconds > 20:
+                                        t1 = datetime.now()
+                                        print("Force reset")
+                                        self.r.hset('pcars_killer'+target_ip,target_ip,"1")
 
 
                                 message = self.r.hget('pcars_data'+target_ip,target_ip)
