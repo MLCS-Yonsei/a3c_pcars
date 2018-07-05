@@ -162,8 +162,7 @@ class pCarsAutoController(mp.Process):
 
         w = w-16 # Margin for window border
         d = int(w/2 * n)
-        print(n)
-        print(zero[0] + d)
+        print("Steering:", n)
         t = [zero[0] + d, zero[1]]
 
         return t
