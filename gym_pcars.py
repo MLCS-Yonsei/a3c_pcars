@@ -136,7 +136,8 @@ class PcarsEnv:
 
             if self.distance == 0 and obs['brake'] == 1:
                 self.brake_cnt = self.brake_cnt + 1
-                if self.brake_cnt > 300:
+                if self.brake_cnt > 1000:
+                    print("too much brakes")
                     self.reward = -200
 
             if "tyres" in obs:
@@ -144,7 +145,7 @@ class PcarsEnv:
                 for i in range(4):
                     if tireTerrain[i]['terrain'] != 0 :  # Episode is terminated if the car is out of track
                         j+=1
-                if j >= 3:
+                if j >= 2:
                     self.reward = -200; j = 0
 
             if crashState > 1:
