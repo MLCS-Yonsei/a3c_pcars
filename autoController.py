@@ -158,18 +158,17 @@ class pCarsAutoController(mp.Process):
         y = rect[1]
         w = rect[2] - x
         h = rect[3] - y
-        zero = [x + int(w/2), y + int(h/2)]
+        zero = [x + int(w/2), y + int(15 * int(h) / 16)]
 
         w = w-16 # Margin for window border
         d = int(w/2 * n)
-        print(n)
-        print(zero[0] + d)
+        print("Steering:", n)
         t = [zero[0] + d, zero[1]]
 
         return t
 
     def move_steer(self, n):
-        # self.controlState['steer'] = n
+        self.controlState['steer'] = n
         t = self.steer_converter(n)
         pywinauto.mouse.move(coords=(t[0], t[1]))
 

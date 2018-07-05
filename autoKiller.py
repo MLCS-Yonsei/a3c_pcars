@@ -172,28 +172,33 @@ class pCarsAutoKiller(mp.Process):
         cmd = '{ENTER}'
         SendKeys(cmd)
 
-        # Wait until game restarts
-        # while True:
-        #     gameData = send_crest_requset(self.target_ip, "crest-monitor", {})
-        #     raceState = gameData["gameStates"]["mRaceState"]
-
-        #     if raceState < 3:
-        #         break
-        
         return True
-    # def run(self):
-    #     while True:
-    #         message = self.r.hget('pcars_killer',self.local_ip)
 
-    #         if message:
-    #             reset_status = eval(message)
+    def restart_type_3(self):
+        time.sleep(7)
 
-    #             if reset_status == 1:
-    #                 self.restart_type_1()
-    #             elif reset_status == 2:
-    #                 self.restart_type_2()
+        self.get_focus()
+        cmd = '{UP}'
+        for i in range(0,3):
+            SendKeys(cmd)
 
-    #             self.r.hdel('pcars_killer',self.local_ip)
+        cmd = '{DOWN}'
+        SendKeys(cmd)
+
+        # Hit Return
+        cmd = '{ENTER}'
+        SendKeys(cmd)
+
+        time.sleep(0.2)
+        cmd = '{DOWN}'
+        SendKeys(cmd)
+
+        cmd = '{ENTER}'
+        SendKeys(cmd)
+
+        
+
+
 
 if __name__ == '__main__':
     pc = pCarsAutoKiller()
@@ -210,10 +215,9 @@ if __name__ == '__main__':
             elif reset_status == 2:
                 pc.restart_type_2()
                 del_stat = True
-            # elif reset_status == 1:
-            #     del_stat = False
-            # elif reset_status == 2:
-            #     del_stat = False
+            elif reset_status == 3:
+                pc.restart_type_3()
+                del_stat = True
             else:
                 del_stat = True
 

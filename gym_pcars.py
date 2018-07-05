@@ -156,6 +156,9 @@ class PcarsEnv:
     def reset_pcars_2(self,target_ip):
         self.r.hset('pcars_killer'+target_ip,target_ip,"2")
 
+    def reset_pcars_3(self,target_ip):
+        self.r.hset('pcars_killer'+target_ip,target_ip,"3")
+
     def agent_to_torcs_discrete(self, u):
         # if self.distance != 0:
         torcs_action = {'0': u[0]}
