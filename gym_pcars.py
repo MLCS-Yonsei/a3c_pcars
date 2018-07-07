@@ -1,9 +1,7 @@
-# import gym
-# from gym import spaces
 import numpy as np
 import redis
-# from os import path
-# import snakeoil3_gym as snakeoil3
+import math
+
 import numpy as np
 import copy
 import collections as col
@@ -12,13 +10,7 @@ import subprocess
 import time
 import signal
 from numpy import linalg as la
-#from DDPG import utils
-#from DDPG import autoController
-#import win32ui
-#import serial
-#import serial.tools.list_ports
-#from pywinauto.keyboard import SendKeys
-
+from datetime import datetime
 
 class PcarsEnv:
     default_speed = 50
@@ -34,10 +26,19 @@ class PcarsEnv:
         # Variables
         self.position = []
         self.prevLapDistance = 0
-        self.distance = 0
-        self.brake_cnt = 0
         self.prevPosition = None
         self.ref_prevPosition = None
+        self.distance = 0
+
+        self.brake_cnt = 0
+        self.backward_cnt = 0
+        self.tyre_out_cnt = 0
+        self.crash_cnt = 0
+        
+        self.brake_time = None
+        self.backward_time = None
+        self.tyre_out_time = None
+        self.crash_time = None
 
         # Grid Line
         self.grid_line = np.load('grid_line.npz')['results']
@@ -59,14 +60,7 @@ class PcarsEnv:
             # Send Action Signal
             self.r.hset('pcars_action'+target_ip, target_ip, this_action)
 
-            # angle = obs["motionAndDeviceRelated"]["mOrientation"][1]
-            
             raceState = [int(s) for s in obs["raceState"].split('>')[0].split() if s.isdigit()][0]
-            #raceState = int(raceState)
-            if raceState == 3:
-                self.reward = -300
-                self.reset_pcars_2(target_ip)
-                terminate_status = True
 
             sp = obs["speed"]
             self.distance = obs["participants"][0]["currentLapDistance"]
@@ -80,6 +74,15 @@ class PcarsEnv:
             ref_position_z = np.interp(cur_position_z, self.xp, self.fp_z)
             ref_position = np.array([ref_position_x,ref_position_y,ref_position_z])
 
+            def norm_np(n):
+                n0 = n[0]
+                n1 = n[1]
+                n2 = n[2]
+
+                ns = math.sqrt(n0*n0 + n1*n1 + n2*n2)
+                
+                return np.array([n0/ns,n1/ns,n2/ns])
+
             print("Distance",self.distance)
             # Reward 
             if self.distance != 0 and self.distance != 65535:
@@ -88,38 +91,30 @@ class PcarsEnv:
                     v_e = cur_position - self.prevPosition
                     v_r = ref_position - self.ref_prevPosition
 
-                    cos_a = np.dot(v_e,v_r) / 20
+                    cos_a = np.dot(norm_np(v_e),norm_np(v_r))
 
                     progress = (sp/200)*(cos_a - d)
                     self.reward = progress / 10
                 
-                    #if sp < 0.01:
-                    #    reward = -200
-                    #    self.reset_pcars(target_ip)
-
-                    # if self.prevLapDistance != 0 and self.prevLapDistance != 78 and (self.distance - self.prevLapDistance) < 0:
-                    #     self.prevLapDistance = 0
-                    #     self.reward = -200
-                    #     print("backward:",self.prevLapDistance, self.distance)
-
-                    #if self.prevLapDistance != 0 and distance != 0 and distance <= self.prevLapDistance:  # Episode is terminated if the agent runs backward
-                    #    reward = -200
-                    #    self.reset_pcars(target_ip)
-                    
+                    if sp < 0.01:
+                       reward += -50
             
             else:
                 if self.prevPosition is not None:
                     v_e = cur_position - self.prevPosition
                     v_r = ref_position
                     
-                    cos_a = np.dot(v_e,v_r) / 1500
+                    cos_a = np.dot(norm_np(v_e),norm_np(v_r))
                     if cos_a != 0:
                         print("cosa", cos_a,v_e,v_r)
-                        self.reward = (sp/200)*cos_a
+                        progress = (sp/200)*cos_a
+                        self.reward = progress / 10
                     else:
-                        self.reward = sp*sp
+                        progress = sp
+                        self.reward = progress / 10
                 else : 
-                    self.reward = sp*sp
+                    progress = sp
+                    self.reward = progress / 10
 
             self.prevPosition = cur_position
             self.prevLapDistance = self.distance
@@ -132,48 +127,93 @@ class PcarsEnv:
                     self.position.append(self.distance)
                     
                     if abs(self.position[19]-self.position[0]) < 10:
-                        print(self.position)
+                        self.backward_cnt += 1
+                        self.backward_time = datetime.now()
                         
-                        self.reward = -200
                 else:
                     self.position.append(self.distance)
 
             if self.distance == 0:
                 if "gear" in obs:
                     if int(obs["gear"]) == 15:
-                        self.brake_cnt = self.brake_cnt + 1
-
-                        if self.brake_cnt > 30:
-                            print("too much brakes", target_ip)
-                            self.reward = -200
-
-            if self.distance == 0 and obs['brake'] == 1:
-                self.brake_cnt = self.brake_cnt + 1
-                if self.brake_cnt > 30:
-                    print("too much brakes", target_ip)
-                    self.reward = -200
-
+                        self.brake_cnt += 1
+                        self.brake_time = datetime.now()
+                        
             if "tyres" in obs:
-                tireTerrain = obs["tyres"]
+                tireTerrains = obs["tyres"]
+                
+                _out_tyres = 0
                 for i in range(4):
-                    if tireTerrain[i]['terrain'] != 0 :  # Episode is terminated if the car is out of track
-                        j+=1
-                if j >= 2:
-                    print("Tyre out", target_ip)
-                    self.reward = -200; j = 0
+                    if tireTerrains[i]['terrain'] != 0 :  # Episode is terminated if the car is out of track
+                        _out_tyres+=1
 
+                if _out_tyres >= 2:
+                    self.tyre_out_cnt += 1
+                    self.tyre_out_time = datetime.now()
+                            
             if crashState > 1:
                 print("Crash!", target_ip)
-                self.reward = -200
+                self.crash_cnt += 1
+                self.crash_time = datetime.now()
+
+            '''
+            Reset Minus Flags based on current time.
+            '''
+            cur_time = datetime.now()
+            reset_time = 10
+            if self.backward_time is not None:
+                delta = cur_time - self.backward_time
+                if delta.seconds > reset_time:
+                    self.backward_cnt = 0
+
+            if self.brake_time is not None:
+                delta = cur_time - self.brake_time
+                if delta.seconds > reset_time:
+                    self.brake_cnt = 0
+
+            if self.tyre_out_time is not None:
+                delta = cur_time - self.tyre_out_time
+                if delta.seconds > reset_time:
+                    self.tyre_out_cnt = 0
+
+            if self.crash_time is not None:
+                delta = cur_time - self.crash_time
+                if delta.seconds > reset_time:
+                    self.crash_cnt = 0
+
+            '''
+            Minus Rewards
+            '''
+            if self.backward_cnt > 0:
+                self.reward += -10 * self.backward_cnt
+
+            if self.brake_cnt > 0:
+                self.reward += -1 * self.brake_cnt
+
+            if self.tyre_out_cnt > 0:
+                self.reward += -5 * self.tyre_out_cnt
+
+            if self.crash_cnt > 0:
+                self.reward = -50 * self.crash_cnt 
 
             # if self.distance == 65535:
             #     print("Bad Distance", target_ip)
             #     self.reward = -200
 
+            if raceState == 3:
+                self.reward = -300
+                self.reset_pcars_2(target_ip)
+                terminate_status = True
+
             print("reward:86:",self.reward,target_ip)
-            if self.reward == -200:
+
+            if self.reward <= -200 and terminate_status is False:
                 print("Restarting")
                 self.brake_cnt = 0
+                self.backward_cnt = 0
+                self.tyre_out_cnt = 0
+                self.crash_cnt = 0
+
                 self.position = []
                 self.distance = 0
                 self.time_step = 0
