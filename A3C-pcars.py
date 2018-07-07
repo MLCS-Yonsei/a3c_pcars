@@ -384,7 +384,7 @@ class Worker:
                                             print("episode ", episode_count, " step count :",episode_step_count)
                                             # If the episode hasn't ended, but the experience buffer is full, then we
                                             # make an update step using that experience rollout.
-                                            if training and len(episode_buffer) == 80 and d is not True:  #batch to 100 30 before 
+                                            if training and len(episode_buffer) == 100 and d is not True:  #batch to 100 30 before 
                                                 # Since we don't know what the true final return is, we "bootstrap" from our current
                                                 # value estimation
                                                 v1 = sess.run(self.local_AC.value,
@@ -473,8 +473,8 @@ def play_training(training=True, load_model=True):
         master_network = AC_Network(s_size, a_size, 'global', None, False)
 	
         worker_ips = [
-                '192.168.0.2',
-                '192.168.0.52',
+                # '192.168.0.2',
+                # '192.168.0.52',
                 '192.168.0.49',
                 # '192.168.0.56'
         ]
@@ -525,8 +525,8 @@ if __name__ == "__main__":
         os.makedirs('./frames')
 
     if len(sys.argv) == 1:  # run from PyCharm
-        play_training(training=True, load_model=True)
+        play_training(training=True, load_model=False)
     elif sys.argv[1] == "1":  # lunch from Terminal and specify 0 or 1 as arguments
-        play_training(training=True, load_model=True)
+        play_training(training=True, load_model=False)
     elif sys.argv[1] == "0":
         play_training(training=False, load_model=True)

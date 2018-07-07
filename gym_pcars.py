@@ -80,46 +80,55 @@ class PcarsEnv:
                 n2 = n[2]
 
                 ns = math.sqrt(n0*n0 + n1*n1 + n2*n2)
-                
-                return np.array([n0/ns,n1/ns,n2/ns])
+                # print(n0,n1,n2,ns)
+                if ns == 0 or ns == 0.0:
+                    return np.array([n0,n1,n2])
+                else:
+                    return np.array([n0/ns,n1/ns,n2/ns])
+
+            def get_distance(p1,p2):
+                r = p1-p2
+                return math.sqrt(r[0]*r[0]+r[1]*r[1]+r[2]*r[2])
 
             print("Distance",self.distance)
             # Reward 
             if self.distance != 0 and self.distance != 65535:
                 if self.prevPosition is not None:
-                    d = la.norm(ref_position-cur_position) / 5
+                    d = get_distance(ref_position,cur_position) / 5
                     v_e = cur_position - self.prevPosition
                     v_r = ref_position - self.ref_prevPosition
 
                     cos_a = np.dot(norm_np(v_e),norm_np(v_r))
 
-                    progress = (sp/200)*(cos_a - d)
+                    progress = (sp)*(cos_a - d)
                     self.reward = progress / 10
                 
-                    if sp < 0.01:
-                       reward += -50
+                    if sp < 0.000001:
+                       self.reward += -50
             
+
             else:
                 if self.prevPosition is not None:
                     v_e = cur_position - self.prevPosition
-                    v_r = ref_position
-                    
+                    v_r = ref_position - self.prevPosition
+
                     cos_a = np.dot(norm_np(v_e),norm_np(v_r))
-                    if cos_a != 0:
-                        print("cosa", cos_a,v_e,v_r)
-                        progress = (sp/200)*cos_a
-                        self.reward = progress / 10
-                    else:
-                        progress = sp
-                        self.reward = progress / 10
+
+                    progress = (sp)*cos_a
+                    self.reward = progress
+
                 else : 
                     progress = sp
                     self.reward = progress / 10
 
-            self.prevPosition = cur_position
+            if np.all(cur_position != self.prevPosition):
+                self.prevPosition = cur_position
+            
+            if np.all(ref_position != self.ref_prevPosition):
+                self.ref_prevPosition = ref_position
+
             self.prevLapDistance = self.distance
             self.time_step += 1
-            self.ref_prevPosition = ref_position
 
             if self.distance > 0:
                 if len(self.position) == 20:
@@ -160,7 +169,7 @@ class PcarsEnv:
             Reset Minus Flags based on current time.
             '''
             cur_time = datetime.now()
-            reset_time = 10
+            reset_time = 1
             if self.backward_time is not None:
                 delta = cur_time - self.backward_time
                 if delta.seconds > reset_time:
@@ -191,10 +200,10 @@ class PcarsEnv:
                 self.reward += -1 * self.brake_cnt
 
             if self.tyre_out_cnt > 0:
-                self.reward += -5 * self.tyre_out_cnt
+                self.reward += -2 * self.tyre_out_cnt
 
             if self.crash_cnt > 0:
-                self.reward = -50 * self.crash_cnt 
+                self.reward += -1 * self.crash_cnt 
 
             # if self.distance == 65535:
             #     print("Bad Distance", target_ip)
@@ -207,7 +216,7 @@ class PcarsEnv:
 
             print("reward:86:",self.reward,target_ip)
 
-            if self.reward <= -200 and terminate_status is False:
+            if self.reward <= -300 and terminate_status is False:
                 print("Restarting")
                 self.brake_cnt = 0
                 self.backward_cnt = 0
