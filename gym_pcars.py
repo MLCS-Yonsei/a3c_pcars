@@ -169,7 +169,7 @@ class PcarsEnv:
             Reset Minus Flags based on current time.
             '''
             cur_time = datetime.now()
-            reset_time = 7
+            reset_time = 3
             if self.backward_time is not None:
                 delta = cur_time - self.backward_time
                 if delta.seconds > reset_time:
