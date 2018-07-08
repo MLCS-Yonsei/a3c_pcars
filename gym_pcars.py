@@ -111,7 +111,7 @@ class PcarsEnv:
                 if self.prevPosition is not None:
                     v_e = cur_position - self.prevPosition
                     ref_position = np.array([self.fp_x[0], self.fp_x[1], self.fp_x[2]])
-                    d = get_distance(ref_position,cur_position) / 5
+                    d = get_distance(ref_position,cur_position) / 20
                     v_r = ref_position - self.prevPosition
 
                     cos_a = np.dot(norm_np(v_e),norm_np(v_r))
