@@ -237,7 +237,7 @@ class Worker:
 
         msg = "Starting worker " + str(self.number)
         print(msg)
-        self.r.hset('pcars_killer'+target_ip,target_ip,"1")
+        # self.r.hset('pcars_killer'+target_ip,target_ip,"3")
         with sess.as_default(), sess.graph.as_default():
             while not coord.should_stop():
                 # try:
