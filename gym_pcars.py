@@ -31,11 +31,13 @@ class PcarsEnv:
         self.distance = 0
 
         self.brake_cnt = 0
+        self.stop_cnt = 0
         self.backward_cnt = 0
         self.tyre_out_cnt = 0
         self.crash_cnt = 0
         
         self.brake_time = None
+        self.stop_time = None
         self.backward_time = None
         self.tyre_out_time = None
         self.crash_time = None
@@ -94,13 +96,14 @@ class PcarsEnv:
             # Reward 
             if self.distance != 0 and self.distance != 65535:
                 if self.prevPosition is not None:
-                    d = get_distance(ref_position,cur_position) / 5
+                    d = abs(get_distance(ref_position,cur_position) / 300) - 2
+                    print("d",d)
                     v_e = cur_position - self.prevPosition
                     v_r = ref_position - self.ref_prevPosition
 
-                    cos_a = np.dot(norm_np(v_e),norm_np(v_r))
-
-                    progress = (sp)*(cos_a - d)
+                    cos_a = -np.dot(norm_np(v_e),norm_np(v_r))
+                    print("cosa", cos_a)
+                    progress = (sp * 100)*(cos_a - d)
                     self.reward = progress / 10
                 
                     if sp < 0.000001:
@@ -111,16 +114,16 @@ class PcarsEnv:
                 if self.prevPosition is not None:
                     v_e = cur_position - self.prevPosition
                     ref_position = np.array([self.fp_x[0], self.fp_x[1], self.fp_x[2]])
-                    d = 18 - get_distance(ref_position,cur_position) / 400
+                    d = (17 - abs(get_distance(ref_position,cur_position) / 400)) * 5
                     v_r = ref_position - self.prevPosition
-                    print(d)
+                    print("d",d)
                     cos_a = np.dot(norm_np(v_e),norm_np(v_r))
-
-                    progress = (sp)*(cos_a+d)
+                    print("cosa", cos_a)
+                    progress = (sp * 100)*(d)
                     self.reward = progress / 10
 
                 else : 
-                    progress = sp
+                    progress = sp * 100
                     self.reward = progress / 10
 
             if np.all(cur_position != self.prevPosition):
@@ -149,6 +152,10 @@ class PcarsEnv:
                     if int(obs["gear"]) == 15:
                         self.brake_cnt += 1
                         self.brake_time = datetime.now()
+
+            if sp < 0.0000001:
+                self.stop_cnt += 1
+                self.stop_time = datetime.now()
                         
             if "tyres" in obs:
                 tireTerrains = obs["tyres"]
@@ -164,7 +171,11 @@ class PcarsEnv:
                             
             if crashState > 1:
                 print("Crash!", target_ip)
-                self.crash_cnt += 1
+                if crashState > 2:
+                    self.crash_cnt += 3
+                else : 
+                    self.crash_cnt += 1
+
                 self.crash_time = datetime.now()
 
             '''
@@ -182,15 +193,24 @@ class PcarsEnv:
                 if delta.seconds > reset_time:
                     self.brake_cnt = 0
 
+            if self.stop_time is not None:
+                delta = cur_time - self.stop_time
+                if delta.seconds > reset_time:
+                    self.stop_cnt = 0
+
             if self.tyre_out_time is not None:
                 delta = cur_time - self.tyre_out_time
-                if delta.seconds > reset_time:
+                if delta.seconds > reset_time and self.stop_cnt == 0:
                     self.tyre_out_cnt = 0
 
             if self.crash_time is not None:
                 delta = cur_time - self.crash_time
-                if delta.seconds > reset_time:
+                if delta.seconds > reset_time and self.tyre_out_cnt == 0:
                     self.crash_cnt = 0
+
+            if self.time_step > 100:
+                if self.distance == 0:
+                    self.reward = -300
 
             '''
             Minus Rewards
@@ -200,6 +220,10 @@ class PcarsEnv:
 
             if self.brake_cnt > 0:
                 self.reward += -1 * self.brake_cnt
+
+            if self.stop_cnt > 0:
+                self.reward += -5 * self.stop_cnt
+                # pass
 
             if self.tyre_out_cnt > 0:
                 self.reward += -2 * self.tyre_out_cnt
@@ -218,9 +242,10 @@ class PcarsEnv:
 
             print("reward:86:",self.reward,target_ip)
 
-            if self.reward <= -300 and terminate_status is False:
+            if self.reward <= -30000 and terminate_status is False:
                 print("Restarting")
                 self.brake_cnt = 0
+                self.stop_cnt = 0
                 self.backward_cnt = 0
                 self.tyre_out_cnt = 0
                 self.crash_cnt = 0

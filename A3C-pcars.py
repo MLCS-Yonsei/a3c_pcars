@@ -281,6 +281,7 @@ class Worker:
                                     message = self.r.hget('pcars_killer'+target_ip,target_ip)
 
                                     if message:
+                                        
                                         reset_status = eval(message)
 
                                         # autoKiller에서 처리중
@@ -306,12 +307,13 @@ class Worker:
 
                                             gameState = [int(s) for s in ob["gameState"].split('>')[0].split() if s.isdigit()][0]
                                             raceState = [int(s) for s in ob["raceState"].split('>')[0].split() if s.isdigit()][0]
+                                            sessionState = [int(s) for s in ob["sessionState"].split('>')[0].split() if s.isdigit()][0]
                                             lap_distance = ob["participants"][0]["currentLapDistance"]
                                             raceStateFlags = ob['raceStateFlags']
                                             # print("Restarting")
                                             # print(gameState, raceState, raceStateFlags)
-                                            # print("R",gameState, raceState, raceStateFlags)
-                                            if gameState != 2 or raceState == 1:
+                                            # print("R",gameState, raceState, sessionState, raceStateFlags)
+                                            if gameState != 2:
                                                 self.r.hdel('pcars_force_acc', target_ip)
                                                 self.restarting = False
                                                 break
@@ -334,16 +336,24 @@ class Worker:
 
                                         gameState = [int(st) for st in ob["gameState"].split('>')[0].split() if st.isdigit()][0]
                                         raceState = [int(st) for st in ob["raceState"].split('>')[0].split() if st.isdigit()][0]
+                                        sessionState = [int(s) for s in ob["sessionState"].split('>')[0].split() if s.isdigit()][0]
                                         lap_distance = ob["participants"][0]["currentLapDistance"]
                                         raceStateFlags = ob['raceStateFlags']
-                                        # print("123",gameState, raceState, raceStateFlags)
+                                        # print("123",gameState, raceState, sessionState, raceStateFlags)
                                         # if int(raceStateFlags) == 44:
                                         #     # 세션 종료
                                         #     self.r.hset('pcars_killer'+target_ip,target_ip,"3")
                                         #     self.restarting = True
                                         #     break
-
-                                        if (raceState == 2 or raceState == 3) and gameState == 2:
+                                        if gameState == 5:
+                                            # Replaying
+                                            pass
+                                        
+                                        elif raceState == 1:
+                                            # Not started
+                                            time.sleep(5)
+                                        
+                                        elif (raceState == 2 or raceState == 3) and gameState == 2:
                                             s = process_frame(s)
                                             # Take an action using probabilities from policy network output.
 
@@ -363,6 +373,7 @@ class Worker:
                                             if not d:
                                                 message = self.r.hget('pcars_data'+target_ip,target_ip)
                                                 if message:
+                                                    self.r.hdel('pcars_data'+target_ip,target_ip)
                                                     ob, s1 = self.parse_message(message)
                                                     s1 = process_frame(s1)
                                                 else:
@@ -475,7 +486,7 @@ def play_training(training=True, load_model=True):
 	
         worker_ips = [
                 # '192.168.0.2',
-                '192.168.0.52',
+                # '192.168.0.52',
                 '192.168.0.49',
                 # '192.168.0.56'
         ]

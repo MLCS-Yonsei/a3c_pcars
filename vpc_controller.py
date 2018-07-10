@@ -96,8 +96,19 @@ class screen_capture_thread(Thread):
 
             self.img = base64.b64encode(buf.getvalue()).decode("utf-8")
 
+            message = self.listener.data.decode("utf-8")
+            message = message.replace('<','\'<')
+            message = message.replace('>','>\'')
+
+            msg = eval(message)
+
+            cur_position_x = msg["participants"][0]["worldPositionX"]
+            cur_position_y = msg["participants"][0]["worldPositionY"]
+            cur_position_z = msg["participants"][0]["worldPositionZ"]
+
+            print(cur_position_x)
             # Set game_data from pcars udp listener after taking screen capturing
-            print(self.listener.data)
+            # print(self.listener.data)
             if self.listener.data is not False and self.listener.data is not None and self.img is not None:
                 result = {'game_data':self.listener.data,'image_data':self.img}
             else:
@@ -114,6 +125,17 @@ class screen_capture_thread(Thread):
 def send_data(listener, sct):
     sct.join()
 
+    message = listener.data.decode("utf-8")
+    message = message.replace('<','\'<')
+    message = message.replace('>','>\'')
+
+    msg = eval(message)
+
+    cur_position_x = msg["participants"][0]["worldPositionX"]
+    cur_position_y = msg["participants"][0]["worldPositionY"]
+    cur_position_z = msg["participants"][0]["worldPositionZ"]
+
+    print(cur_position_x)
     # Set game_data from pcars udp listener after taking screen capturing
     if listener.data is not False and sct.img is not None:
         result = {'game_data':listener.data,'image_data':sct.img}
