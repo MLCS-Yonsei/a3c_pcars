@@ -223,7 +223,12 @@ if __name__ == '__main__':
 
         if message:
             action = eval(message)
-            pc.action_parser(action)
+            if action is False:
+                pc.move_steer(0)
+                pc.brakeOff()
+                pc.accOff()
+            else:
+                pc.action_parser(action)
 
             r.hdel('pcars_action'+local_ip,local_ip)
 
