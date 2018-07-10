@@ -99,11 +99,11 @@ class screen_capture_thread(Thread):
             # message = message.replace('<','\'<')
             # message = message.replace('>','>\'')
 
-            msg = self.listener.data
+            # msg = self.listener.data
 
-            cur_position_x = msg["participants"][0]["worldPositionX"]
-            cur_position_y = msg["participants"][0]["worldPositionY"]
-            cur_position_z = msg["participants"][0]["worldPositionZ"]
+            # cur_position_x = msg["participants"][0]["worldPositionX"]
+            # cur_position_y = msg["participants"][0]["worldPositionY"]
+            # cur_position_z = msg["participants"][0]["worldPositionZ"]
 
             # if cur_position_x == 435 and cur_position_y == 20 and cur_position_z == 7176:
             # Set game_data from pcars udp listener after taking screen capturing
