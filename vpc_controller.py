@@ -96,11 +96,10 @@ class screen_capture_thread(Thread):
 
             self.img = base64.b64encode(buf.getvalue()).decode("utf-8")
 
-            message = self.listener.data.decode("utf-8")
-            message = message.replace('<','\'<')
-            message = message.replace('>','>\'')
+            # message = message.replace('<','\'<')
+            # message = message.replace('>','>\'')
 
-            msg = eval(message)
+            msg = self.listener.data
 
             cur_position_x = msg["participants"][0]["worldPositionX"]
             cur_position_y = msg["participants"][0]["worldPositionY"]
