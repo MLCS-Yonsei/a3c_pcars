@@ -99,19 +99,21 @@ class screen_capture_thread(Thread):
             # message = message.replace('<','\'<')
             # message = message.replace('>','>\'')
 
-            # msg = self.listener.data
+            msg = self.listener.data
+        
+            if "participants" in msg:
+                cur_position_x = msg["participants"][0]["worldPositionX"]
+                cur_position_y = msg["participants"][0]["worldPositionY"]
+                cur_position_z = msg["participants"][0]["worldPositionZ"]
 
-            # cur_position_x = msg["participants"][0]["worldPositionX"]
-            # cur_position_y = msg["participants"][0]["worldPositionY"]
-            # cur_position_z = msg["participants"][0]["worldPositionZ"]
-
-            # if cur_position_x == 435 and cur_position_y == 20 and cur_position_z == 7176:
-            # Set game_data from pcars udp listener after taking screen capturing
-            # print(self.listener.data)
-            if self.listener.data is not False and self.listener.data is not None and self.img is not None:
-                result = {'game_data':self.listener.data,'image_data':self.img}
-            else:
-                result = False
+                if cur_position_x == 435 and cur_position_y == 20 and cur_position_z == 7176:
+                    pass
+                else:
+                    if self.listener.data is not False and self.listener.data is not None and self.img is not None:
+                        
+                        result = {'game_data':self.listener.data,'image_data':self.img}
+                    else:
+                        result = False
         
             if result is not False:
                 r.hset('pcars_data'+local_ip,local_ip,result)
