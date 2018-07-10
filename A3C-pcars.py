@@ -255,6 +255,7 @@ class Worker:
 
                         if raceState == 2 or raceState == 3 and gameState == 2:
                             print("Starting Episode", episode_count, target_ip)
+                            self.r.hset('pcars_action'+target_ip, target_ip, False)
                             sess.run(self.update_local_ops)
                             episode_buffer = []
                             episode_values = []
