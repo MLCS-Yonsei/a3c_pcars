@@ -222,8 +222,9 @@ if __name__ == '__main__':
                 r.hdel('pcars_force_acc',local_ip)
 
         if message:
-            action = eval(message)
+            action = eval(message))
             if action is False:
+                print("Control OFF")
                 pc.move_steer(0)
                 pc.brakeOff()
                 pc.accOff()

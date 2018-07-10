@@ -212,7 +212,7 @@ class PcarsEnv:
                 if delta.seconds > reset_time and self.tyre_out_cnt == 0:
                     self.crash_cnt = 0
 
-            if self.time_step > 100:
+            if self.time_step > 99:
                 if self.distance == 0:
                     self.reward = -300
 
@@ -243,6 +243,7 @@ class PcarsEnv:
                 self.reward = -300
                 self.reset_pcars_2(target_ip)
                 terminate_status = True
+                self.r.hset('pcars_action'+target_ip, target_ip, False)
 
             print("reward:86:",self.reward,target_ip)
 
@@ -258,6 +259,7 @@ class PcarsEnv:
                 self.distance = 0
                 self.time_step = 0
 
+                self.r.hset('pcars_action'+target_ip, target_ip, False)
                 self.reset_pcars(target_ip)
                 terminate_status = True
 
