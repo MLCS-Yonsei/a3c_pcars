@@ -104,18 +104,16 @@ class screen_capture_thread(Thread):
             
             if msg is not None:
                 if "participants" in msg:
-                    cur_position_x = msg["participants"][0]["worldPositionX"]
-                    cur_position_y = msg["participants"][0]["worldPositionY"]
-                    cur_position_z = msg["participants"][0]["worldPositionZ"]
+                    if "worldPositionX" in msg["participants"][0]:
+                        cur_position_x = msg["participants"][0]["worldPositionX"]
+                        cur_position_y = msg["participants"][0]["worldPositionY"]
+                        cur_position_z = msg["participants"][0]["worldPositionZ"]
 
-                    if cur_position_x == 435 and cur_position_y == 20 and cur_position_z == 7176:
-                        pass
-                    else:
-                        if self.listener.data is not False and self.listener.data is not None and self.img is not None:
-                            
-                            result = {'game_data':self.listener.data,'image_data':self.img}
+                        if cur_position_x == 435 and cur_position_y == 20 and cur_position_z == 7176:
+                            pass
                         else:
-                            result = False
+                            if self.listener.data is not False and self.listener.data is not None and self.img is not None:
+                                result = {'game_data':self.listener.data,'image_data':self.img}
                 
         
             if result is not False:
