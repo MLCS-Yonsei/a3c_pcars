@@ -105,15 +105,16 @@ class screen_capture_thread(Thread):
             cur_position_y = msg["participants"][0]["worldPositionY"]
             cur_position_z = msg["participants"][0]["worldPositionZ"]
 
-            print(cur_position_x)
+            # if cur_position_x == 435 and cur_position_y == 20 and cur_position_z == 7176:
             # Set game_data from pcars udp listener after taking screen capturing
             # print(self.listener.data)
             if self.listener.data is not False and self.listener.data is not None and self.img is not None:
                 result = {'game_data':self.listener.data,'image_data':self.img}
             else:
                 result = False
-
-            r.hset('pcars_data'+local_ip,local_ip,result)
+        
+            if result is not False:
+                r.hset('pcars_data'+local_ip,local_ip,result)
             exit(0)
             
         except Exception as ex:
