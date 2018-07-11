@@ -28,6 +28,7 @@ import socket
 
 from autoController import pCarsAutoController
 from autoKiller import pCarsAutoKiller
+from datetime import datetime
 
 ''' Getting Local IP of this Computer '''
 local_ip = [ip for ip in socket.gethostbyname_ex(socket.gethostname())[2] if not ip.startswith("127.")][:1][0]
@@ -113,7 +114,7 @@ class screen_capture_thread(Thread):
                             pass
                         else:
                             if self.listener.data is not False and self.listener.data is not None and self.img is not None:
-                                result = {'game_data':self.listener.data,'image_data':self.img}
+                                result = {'game_data':self.listener.data,'image_data':self.img,'current_time':datetime.now()}
                 
         
             if result is not False:

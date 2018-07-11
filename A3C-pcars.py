@@ -228,6 +228,11 @@ class Worker:
         msg = eval(message)
         ob = msg['game_data']
         s = msg['image_data']
+        ct = msg['current_time']
+
+        now = datetime.now()   
+        delta = ct - now
+        print("MSG before:", delta.seconds)
 
         # Decode image within base64 
         s = base64.b64decode(s)
