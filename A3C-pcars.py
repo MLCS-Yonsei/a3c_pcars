@@ -228,12 +228,12 @@ class Worker:
         msg = eval(message)
         ob = msg['game_data']
         s = msg['image_data']
-        ct = datetime.strptime(msg['current_time'], "%Y-%m-%d %H:%M:%S.%f")
-        print(ct)
-        now = datetime.now()   
-        print(now)
-        delta = ct - now
-        print("MSG before:", delta.seconds)
+        # ct = datetime.strptime(msg['current_time'], "%Y-%m-%d %H:%M:%S.%f")
+        # print(ct)
+        # now = datetime.now()   
+        # print(now)
+        # delta = ct - now
+        # print("MSG before:", delta.seconds)
 
         try:
             1
@@ -513,8 +513,8 @@ def play_training(training=True, load_model=True):
         worker_ips = [
                 # '192.168.0.2',
                 # '192.168.0.52',
-                '192.168.0.49',
-                # '192.168.0.56'
+                '165.132.108.169',
+                '192.168.0.56'
         ]
 
         if training:
@@ -563,8 +563,8 @@ if __name__ == "__main__":
         os.makedirs('./frames')
 
     if len(sys.argv) == 1:  # run from PyCharm
-        play_training(training=True, load_model=False)
+        play_training(training=True, load_model=True)
     elif sys.argv[1] == "1":  # lunch from Terminal and specify 0 or 1 as arguments
-        play_training(training=True, load_model=False)
+        play_training(training=True, load_model=True)
     elif sys.argv[1] == "0":
         play_training(training=False, load_model=True)
