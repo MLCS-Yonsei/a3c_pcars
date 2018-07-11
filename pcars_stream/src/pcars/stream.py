@@ -34,7 +34,7 @@ class PCarsStreamReceiver(Thread):
         while True:
             try:
                 data = sock.recv(1400)
-                print(data)
+                # print(data)
                 packet = Packet.readFrom(BytesIO(data))
                 for listener in self.listeners:
                     listener.handlePacket(packet)
