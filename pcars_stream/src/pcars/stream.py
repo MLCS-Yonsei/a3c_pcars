@@ -5,7 +5,7 @@ import socket
 import struct
 
 
-_MCAST_ANY = "224.0.0.1"
+_MCAST_ANY = "127.0.0.1"
 
 
 class PCarsStreamReceiver(Thread):
