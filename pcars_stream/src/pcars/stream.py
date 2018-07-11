@@ -29,7 +29,7 @@ class PCarsStreamReceiver(Thread):
         # sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
         
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        sock.bind(("", self.port))
+        sock.bind(("127.0.0.1", self.port))
 
         while True:
             try:
