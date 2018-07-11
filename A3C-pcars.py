@@ -279,7 +279,7 @@ class Worker:
                             episode_frames.append(to_gif)
                             
                             rnn_state = self.local_AC.state_init
-                            race_action = np.zeros((1, 33), np.float32)
+                            race_action = np.zeros((1, 34), np.float32)
 
                             while not d:
                                 # 자동 재시작 프로세스 중 머무르는 루프
@@ -501,7 +501,7 @@ def play_training(training=True, load_model=True):
                 # '192.168.0.2',
                 # '192.168.0.52',
                 '192.168.0.49',
-                # '192.168.0.56'
+                '192.168.0.56'
         ]
 
         if training:
@@ -550,8 +550,8 @@ if __name__ == "__main__":
         os.makedirs('./frames')
 
     if len(sys.argv) == 1:  # run from PyCharm
-        play_training(training=True, load_model=False)
+        play_training(training=True, load_model=True)
     elif sys.argv[1] == "1":  # lunch from Terminal and specify 0 or 1 as arguments
-        play_training(training=True, load_model=False)
+        play_training(training=True, load_model=True)
     elif sys.argv[1] == "0":
         play_training(training=False, load_model=True)
