@@ -42,6 +42,7 @@ class PcarsEnv:
         self.backward_time = None
         self.tyre_out_time = None
         self.crash_time = None
+        self.stay_time = None
 
         # Grid Line
         self.grid_line = np.load('grid_line.npz')['results']
@@ -121,8 +122,6 @@ class PcarsEnv:
                 
                     if sp < 0.000001:
                        self.reward += -50
-            
-
             else:
                 if self.prevPosition is not None:
                     v_e = cur_position - self.prevPosition
@@ -225,9 +224,12 @@ class PcarsEnv:
 
             if self.time_step > 99:
                 if self.distance == 0:
-                    self.stay_cnt += 1
+                    if self.stay_time is None:
+                        self.stay_time = datetime.now()
+                    self.stay_cnt += (cur_time - self.stay_time).seconds * 4
                 else:
                     self.stay_cnt = 0
+                    self.stay_time = None
                 
 
             '''
