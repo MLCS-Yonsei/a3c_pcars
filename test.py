@@ -1,5 +1,7 @@
 import win32gui
 import win32ui 
+import win32con
+
 windowname = "Project CARS™"
 bmpfilenamename = "123.bmp"
 hwnd = win32gui.FindWindow(None, windowname)
