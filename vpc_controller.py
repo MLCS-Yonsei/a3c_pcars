@@ -114,7 +114,7 @@ class screen_capture_thread(Thread):
                             pass
                         else:
                             if self.listener.data is not False and self.listener.data is not None and self.img is not None:
-                                result = {'game_data':self.listener.data,'image_data':self.img,'current_time':datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
+                                result = {'game_data':self.listener.data,'image_data':self.img,'current_time':datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")}
                 
         
             if result is not False:
