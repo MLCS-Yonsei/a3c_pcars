@@ -109,7 +109,7 @@ class screen_capture_thread(Thread):
                         cur_position_x = msg["participants"][0]["worldPositionX"]
                         cur_position_y = msg["participants"][0]["worldPositionY"]
                         cur_position_z = msg["participants"][0]["worldPositionZ"]
-
+                        print(cur_position_x)
                         if cur_position_x == 435 and cur_position_y == 20 and cur_position_z == 7176:
                             pass
                         else:

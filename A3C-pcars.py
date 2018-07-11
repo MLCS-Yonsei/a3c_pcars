@@ -228,9 +228,10 @@ class Worker:
         msg = eval(message)
         ob = msg['game_data']
         s = msg['image_data']
-        ct = msg['current_time']
-
+        ct = datetime.strptime(msg['current_time'], "%Y-%m-%d %H:%M:%S.%f")
+        print(ct)
         now = datetime.now()   
+        print(now)
         delta = ct - now
         print("MSG before:", delta.seconds)
 
