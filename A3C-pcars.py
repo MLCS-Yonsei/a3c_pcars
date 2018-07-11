@@ -364,12 +364,12 @@ class Worker:
                                         lap_distance = ob["participants"][0]["currentLapDistance"]
                                         raceStateFlags = ob['raceStateFlags']
                                         # print("123",gameState, raceState, sessionState, raceStateFlags)
-                                        # if int(raceStateFlags) == 44:
-                                        #     # 세션 종료
-                                        #     self.r.hset('pcars_killer'+target_ip,target_ip,"3")
-                                        #     self.restarting = True
-                                        #     break
-                                        if gameState == 5:
+                                        if int(raceStateFlags) == 44:
+                                            # 세션 종료
+                                            self.r.hset('pcars_killer'+target_ip,target_ip,"3")
+                                            self.restarting = True
+                                            break
+                                        elif gameState == 5:
                                             # Replaying
                                             pass
                                         

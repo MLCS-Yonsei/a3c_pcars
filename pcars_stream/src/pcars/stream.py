@@ -5,8 +5,8 @@ import socket
 import struct
 
 
-_MCAST_ANY = "192.168.0.49"
-
+_MCAST_ANY = "localhost"
+print("_MCAST_ANY", _MCAST_ANY)
 
 class PCarsStreamReceiver(Thread):
 
