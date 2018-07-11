@@ -228,17 +228,23 @@ class Worker:
         msg = eval(message)
         ob = msg['game_data']
         s = msg['image_data']
-        ct = msg['current_time']
 
-        now = datetime.now()   
-        delta = ct - now
-        print("MSG before:", delta.seconds)
+        try:
+            ct = msg['current_time']
+
+            now = datetime.now()   
+            delta = ct - now
+            print("MSG before:", delta.seconds)
+
+            
+        except:
+            print(msg)
 
         # Decode image within base64 
         s = base64.b64decode(s)
         s = Image.open(BytesIO(s))
         s = np.array(s)
-
+        
         return ob, s
 
     def work(self, max_episode_length, gamma, sess, coord, saver, training, target_ip):
