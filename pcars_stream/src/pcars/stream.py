@@ -20,7 +20,7 @@ class PCarsStreamReceiver(Thread):
         self.listeners.append(listener)
 
     def run(self):
-        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        sock = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
 
         # Bind to the server address
         # sock.bind(("", self.port))
