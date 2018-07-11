@@ -35,6 +35,7 @@ class PcarsEnv:
         self.backward_cnt = 0
         self.tyre_out_cnt = 0
         self.crash_cnt = 0
+        self.stay_cnt = 0
         
         self.brake_time = None
         self.stop_time = None
@@ -224,11 +225,17 @@ class PcarsEnv:
 
             if self.time_step > 99:
                 if self.distance == 0:
-                    self.reward = -300
+                    self.stay_cnt += 1
+                else:
+                    self.stay_cnt = 0
+                
 
             '''
             Minus Rewards
             '''
+            if self.stay_cnt > 0:
+                self.reward += -3 * self.stay_cnt
+
             if self.backward_cnt > 0:
                 self.reward += -10 * self.backward_cnt
 
@@ -264,6 +271,7 @@ class PcarsEnv:
                 self.backward_cnt = 0
                 self.tyre_out_cnt = 0
                 self.crash_cnt = 0
+                self.stay_cnt = 0
 
                 self.position = []
                 self.distance = 0
@@ -311,9 +319,19 @@ class PcarsEnv:
         torcs_action.update({'20': u[20]})
         torcs_action.update({'21': u[21]})
         torcs_action.update({'22': u[22]})
+        torcs_action.update({'23': u[23]})
+        torcs_action.update({'24': u[24]})
+        torcs_action.update({'25': u[25]})
+        torcs_action.update({'26': u[26]})
+        torcs_action.update({'27': u[27]})
+        torcs_action.update({'28': u[28]})
+        torcs_action.update({'29': u[29]})
+        torcs_action.update({'30': u[30]})
+        torcs_action.update({'31': u[31]})
+        torcs_action.update({'32': u[32]})
+
         # else:
         #     for i in range(23):
         #         torcs_action.update({str(i): u[8]})
-
 
         return torcs_action

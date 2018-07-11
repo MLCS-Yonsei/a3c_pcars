@@ -80,6 +80,9 @@ class AC_Network:
             self.conv2 = slim.conv2d(activation_fn=tf.nn.elu,
                                      inputs=self.conv1, num_outputs=32,
                                      kernel_size=[4, 8], stride=[1, 6], padding='VALID')
+            self.conv2 = slim.conv2d(activation_fn=tf.nn.elu,
+                                     inputs=self.conv1, num_outputs=32,
+                                     kernel_size=[2, 4], stride=[1, 6], padding='VALID')
             hidden = slim.fully_connected(slim.flatten(self.conv2), 256, activation_fn=tf.nn.elu)
             self.racing_action = tf.placeholder(shape=[None, a_size+1], dtype=tf.float32, name="Racing_action")
             hidden = tf.concat([hidden, self.racing_action], 1)
@@ -276,7 +279,7 @@ class Worker:
                             episode_frames.append(to_gif)
                             
                             rnn_state = self.local_AC.state_init
-                            race_action = np.zeros((1, 24), np.float32)
+                            race_action = np.zeros((1, 33), np.float32)
 
                             while not d:
                                 # 자동 재시작 프로세스 중 머무르는 루프
@@ -323,6 +326,7 @@ class Worker:
                                             if gameState != 2:
                                                 self.r.hdel('pcars_force_acc', target_ip)
                                                 self.restarting = False
+                                                self.r.hset('pcars_action'+target_ip, target_ip, False)
                                                 break
                                     
                                     t2 = datetime.now()
@@ -496,8 +500,8 @@ def play_training(training=True, load_model=True):
         worker_ips = [
                 # '192.168.0.2',
                 # '192.168.0.52',
-                # '192.168.0.49',
-                '192.168.0.56'
+                '192.168.0.49',
+                # '192.168.0.56'
         ]
 
         if training:
@@ -533,7 +537,7 @@ if __name__ == "__main__":
     max_episode_length = 300
     gamma = .99  # discount rate for advantage estimation and reward discounting
     s_size = 30000#340464  # Observations are greyscale frames of 84 * 84 * 1
-    a_size = 23  # Left, Right, Forward, Brake
+    a_size = 33  # Left, Right, Forward, Brake
     model_path = './model'
 
     tf.reset_default_graph()
@@ -546,8 +550,8 @@ if __name__ == "__main__":
         os.makedirs('./frames')
 
     if len(sys.argv) == 1:  # run from PyCharm
-        play_training(training=True, load_model=True)
+        play_training(training=True, load_model=False)
     elif sys.argv[1] == "1":  # lunch from Terminal and specify 0 or 1 as arguments
-        play_training(training=True, load_model=True)
+        play_training(training=True, load_model=False)
     elif sys.argv[1] == "0":
         play_training(training=False, load_model=True)

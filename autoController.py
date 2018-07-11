@@ -76,70 +76,110 @@ class pCarsAutoController(mp.Process):
             self.accOff()
         elif this_action['6'] == True:
             self.brakeOff()
-            self.move_steer(-0.25)
+            self.move_steer(-0.35)
             self.accOn()
         elif this_action['7'] == True:
             self.brakeOff()
-            self.move_steer(-0.25)
+            self.move_steer(-0.35)
             self.accOff()
         elif this_action['8'] == True:
             self.brakeOff()
-            self.move_steer(0)
+            self.move_steer(-0.2)
             self.accOn()
         elif this_action['9'] == True:
             self.brakeOff()
-            self.move_steer(0)
+            self.move_steer(-0.2)
             self.accOff()
         elif this_action['10'] == True:
             self.brakeOff()
-            self.move_steer(0.25)
+            self.move_steer(-0.1)
             self.accOn()
         elif this_action['11'] == True:
             self.brakeOff()
-            self.move_steer(0.25)
+            self.move_steer(-0.1)
             self.accOff()
         elif this_action['12'] == True:
             self.brakeOff()
-            self.move_steer(0.5)
+            self.move_steer(0)
             self.accOn()
         elif this_action['13'] == True:
             self.brakeOff()
-            self.move_steer(0.5)
+            self.move_steer(0)
             self.accOff()
         elif this_action['14'] == True:
             self.brakeOff()
-            self.move_steer(0.75)
+            self.move_steer(0.1)
             self.accOn()
         elif this_action['15'] == True:
             self.brakeOff()
-            self.move_steer(0.75)
+            self.move_steer(0.1)
             self.accOff()
         elif this_action['16'] == True:
             self.brakeOff()
-            self.move_steer(1)
+            self.move_steer(0.2)
             self.accOn()
         elif this_action['17'] == True:
+            self.brakeOff()
+            self.move_steer(0.2)
+            self.accOff()
+        elif this_action['18'] == True:
+            self.brakeOff()
+            self.move_steer(0.35)
+            self.accOn()
+        elif this_action['19'] == True:
+            self.brakeOff()
+            self.move_steer(0.35)
+            self.accOff()
+        elif this_action['20'] == True:
+            self.brakeOff()
+            self.move_steer(0.5)
+            self.accOn()
+        elif this_action['21'] == True:
+            self.brakeOff()
+            self.move_steer(0.5)
+            self.accOff()
+        elif this_action['22'] == True:
+            self.brakeOff()
+            self.move_steer(0.75)
+            self.accOn()
+        elif this_action['23'] == True:
+            self.brakeOff()
+            self.move_steer(0.75)
+            self.accOff()
+        elif this_action['24'] == True:
+            self.brakeOff()
+            self.move_steer(1)
+            self.accOn()
+        elif this_action['25'] == True:
             self.brakeOff()
             self.move_steer(1)
             self.accOff()
         
-        elif this_action['18'] == True:
+        elif this_action['26'] == True:
             self.accOff()
             self.brakeOn()
             self.move_steer(-1)
-        elif this_action['19'] == True:
+        elif this_action['27'] == True:
             self.accOff()
             self.brakeOn()
             self.move_steer(-0.5)
-        elif this_action['20'] == True:
+        elif this_action['28'] == True:
+            self.accOff()
+            self.brakeOn()
+            self.move_steer(-0.15)
+        elif this_action['29'] == True:
             self.accOff()
             self.brakeOn()
             self.move_steer(0)
-        elif this_action['21'] == True:
+        elif this_action['30'] == True:
+            self.accOff()
+            self.brakeOn()
+            self.move_steer(0.15)
+        elif this_action['31'] == True:
             self.accOff()
             self.brakeOn()
             self.move_steer(0.5)
-        elif this_action['22'] == True:
+        elif this_action['32'] == True:
             self.accOff()
             self.brakeOn()
             self.move_steer(1)
