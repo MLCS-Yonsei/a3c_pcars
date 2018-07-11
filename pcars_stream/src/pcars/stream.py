@@ -30,7 +30,6 @@ class PCarsStreamReceiver(Thread):
 
         while True:
             try:
-                print(sock.getsockname()[0])
                 data = sock.recv(1400)
                 packet = Packet.readFrom(BytesIO(data))
                 for listener in self.listeners:
