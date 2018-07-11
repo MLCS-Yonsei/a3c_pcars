@@ -81,6 +81,8 @@ class AC_Network:
                                      inputs=self.conv1, num_outputs=32,
                                      kernel_size=[4, 8], stride=[1, 6], padding='VALID')
             hidden = slim.fully_connected(slim.flatten(self.conv2), 256, activation_fn=tf.nn.elu)
+            self.racing_action = tf.placeholder(shape=[None, a_size+1], dtype=tf.float32, name="Racing_action")
+            hidden = tf.concat([hidden, self.racing_action], 1)
 
             # Recurrent network for temporal dependencies
             lstm_cell = tf.contrib.rnn.BasicLSTMCell(256, state_is_tuple=True)
@@ -173,6 +175,7 @@ class Worker:
         rewards = rollout[:, 2]
         next_observations = rollout[:, 3]
         values = rollout[:, 5]
+        race_action = np.vstack(rollout[:,6])
 
         # We take the rewards and values from rollout, and use them to generate the advantage and discounted returns.
         # The advantage function uses "Generalized Advantage Estimation"
@@ -191,7 +194,8 @@ class Worker:
                          self.local_AC.actions: actions,
                          self.local_AC.advantages: advantages,
                          self.local_AC.state_in[0]: rnn_state[0],
-                         self.local_AC.state_in[1]: rnn_state[1]}
+                         self.local_AC.state_in[1]: rnn_state[1],
+                         self.local_AC.racing_action: race_action}
         else:
             feed_dict = {self.local_AC.target_v: discounted_rewards,
                          self.local_AC.inputs: np.vstack(observations),
@@ -200,7 +204,8 @@ class Worker:
                          # self.local_AC.brake: actions[:, 2],
                          self.local_AC.advantages: advantages,
                          self.local_AC.state_in[0]: rnn_state[0],
-                         self.local_AC.state_in[1]: rnn_state[1]}
+                         self.local_AC.state_in[1]: rnn_state[1],
+                         self.local_AC.racing_action: race_action}
         v_l, p_l, e_l, loss_f, g_n, v_n, _ = sess.run([self.local_AC.value_loss,
                                                        self.local_AC.policy_loss,
                                                        self.local_AC.entropy_loss,
@@ -271,6 +276,7 @@ class Worker:
                             episode_frames.append(to_gif)
                             
                             rnn_state = self.local_AC.state_init
+                            race_action = np.zeros((1, 24), np.float32)
 
                             while not d:
                                 # 자동 재시작 프로세스 중 머무르는 루프
@@ -362,11 +368,12 @@ class Worker:
                                                 [self.local_AC.discrete_policy, self.local_AC.value, self.local_AC.state_out],
                                                 feed_dict={self.local_AC.inputs: [s],
                                                         self.local_AC.state_in[0]: rnn_state[0],
-                                                        self.local_AC.state_in[1]: rnn_state[1]})
+                                                        self.local_AC.state_in[1]: rnn_state[1],
+                                                        self.local_AC.racing_action: race_action})
                                             a_t = np.random.choice(a_dist[0], p=a_dist[0])  # a random sample is generated given probabs
                                             a_t = np.argmax(a_dist == a_t)
                                             
-                                            _, reward, info, d = self.env.step_discrete(self.actions[a_t], ob, target_ip)
+                                            _, reward, info, d, race_action = self.env.step_discrete(self.actions[a_t], a_t, ob, target_ip)
 
                                             # r = reward/1000
                                             r = reward
@@ -387,7 +394,7 @@ class Worker:
                                             else:
                                                 s1 = s
 
-                                            episode_buffer.append([s, a_t, r, s1, d, v[0, 0]])
+                                            episode_buffer.append([s, a_t, r, s1, d, v[0, 0], race_action])
                                             episode_values.append(v[0, 0])
 
                                             episode_reward += r
@@ -403,7 +410,8 @@ class Worker:
                                                 v1 = sess.run(self.local_AC.value,
                                                             feed_dict={self.local_AC.inputs: [s],
                                                                         self.local_AC.state_in[0]: rnn_state[0],
-                                                                        self.local_AC.state_in[1]: rnn_state[1]})[0, 0]
+                                                                        self.local_AC.state_in[1]: rnn_state[1],
+                                                                        self.local_AC.racing_action: race_action})[0, 0]
                                                 v_l, p_l, e_l, loss_f, g_n, v_n = self.train(episode_buffer, sess, gamma, v1)
                                                 episode_buffer = []
                                                 sess.run(self.update_local_ops)
@@ -488,8 +496,8 @@ def play_training(training=True, load_model=True):
         worker_ips = [
                 # '192.168.0.2',
                 # '192.168.0.52',
-                '192.168.0.49',
-                # '192.168.0.56'
+                # '192.168.0.49',
+                '192.168.0.56'
         ]
 
         if training:

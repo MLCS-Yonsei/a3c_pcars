@@ -51,7 +51,12 @@ class PcarsEnv:
 
         self.reward = 0
    
-    def step_discrete(self, u, obs, target_ip):
+    def one_hot(self, label, n_classes):
+        a = np.zeros(n_classes)
+        a[label] = 1
+        return a
+
+    def step_discrete(self, u, a_t, obs, target_ip):
         if 'raceState' in obs:
 
             j=0
@@ -77,6 +82,11 @@ class PcarsEnv:
             ref_position_y = np.interp(cur_position_y, self.xp, self.fp_y)
             ref_position_z = np.interp(cur_position_z, self.xp, self.fp_z)
             ref_position = np.array([ref_position_x,ref_position_y,ref_position_z])
+
+            race_action = self.one_hot(a_t, 23)
+            race_action = np.append(race_action, sp)
+            race_action.astype(np.float32)
+            race_action = race_action[np.newaxis,:]
 
             def norm_np(n):
                 n0 = n[0]
@@ -263,7 +273,7 @@ class PcarsEnv:
                 self.reset_pcars(target_ip)
                 terminate_status = True
 
-            return obs, self.reward, {}, terminate_status
+            return obs, self.reward, {}, terminate_status, race_action
 
    
     def reset_pcars(self,target_ip):
