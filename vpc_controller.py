@@ -102,7 +102,7 @@ class screen_capture_thread(Thread):
 
             result = False
             msg = self.listener.data
-            
+            print(msg)
             if msg is not None:
                 if "participants" in msg:
                     if "worldPositionX" in msg["participants"][0]:
