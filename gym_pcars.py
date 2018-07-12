@@ -241,23 +241,23 @@ class PcarsEnv:
             descale_factor = 5
             print("reward:242:",self.reward,target_ip)
             if self.stay_cnt > 0:
-                self.reward += -3 * self.stay_cnt / descale_factor
+                self.reward += (-3 * self.stay_cnt / descale_factor)
 
             if self.backward_cnt > 0:
-                self.reward += -10 * self.backward_cnt / descale_factor
+                self.reward += ( -10 * self.backward_cnt / descale_factor)
 
             if self.brake_cnt > 0:
-                self.reward += -1 * self.brake_cnt / descale_factor
+                self.reward += (-1 * self.brake_cnt / descale_factor)
 
             if self.stop_cnt > 0:
-                self.reward += -5 * self.stop_cnt / descale_factor
+                self.reward += (-5 * self.stop_cnt / descale_factor)
                 # pass
 
             if self.tyre_out_cnt > 0:
-                self.reward += -2 * self.tyre_out_cnt / descale_factor
+                self.reward += (-2 * self.tyre_out_cnt / descale_factor)
 
             if self.crash_cnt > 0:
-                self.reward += -5 * self.crash_cnt  / descale_factor
+                self.reward += (-5 * self.crash_cnt  / descale_factor)
 
             # if self.distance == 65535:
             #     print("Bad Distance", target_ip)
