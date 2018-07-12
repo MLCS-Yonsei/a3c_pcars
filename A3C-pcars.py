@@ -80,10 +80,10 @@ class AC_Network:
             self.conv2 = slim.conv2d(activation_fn=tf.nn.elu,
                                      inputs=self.conv1, num_outputs=32,
                                      kernel_size=[4, 8], stride=[1, 6], padding='VALID')
-            self.conv2 = slim.conv2d(activation_fn=tf.nn.elu,
+            self.conv3 = slim.conv2d(activation_fn=tf.nn.elu,
                                      inputs=self.conv1, num_outputs=32,
                                      kernel_size=[2, 4], stride=[1, 6], padding='VALID')
-            hidden = slim.fully_connected(slim.flatten(self.conv2), 256, activation_fn=tf.nn.elu)
+            hidden = slim.fully_connected(slim.flatten(self.conv3), 256, activation_fn=tf.nn.elu)
             self.racing_action = tf.placeholder(shape=[None, a_size+1], dtype=tf.float32, name="Racing_action")
             hidden = tf.concat([hidden, self.racing_action], 1)
 
@@ -228,19 +228,6 @@ class Worker:
         msg = eval(message)
         ob = msg['game_data']
         s = msg['image_data']
-        # ct = datetime.strptime(msg['current_time'], "%Y-%m-%d %H:%M:%S.%f")
-        # print(ct)
-        # now = datetime.now()   
-        # print(now)
-        # delta = ct - now
-        # print("MSG before:", delta.seconds)
-
-        try:
-            1
-
-            
-        except:
-            print(msg)
 
         # Decode image within base64 
         s = base64.b64decode(s)
@@ -563,8 +550,8 @@ if __name__ == "__main__":
         os.makedirs('./frames')
 
     if len(sys.argv) == 1:  # run from PyCharm
-        play_training(training=True, load_model=True)
+        play_training(training=True, load_model=False)
     elif sys.argv[1] == "1":  # lunch from Terminal and specify 0 or 1 as arguments
-        play_training(training=True, load_model=True)
+        play_training(training=True, load_model=False)
     elif sys.argv[1] == "0":
         play_training(training=False, load_model=True)

@@ -86,6 +86,7 @@ class screen_capture_thread(Thread):
                 monitor = {'top': t, 'left': l, 'width': w, 'height': h}
 
                 # Grab the data
+                msg = self.listener.data
                 sct_img = sct.grab(monitor)
 
             img = Image.frombytes('RGB', sct_img.size, sct_img.bgra, 'raw', 'BGRX')
@@ -101,7 +102,7 @@ class screen_capture_thread(Thread):
             # message = message.replace('>','>\'')
 
             result = False
-            msg = self.listener.data
+            
             # print(msg)
             if msg is not None:
                 if "participants" in msg:
@@ -112,6 +113,7 @@ class screen_capture_thread(Thread):
                         
                         if self.listener.data is not False and self.listener.data is not None and self.img is not None:
                             result = {'game_data':self.listener.data,'image_data':self.img,'current_time':datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")}
+                            print(result['current_time'])
                 
         
             if result is not False:
@@ -177,10 +179,15 @@ if __name__ == '__main__':
         일단은 귀찮아서 0.08초 단위로 쓰레드를 만들어서 함.
         코드 수정필요
         '''
-        interval = 0.08
+        # interval = 0.08
 
-        sct = start_capture(listener)
-        time.sleep(interval)
+        # sct = start_capture(listener)
+        # time.sleep(interval)
+        sct = screen_capture_thread(listener)
+        sct.daemon = True 
+        sct.start()
+        sct.join()
+        # print(123)
 
         
 

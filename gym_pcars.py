@@ -46,10 +46,10 @@ class PcarsEnv:
 
         # Grid Line
         self.grid_line = np.load('grid_line.npz')['results']
-        self.xp = self.grid_line[:,0]
-        self.fp_x = self.grid_line[:,1]
-        self.fp_y = self.grid_line[:,2]
-        self.fp_z = self.grid_line[:,3]
+        # self.xp = self.grid_line[0]
+        # self.fp_x = self.grid_line[:,0]
+        # self.fp_y = self.grid_line[:,1]
+        # self.fp_z = self.grid_line[:,2]
 
         self.reward = 0
    
@@ -80,11 +80,15 @@ class PcarsEnv:
 
             # print(cur_position_x, cur_position_y, cur_position_z)
             cur_position = np.array([cur_position_x,cur_position_y,cur_position_z])
-            ref_position_x = np.interp(cur_position_x, self.xp, self.fp_x)
-            ref_position_y = np.interp(cur_position_y, self.xp, self.fp_y)
-            ref_position_z = np.interp(cur_position_z, self.xp, self.fp_z)
-            ref_position = np.array([ref_position_x,ref_position_y,ref_position_z])
-
+            # ref_position_x = np.interp(cur_position_x, self.xp, self.fp_x)
+            # ref_position_y = np.interp(cur_position_y, self.xp, self.fp_y)
+            # ref_position_z = np.interp(cur_position_z, self.xp, self.fp_z)
+            # ref_position = np.array([ref_position_x,ref_position_y,ref_position_z])
+            if self.distance !== 65535:
+                ref_position = self.grid_line[self.distance]
+            else:
+                ref_position = self.grid_line[1]
+        
             race_action = self.one_hot(a_t, 33)
             race_action = np.append(race_action, sp)
             race_action.astype(np.float32)
@@ -110,7 +114,7 @@ class PcarsEnv:
             # Reward 
             if self.distance != 0 and self.distance != 65535:
                 if self.prevPosition is not None:
-                    d = abs(get_distance(ref_position,cur_position) / 300) - 2
+                    d = abs(get_distance(ref_position,cur_position)) / 4
                     print("d",d)
                     v_e = cur_position - self.prevPosition
                     v_r = ref_position - self.ref_prevPosition
@@ -125,11 +129,10 @@ class PcarsEnv:
             else:
                 if self.prevPosition is not None:
                     v_e = cur_position - self.prevPosition
-                    ref_position = np.array([self.fp_x[0], self.fp_x[1], self.fp_x[2]])
-                    d = (17 - abs(get_distance(ref_position,cur_position) / 400)) * 5
-
-                    ref_position = np.array([414, 21,7169])
+                    ref_position = self.grid_line[1]
+                    d = abs(get_distance(ref_position,cur_position)) / 6
                     v_r = ref_position - self.prevPosition
+
                     print("d",d)
                     cos_a = np.dot(norm_np(v_e),norm_np(v_r))
                     print("cosa", cos_a)
@@ -266,7 +269,7 @@ class PcarsEnv:
 
             print("reward:86:",self.reward,target_ip)
 
-            if self.reward <= -300 and terminate_status is False:
+            if self.reward <= -30000 and terminate_status is False:
                 print("Restarting")
                 self.brake_cnt = 0
                 self.stop_cnt = 0

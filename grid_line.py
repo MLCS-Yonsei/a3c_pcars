@@ -5,7 +5,6 @@ import numpy as np
 df = pd.read_csv('output.csv',sep=',',header=None)
 data = df.values #(4537,76)
 
-
 lapDistance = []
 for k in range(19):
     for i in range(len(data)):
@@ -59,6 +58,6 @@ for k in range(19):
 results = np.transpose(results, (1,0,2))
 
 results = np.nanmean(results,axis=1)
-
+# print(results[192])
 np.savez_compressed('grid_line',results=results)
 
