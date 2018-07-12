@@ -230,6 +230,7 @@ class PcarsEnv:
                     if self.stay_time is None:
                         self.stay_time = datetime.now()
                     self.stay_cnt += (cur_time - self.stay_time).seconds * 2
+                    print("123",self.stay_cnt)
                 else:
                     self.stay_cnt = 0
                     self.stay_time = None
