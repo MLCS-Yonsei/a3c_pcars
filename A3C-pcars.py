@@ -362,7 +362,8 @@ class Worker:
                                         
                                         elif raceState == 1:
                                             # Not started
-                                            time.sleep(5)
+                                            # time.sleep(5)
+                                            pass
                                         
                                         elif (raceState == 2 or raceState == 3) and gameState == 2:
                                             s = process_frame(s)
