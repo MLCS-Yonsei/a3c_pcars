@@ -238,26 +238,24 @@ class PcarsEnv:
             '''
             Minus Rewards
             '''
-            descale_factor = 5
-            print("reward:242:",self.reward,target_ip)
             if self.stay_cnt > 0:
-                self.reward += (-3 * self.stay_cnt / descale_factor)
+                self.reward += -3 * self.stay_cnt 
 
             if self.backward_cnt > 0:
-                self.reward += ( -10 * self.backward_cnt / descale_factor)
+                self.reward += -10 * self.backward_cnt
 
             if self.brake_cnt > 0:
-                self.reward += (-1 * self.brake_cnt / descale_factor)
+                self.reward += -1 * self.brake_cnt
 
             if self.stop_cnt > 0:
-                self.reward += (-5 * self.stop_cnt / descale_factor)
+                self.reward += -5 * self.stop_cnt
                 # pass
 
             if self.tyre_out_cnt > 0:
-                self.reward += (-2 * self.tyre_out_cnt / descale_factor)
+                self.reward += -2 * self.tyre_out_cnt
 
             if self.crash_cnt > 0:
-                self.reward += (-5 * self.crash_cnt  / descale_factor)
+                self.reward += -1 * self.crash_cnt 
 
             # if self.distance == 65535:
             #     print("Bad Distance", target_ip)
@@ -269,7 +267,7 @@ class PcarsEnv:
                 terminate_status = True
                 self.r.hset('pcars_action'+target_ip, target_ip, False)
 
-            print("reward:272:",self.reward,target_ip)
+            print("reward:86:",self.reward,target_ip)
 
             if self.reward <= -300 and terminate_status is False:
                 print("Restarting")
