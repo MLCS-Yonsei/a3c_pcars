@@ -239,6 +239,7 @@ class PcarsEnv:
             Minus Rewards
             '''
             descale_factor = 5
+            print("reward:242:",self.reward,target_ip)
             if self.stay_cnt > 0:
                 self.reward += -3 * self.stay_cnt / descale_factor
 
@@ -268,7 +269,7 @@ class PcarsEnv:
                 terminate_status = True
                 self.r.hset('pcars_action'+target_ip, target_ip, False)
 
-            print("reward:86:",self.reward,target_ip)
+            print("reward:272:",self.reward,target_ip)
 
             if self.reward <= -300 and terminate_status is False:
                 print("Restarting")
