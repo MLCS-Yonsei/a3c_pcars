@@ -229,8 +229,7 @@ class PcarsEnv:
                 if self.distance == 0:
                     if self.stay_time is None:
                         self.stay_time = datetime.now()
-                    self.stay_cnt += (cur_time - self.stay_time).seconds * 2
-                    print("123",self.stay_cnt)
+                    self.stay_cnt += (self.stay_time - ).seconds * 2
                 else:
                     self.stay_cnt = 0
                     self.stay_time = None
@@ -239,24 +238,25 @@ class PcarsEnv:
             '''
             Minus Rewards
             '''
+            d_factor = 5
             if self.stay_cnt > 0:
-                self.reward += -3 * self.stay_cnt 
+                self.reward += -3 * self.stay_cnt / d_factor
 
             if self.backward_cnt > 0:
-                self.reward += -10 * self.backward_cnt
+                self.reward += -10 * self.backward_cnt / d_factor
 
             if self.brake_cnt > 0:
-                self.reward += -1 * self.brake_cnt
+                self.reward += -1 * self.brake_cnt / d_factor
 
             if self.stop_cnt > 0:
-                self.reward += -5 * self.stop_cnt
+                self.reward += -5 * self.stop_cnt / d_factor
                 # pass
 
             if self.tyre_out_cnt > 0:
-                self.reward += -2 * self.tyre_out_cnt
+                self.reward += -2 * self.tyre_out_cnt / d_factor
 
             if self.crash_cnt > 0:
-                self.reward += -1 * self.crash_cnt 
+                self.reward += -1 * self.crash_cnt / d_factor
 
             # if self.distance == 65535:
             #     print("Bad Distance", target_ip)
