@@ -84,7 +84,7 @@ class PcarsEnv:
             # ref_position_y = np.interp(cur_position_y, self.xp, self.fp_y)
             # ref_position_z = np.interp(cur_position_z, self.xp, self.fp_z)
             # ref_position = np.array([ref_position_x,ref_position_y,ref_position_z])
-            if self.distance !== 65535:
+            if self.distance != 65535:
                 ref_position = self.grid_line[self.distance]
             else:
                 ref_position = self.grid_line[1]
@@ -269,7 +269,7 @@ class PcarsEnv:
 
             print("reward:86:",self.reward,target_ip)
 
-            if self.reward <= -30000 and terminate_status is False:
+            if self.reward <= -300 and terminate_status is False:
                 print("Restarting")
                 self.brake_cnt = 0
                 self.stop_cnt = 0
