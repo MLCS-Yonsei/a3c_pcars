@@ -229,7 +229,7 @@ class PcarsEnv:
                 if self.distance == 0:
                     if self.stay_time is None:
                         self.stay_time = datetime.now()
-                    self.stay_cnt += (cur_time - self.stay_time).seconds * 4
+                    self.stay_cnt += (cur_time - self.stay_time).seconds * 2
                 else:
                     self.stay_cnt = 0
                     self.stay_time = None
@@ -269,7 +269,7 @@ class PcarsEnv:
 
             print("reward:86:",self.reward,target_ip)
 
-            if self.reward <= -300 and terminate_status is False:
+            if self.reward <= -500 and terminate_status is False:
                 print("Restarting")
                 self.brake_cnt = 0
                 self.stop_cnt = 0
