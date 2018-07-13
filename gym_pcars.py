@@ -274,7 +274,7 @@ class PcarsEnv:
 
             print("reward:86:",self.reward,target_ip)
 
-            if self.reward <= -2000 and terminate_status is False:
+            if self.reward <= -700 and terminate_status is False:
                 print("Restarting")
                 self.brake_cnt = 0
                 self.stop_cnt = 0
