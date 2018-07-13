@@ -229,7 +229,11 @@ class PcarsEnv:
                 if self.distance == 0:
                     if self.stay_time is None:
                         self.stay_time = datetime.now()
-                    self.stay_cnt += (self.stay_time - cur_time).seconds * 2
+
+                    if cur_time > self.stay_time:
+                        self.stay_cnt += (cur_time - self.stay_time).seconds * 2
+                    else:
+                        self.stay_cnt += (self.stay_time - cur_time).seconds * 2
                 else:
                     self.stay_cnt = 0
                     self.stay_time = None
