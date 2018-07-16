@@ -25,6 +25,8 @@ import signal
 import redis
 import socket
 
+from autoController import pCarsAutoController
+
 ''' Init Redis '''
 r = redis.StrictRedis(host='redis.hwanmoo.kr', port=6379, db=1)
 
@@ -40,10 +42,12 @@ class pCarsAutoKiller(mp.Process):
         self.get_focus()
         self.status = 'active'
 
-        self.target_ip = 'localhost:8080'
+        self.local_ip = 'localhost:8080'
         
         self.connect_arduino()
         self.prevLapDistance = 0
+
+        self.prev_sp = None
 
         ''' Getting Local IP of this Computer '''
         self.local_ip = [ip for ip in socket.gethostbyname_ex(socket.gethostname())[2] if not ip.startswith("127.")][:1][0]
@@ -84,29 +88,49 @@ class pCarsAutoKiller(mp.Process):
                 break
 
             # check if menu pops up
-            # gameData = send_crest_requset(self.target_ip, "crest-monitor", {})
+            # gameData = send_crest_requset(self.local_ip, "crest-monitor", {})
             # gameState = gameData["gameStates"]["mRaceState"]
 
             # if gameState == 3:
             #     break
 
         return True
-
-    def trigger_virtual_esc(self):
+    
+    def press_vkey(self,px,py):
         self.get_focus()
         # Make Pcars window focused
         rect = win32gui.GetWindowRect(win32gui.FindWindow( None, "화상 키보드" ))
-        print(rect)
+
         x = rect[0]
         y = rect[1]
         w = rect[2] - x
         h = rect[3] - y
-        pywinauto.mouse.move(coords=(x+30, y+0))
-        time.sleep(1)
-        pywinauto.mouse.press(button='left', coords=(x-5, y+90))
-        pywinauto.mouse.click(button='left', coords=(x-5, y+90))
-        pywinauto.mouse.press(button='left', coords=(x-5, y+90))
-        # pywinauto.mouse.release(button='left', coords=(x+30, y))
+        # time.sleep(1)
+        t1 = datetime.datetime.now()
+        pywinauto.mouse.press(button='left', coords=(x+px, y+py))
+        # pywinauto.mouse.click(button='left', coords=(x+5, y+90))
+        # pywinauto.mouse.press(button='left', coords=(x+5, y+90))
+        pywinauto.mouse.release(button='left', coords=(x+px, y))
+        t2 = datetime.datetime.now()
+
+        # print(t2-t1)
+
+    def trigger_virtual_esc(self):
+        px = 30
+        py = 150
+
+        self.press_vkey(px,py)
+
+
+    def trigger_virtual_enter(self):
+        px = 550
+        py = 380
+
+        self.press_vkey(px,py)
+
+    def send_enter(self):
+        cmd = '{ENTER}'
+        SendKeys(cmd)
 
     def restart_type_1(self):
         self.trigger_arduino_esc()
@@ -136,7 +160,7 @@ class pCarsAutoKiller(mp.Process):
 
         # Wait until game restarts
         # while True:
-        #     gameData = send_crest_requset(self.target_ip, "crest-monitor", {})
+        #     gameData = send_crest_requset(self.local_ip, "crest-monitor", {})
         #     gameState = gameData["gameStates"]["mRaceState"]
 
         #     if gameState == 2:
@@ -196,9 +220,72 @@ class pCarsAutoKiller(mp.Process):
         cmd = '{ENTER}'
         SendKeys(cmd)
 
-        
+    def restart_type_4(self):
+        pac = pCarsAutoController()
+        pac.move_steer(0)
+        pac.brakeOff()
+        pac.accOff()
+        cnt = 0
+        while True:
+            
+            message = self.r.hget('pcars_data'+local_ip,local_ip)
 
+            if message:
+                                            
+                self.r.hdel('pcars_data'+local_ip,local_ip)
+                message = message.decode("utf-8")
+                message = message.replace('<','\'<')
+                message = message.replace('>','>\'')
 
+                msg = eval(message)
+                ob = msg['game_data']
+
+                if "speed" in ob:
+                    # cnt += 1
+                    # if cnt > 10:
+                    #     break
+
+                    sp = ob["speed"]
+                    print(type(sp))
+                    print(sp)
+                    if sp < 0.2:
+                        self.trigger_virtual_enter()
+                        break
+
+                    if self.prev_sp is None:
+                        self.prev_sp = sp
+                        self.prev_action = 'brake'
+                        pac.accOff()
+                        pac.brakeOn()
+                        
+                    elif self.prev_sp > sp:
+                        self.prev_sp = sp
+
+                        if self.prev_action == 'brake':
+                            pac.accOff()
+                            pac.brakeOn()
+                        else:
+                            pac.brakeOff()
+                            pac.accOn()
+
+                            self.prev_action = 'acc'
+
+                    elif self.prev_sp < sp:
+                        self.prev_sp = sp
+
+                        if self.prev_action == 'brake':
+                            pac.brakeOff()
+                            pac.accOn()
+                            
+                            self.prev_action = 'acc'
+                        else:
+                            pac.accOff()
+                            pac.brakeOn()
+
+                    time.sleep(0.5)
+                    pac.brakeOff()
+                    pac.accOff()
+                    self.trigger_virtual_enter()
 
 if __name__ == '__main__':
     pc = pCarsAutoKiller()
@@ -218,10 +305,17 @@ if __name__ == '__main__':
             elif reset_status == 3:
                 pc.restart_type_3()
                 del_stat = True
+            elif reset_status == 4:
+                pc.restart_type_4()
+                del_stat = True
             else:
                 del_stat = True
 
             r.hdel('pcars_killer'+local_ip,local_ip)
+    # print("V esc")
+    # time.sleep(3)
+    
+    # pc.restart_type_4()
 
                 
             
