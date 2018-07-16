@@ -115,11 +115,11 @@ class PcarsEnv:
             if self.distance != 0 and self.distance != 65535:
                 if self.prevPosition is not None:
                     d = abs(get_distance(ref_position,cur_position)) / 4
-                    print("d",d)
                     v_e = cur_position - self.prevPosition
                     v_r = ref_position - self.ref_prevPosition
 
                     cos_a = -np.dot(norm_np(v_e),norm_np(v_r))
+                    print("d",d)
                     print("cosa", cos_a)
                     progress = (sp * 100)*(cos_a - d)
                     self.reward = progress / 10
@@ -128,13 +128,14 @@ class PcarsEnv:
                        self.reward += -50
             else:
                 if self.prevPosition is not None:
-                    v_e = cur_position - self.prevPosition
                     ref_position = self.grid_line[1]
+                    
                     d = abs(get_distance(ref_position,cur_position)) / 6
+                    v_e = cur_position - self.prevPosition
                     v_r = ref_position - self.prevPosition
 
-                    print("d",d)
                     cos_a = np.dot(norm_np(v_e),norm_np(v_r))
+                    print("d",d)
                     print("cosa", cos_a)
                     progress = (sp * 100)*(cos_a - d)
                     self.reward = progress / 10

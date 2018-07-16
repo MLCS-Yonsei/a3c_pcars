@@ -6,7 +6,7 @@ import struct
 
 
 _MCAST_ANY = "224.0.0.1"
-
+local_ip = [ip for ip in socket.gethostbyname_ex(socket.gethostname())[2] if not ip.startswith("127.")][:1][0]
 
 class PCarsStreamReceiver(Thread):
 
@@ -30,9 +30,11 @@ class PCarsStreamReceiver(Thread):
 
         while True:
             try:
-                data = sock.recv(1400)
-                packet = Packet.readFrom(BytesIO(data))
-                for listener in self.listeners:
-                    listener.handlePacket(packet)
+                data, addr = sock.recvfrom(1400)
+                # print("Source:", addr[0])
+                if addr[0] == local_ip:
+                    packet = Packet.readFrom(BytesIO(data))
+                    for listener in self.listeners:
+                        listener.handlePacket(packet)
             except Exception as ex:
                 print("Error in stream.py : ",ex)
