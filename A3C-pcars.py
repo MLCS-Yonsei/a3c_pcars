@@ -304,10 +304,16 @@ class Worker:
                                             pass
                                         elif reset_status == 4:
                                             pass
-                                        else:
+                                        elif reset_status == 0:
+                                            print("out of First loop")
+                                            self.r.hdel('pcars_killer'+target_ip,target_ip)
                                             break
-
+                                        else:
+                                            print("out of First loop")
+                                            break
+                                print("!@#!!")
                                 while self.restarting:
+                                    print("!@#")
                                     message = self.r.hget('pcars_data'+target_ip,target_ip)
 
                                     if message:
@@ -330,7 +336,7 @@ class Worker:
                                                 self.restarting = False
                                                 self.r.hset('pcars_action'+target_ip, target_ip, False)
                                                 break
-                                    print("!@#")
+                                    
                                     t2 = datetime.now()
                                     delta = t2 - t1
                                     if delta.seconds > 20:

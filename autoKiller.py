@@ -335,6 +335,7 @@ if __name__ == '__main__':
                 del_stat = True
 
             r.hdel('pcars_killer'+local_ip,local_ip)
+            self.r.hset('pcars_killer'+target_ip,target_ip,"0")
     # print("V esc")
     # time.sleep(3)
     
