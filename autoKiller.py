@@ -237,6 +237,8 @@ class pCarsAutoKiller(mp.Process):
         cmd = '{ENTER}'
         SendKeys(cmd)
 
+        return True
+
     def restart_type_4(self):
         pac = pCarsAutoController()
         pac.move_steer(0)
@@ -266,6 +268,7 @@ class pCarsAutoKiller(mp.Process):
 
                     if sp < 0.2:
                         # self.trigger_virtual_enter()
+                        print("speed almost 0")
                         self.trigger_arduino_enter()
                         break
 
@@ -304,6 +307,8 @@ class pCarsAutoKiller(mp.Process):
                     pac.accOff()
                     # self.trigger_virtual_enter()
                     self.trigger_arduino_enter()
+
+        return True
 
 if __name__ == '__main__':
     pc = pCarsAutoKiller()
