@@ -332,6 +332,8 @@ if __name__ == '__main__':
                 pc.restart_type_4()
                 del_stat = False
                 r.hset('pcars_killer'+local_ip,local_ip,"0")
+            elif reset_status == 0:
+                del_stat = False
             else:
                 del_stat = True
 
