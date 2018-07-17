@@ -294,7 +294,7 @@ class Worker:
                                         t0 = datetime.now()
                                         
                                         reset_status = eval(message)
-                                        print(t0, reset_status)
+                                        # print(t0, reset_status)
                                         # autoKiller에서 처리중
                                         if reset_status == 1:
                                             pass
@@ -313,7 +313,14 @@ class Worker:
                                             print("out of First loop")
                                             break
 
-                                # while self.restarting:
+                                    t2 = datetime.now()
+                                    delta = t2 - t1
+                                    if delta.seconds > 10:
+                                        t1 = datetime.now()
+                                        print("Force reset")
+                                        self.r.hset('pcars_killer'+target_ip,target_ip,"1")
+
+                                while self.restarting:
                                     message = self.r.hget('pcars_data'+target_ip,target_ip)
 
                                     if message:
@@ -331,7 +338,7 @@ class Worker:
                                             # print("Restarting")
                                             # print(gameState, raceState, raceStateFlags)
                                             print("R",gameState, raceState, sessionState, raceStateFlags)
-                                            if gameState != 2:
+                                            if gameState != 2 or (gameState == 2 and raceState == 2):
                                                 self.r.hdel('pcars_force_acc', target_ip)
                                                 self.restarting = False
                                                 self.r.hset('pcars_action'+target_ip, target_ip, False)
@@ -358,7 +365,7 @@ class Worker:
                                         sessionState = [int(s) for s in ob["sessionState"].split('>')[0].split() if s.isdigit()][0]
                                         lap_distance = ob["participants"][0]["currentLapDistance"]
                                         raceStateFlags = ob['raceStateFlags']
-                                        print("123",gameState, raceState, sessionState, raceStateFlags)
+                                        # print("123",gameState, raceState, sessionState, raceStateFlags)
                                         if int(raceStateFlags) == 44:
                                             # 세션 종료
                                             self.r.hset('pcars_killer'+target_ip,target_ip,"3")
@@ -510,7 +517,7 @@ def play_training(training=True, load_model=True):
                 # '192.168.0.2',
                 # '192.168.0.52',
                 '165.132.108.169',
-                # '192.168.0.56'
+                '192.168.0.56'
         ]
 
         if training:

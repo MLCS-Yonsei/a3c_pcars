@@ -45,9 +45,9 @@ class PcarsEnv:
         self.stay_time = None
 
         # Grid Line
-        self.grid_line = np.load('grid_line.npz')['results'].reshape(-1,3)
-        self.distance_ref = np.array(list(range(len(self.grid_line))))
-        # self.xp = self.grid_line[0]
+        self.grid_line = np.load('grid_line.npz')['results'][:,1:4]
+        self.distance_ref = np.load('grid_line.npz')['results'][:,0]
+
         self.fp_x = self.grid_line[:,0].astype(float)
         self.fp_y = self.grid_line[:,1].astype(float)
         self.fp_z = self.grid_line[:,2].astype(float)
@@ -92,9 +92,12 @@ class PcarsEnv:
                 ref_position_z = np.interp(self.distance, self.distance_ref, self.fp_z)
 
                 ref_position = np.array([ref_position_x, ref_position_y, ref_position_z])
-
+                # print("REF:",ref_position)
+                # print("CUR:",cur_position)
             else:
                 ref_position = self.grid_line[1]
+
+            
         
             race_action = self.one_hot(a_t, 33)
             race_action = np.append(race_action, sp)
@@ -242,6 +245,7 @@ class PcarsEnv:
                         self.stay_cnt += (cur_time - self.stay_time).seconds * 2
                     else:
                         self.stay_cnt += (self.stay_time - cur_time).seconds * 2
+
                 else:
                     self.stay_cnt = 0
                     self.stay_time = None
@@ -282,7 +286,7 @@ class PcarsEnv:
 
             print("reward:86:",self.reward,target_ip)
 
-            if self.reward <= -30 and terminate_status is False:
+            if self.reward <= -700 and terminate_status is False:
                 print("Restarting")
                 self.brake_cnt = 0
                 self.stop_cnt = 0
