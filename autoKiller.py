@@ -95,6 +95,30 @@ class pCarsAutoKiller(mp.Process):
             #     break
 
         return True
+
+    def trigger_arduino_enter(self):
+        
+        # Make Pcars focused just in case
+        self.get_focus()
+        while True:
+            # Send Signal
+            self.ard.write(b"enter")
+            time.sleep(0.3)
+            msg = self.ard.readline()
+
+            # Finish if sec signal succeed
+            if msg == b'enter\r\n':
+                break
+
+            # check if menu pops up
+            # gameData = send_crest_requset(self.local_ip, "crest-monitor", {})
+            # gameState = gameData["gameStates"]["mRaceState"]
+
+            # if gameState == 3:
+            #     break
+
+        return True
+    
     
     def press_vkey(self,px,py):
         self.get_focus()
@@ -246,10 +270,10 @@ class pCarsAutoKiller(mp.Process):
                     #     break
 
                     sp = ob["speed"]
-                    print(type(sp))
-                    print(sp)
+
                     if sp < 0.2:
-                        self.trigger_virtual_enter()
+                        # self.trigger_virtual_enter()
+                        self.trigger_arduino_enter()
                         break
 
                     if self.prev_sp is None:
@@ -285,7 +309,8 @@ class pCarsAutoKiller(mp.Process):
                     time.sleep(0.5)
                     pac.brakeOff()
                     pac.accOff()
-                    self.trigger_virtual_enter()
+                    # self.trigger_virtual_enter()
+                    self.trigger_arduino_enter()
 
 if __name__ == '__main__':
     pc = pCarsAutoKiller()

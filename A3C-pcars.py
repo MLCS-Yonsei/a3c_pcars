@@ -502,7 +502,7 @@ def play_training(training=True, load_model=True):
                 # '192.168.0.2',
                 # '192.168.0.52',
                 '165.132.108.169',
-                '192.168.0.56'
+                # '192.168.0.56'
         ]
 
         if training:

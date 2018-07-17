@@ -45,11 +45,12 @@ class PcarsEnv:
         self.stay_time = None
 
         # Grid Line
-        self.grid_line = np.load('grid_line.npz')['results']
+        self.grid_line = np.load('grid_line.npz')['results'].reshape(-1,3)
+        self.distance_ref = np.array(list(range(len(self.grid_line))))
         # self.xp = self.grid_line[0]
-        # self.fp_x = self.grid_line[:,0]
-        # self.fp_y = self.grid_line[:,1]
-        # self.fp_z = self.grid_line[:,2]
+        self.fp_x = self.grid_line[:,0].astype(float)
+        self.fp_y = self.grid_line[:,1].astype(float)
+        self.fp_z = self.grid_line[:,2].astype(float)
 
         self.reward = 0
    
@@ -84,8 +85,15 @@ class PcarsEnv:
             # ref_position_y = np.interp(cur_position_y, self.xp, self.fp_y)
             # ref_position_z = np.interp(cur_position_z, self.xp, self.fp_z)
             # ref_position = np.array([ref_position_x,ref_position_y,ref_position_z])
-            if self.distance < 10000:
-                ref_position = self.grid_line[self.distance]
+            if 0 < self.distance < 10000:
+                # ref_position = self.grid_line[self.distance]
+                # print(np.dtype(self.distance_ref))
+
+                ref_position_x = np.interp(self.distance, self.distance_ref, self.fp_x)
+                ref_position_y = np.interp(self.distance, self.distance_ref, self.fp_y)
+                ref_position_z = np.interp(self.distance, self.distance_ref, self.fp_z)
+
+                exit(0)
             else:
                 ref_position = self.grid_line[1]
         
@@ -289,7 +297,7 @@ class PcarsEnv:
                 self.time_step = 0
 
                 self.r.hset('pcars_action'+target_ip, target_ip, False)
-                self.reset_pcars(target_ip)
+                self.reset_pcars_4(target_ip)
                 terminate_status = True
 
             return obs, self.reward, {}, terminate_status, race_action
@@ -304,6 +312,9 @@ class PcarsEnv:
 
     def reset_pcars_3(self,target_ip):
         self.r.hset('pcars_killer'+target_ip,target_ip,"3")
+
+    def reset_pcars_4(self,target_ip):
+        self.r.hset('pcars_killer'+target_ip,target_ip,"4")
 
     def agent_to_torcs_discrete(self, u):
         # if self.distance != 0:
