@@ -330,12 +330,14 @@ if __name__ == '__main__':
                 del_stat = True
             elif reset_status == 4:
                 pc.restart_type_4()
-                del_stat = True
+                del_stat = False
+                r.hset('pcars_killer'+local_ip,local_ip,"0")
             else:
                 del_stat = True
 
-            r.hdel('pcars_killer'+local_ip,local_ip)
-            r.hset('pcars_killer'+local_ip,local_ip,"0")
+            if del_stat:
+                r.hdel('pcars_killer'+local_ip,local_ip)
+            
     # print("V esc")
     # time.sleep(3)
     

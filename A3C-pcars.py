@@ -306,14 +306,14 @@ class Worker:
                                             pass
                                         elif reset_status == 0:
                                             print("out of First loop")
+                                            self.restarting = False
                                             self.r.hdel('pcars_killer'+target_ip,target_ip)
                                             break
                                         else:
                                             print("out of First loop")
                                             break
-                                print("!@#!!")
-                                while self.restarting:
-                                    print("!@#")
+
+                                # while self.restarting:
                                     message = self.r.hget('pcars_data'+target_ip,target_ip)
 
                                     if message:
