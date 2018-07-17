@@ -110,13 +110,6 @@ class pCarsAutoKiller(mp.Process):
             if msg == b'enter\r\n':
                 break
 
-            # check if menu pops up
-            # gameData = send_crest_requset(self.local_ip, "crest-monitor", {})
-            # gameState = gameData["gameStates"]["mRaceState"]
-
-            # if gameState == 3:
-            #     break
-
         return True
     
     

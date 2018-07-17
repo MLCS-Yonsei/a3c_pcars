@@ -87,13 +87,12 @@ class PcarsEnv:
             # ref_position = np.array([ref_position_x,ref_position_y,ref_position_z])
             if 0 < self.distance < 10000:
                 # ref_position = self.grid_line[self.distance]
-                # print(np.dtype(self.distance_ref))
-
                 ref_position_x = np.interp(self.distance, self.distance_ref, self.fp_x)
                 ref_position_y = np.interp(self.distance, self.distance_ref, self.fp_y)
                 ref_position_z = np.interp(self.distance, self.distance_ref, self.fp_z)
 
-                exit(0)
+                ref_position = np.array([ref_position_x, ref_position_y, ref_position_z])
+
             else:
                 ref_position = self.grid_line[1]
         
