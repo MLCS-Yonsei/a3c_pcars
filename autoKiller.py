@@ -282,8 +282,6 @@ class pCarsAutoKiller(mp.Process):
                             pac.brakeOff()
                             pac.accOn()
 
-                            self.prev_action = 'acc'
-
                     elif self.prev_sp < sp:
                         self.prev_sp = sp
 
@@ -295,6 +293,8 @@ class pCarsAutoKiller(mp.Process):
                         else:
                             pac.accOff()
                             pac.brakeOn()
+
+                            self.prev_action = 'brake'
 
                     time.sleep(0.5)
                     pac.brakeOff()
