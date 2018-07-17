@@ -300,7 +300,7 @@ class pCarsAutoKiller(mp.Process):
                     pac.brakeOff()
                     pac.accOff()
                     # self.trigger_virtual_enter()
-                    self.trigger_arduino_enter()
+                    # self.trigger_arduino_enter()
 
                     if sp < 0.2:
                         # self.trigger_virtual_enter()
