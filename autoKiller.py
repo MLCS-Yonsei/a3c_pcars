@@ -266,12 +266,6 @@ class pCarsAutoKiller(mp.Process):
 
                     sp = ob["speed"]
 
-                    if sp < 0.2:
-                        # self.trigger_virtual_enter()
-                        print("speed almost 0")
-                        self.trigger_arduino_enter()
-                        break
-
                     if self.prev_sp is None:
                         self.prev_sp = sp
                         self.prev_action = 'brake'
@@ -307,6 +301,12 @@ class pCarsAutoKiller(mp.Process):
                     pac.accOff()
                     # self.trigger_virtual_enter()
                     self.trigger_arduino_enter()
+
+                    if sp < 0.2:
+                        # self.trigger_virtual_enter()
+                        print("speed almost 0")
+                        self.trigger_arduino_enter()
+                        break
 
         return True
 
