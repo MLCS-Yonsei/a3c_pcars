@@ -319,7 +319,7 @@ class Worker:
                                         t1 = datetime.now()
                                         print("Force reset")
                                         self.r.hset('pcars_killer'+target_ip,target_ip,"1")
-
+                                t1 = datetime.now()
                                 while self.restarting:
                                     message = self.r.hget('pcars_data'+target_ip,target_ip)
 
