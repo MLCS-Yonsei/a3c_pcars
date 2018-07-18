@@ -251,7 +251,7 @@ class pCarsAutoKiller(mp.Process):
                 km = eval(kill_message)
                 if km != 4:
                     break
-                    
+
             message = self.r.hget('pcars_data'+local_ip,local_ip)
 
             if message:
@@ -270,7 +270,12 @@ class pCarsAutoKiller(mp.Process):
                     #     break
 
                     sp = ob["speed"]
-
+                    if sp < 0.2:
+                        # self.trigger_virtual_enter()
+                        print("speed almost 0")
+                        self.trigger_arduino_enter()
+                        break
+                        
                     if self.prev_sp is None:
                         self.prev_sp = sp
                         self.prev_action = 'brake'
@@ -307,11 +312,7 @@ class pCarsAutoKiller(mp.Process):
                     # self.trigger_virtual_enter()
                     # self.trigger_arduino_enter()
 
-                    if sp < 0.2:
-                        # self.trigger_virtual_enter()
-                        print("speed almost 0")
-                        self.trigger_arduino_enter()
-                        break
+                    
 
         return True
 
