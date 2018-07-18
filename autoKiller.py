@@ -246,7 +246,12 @@ class pCarsAutoKiller(mp.Process):
         pac.accOff()
         cnt = 0
         while True:
-            
+            kill_message = r.hget('pcars_killer'+local_ip,local_ip)
+            if kill_message:
+                km = eval(kill_message)
+                if km != 4:
+                    break
+                    
             message = self.r.hget('pcars_data'+local_ip,local_ip)
 
             if message:
