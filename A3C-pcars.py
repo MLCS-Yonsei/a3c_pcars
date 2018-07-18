@@ -346,7 +346,7 @@ class Worker:
                                     
                                     t2 = datetime.now()
                                     delta = t2 - t1
-                                    if delta.seconds > 30:
+                                    if delta.seconds > 40:
                                         t1 = datetime.now()
                                         print("Force reset")
                                         self.r.hset('pcars_killer'+target_ip,target_ip,"1")
