@@ -94,10 +94,19 @@ class PcarsEnv:
                 ref_position = np.array([ref_position_x, ref_position_y, ref_position_z])
                 # print("REF:",ref_position)
                 # print("CUR:",cur_position)
+
+                if self.ref_prevPosition is None and self.distance > 1:
+                    ref_position_x = np.interp(self.distance-1, self.distance_ref, self.fp_x)
+                    ref_position_y = np.interp(self.distance-1, self.distance_ref, self.fp_y)
+                    ref_position_z = np.interp(self.distance-1, self.distance_ref, self.fp_z)
+
+                    self.ref_prevPosition = np.array([ref_position_x, ref_position_y, ref_position_z])
+
             else:
                 ref_position = self.grid_line[1]
 
             
+                
         
             race_action = self.one_hot(a_t, 33)
             race_action = np.append(race_action, sp)
@@ -123,19 +132,36 @@ class PcarsEnv:
             print("Distance",self.distance)
             # Reward 
             if self.distance != 0 and self.distance != 65535:
-                if self.prevPosition is not None:
-                    d = abs(get_distance(ref_position,cur_position)) / 4
+                # print(ref_position)
+                # print(self.ref_prevPosition)
+                # print(np.any(ref_position != self.ref_prevPosition))
+                if self.prevPosition is not None and np.any(cur_position != self.prevPosition):
+                    d = abs(get_distance(ref_position,cur_position)) / 6
                     v_e = cur_position - self.prevPosition
                     v_r = ref_position - self.ref_prevPosition
 
-                    cos_a = -np.dot(norm_np(v_e),norm_np(v_r))
+                    cos_a = np.dot(norm_np(v_e),norm_np(v_r))
                     print("d",d)
-                    print("cosa", cos_a)
+                    print("cosa1", cos_a)
                     progress = (sp * 100)*(cos_a - d)
                     self.reward = progress / 10
                 
                     if sp < 0.000001:
                        self.reward += -50
+                else:
+                    d = abs(get_distance(ref_position,cur_position)) / 6
+                    v_e = cur_position - self.ref_prevPosition
+                    v_r = ref_position - self.ref_prevPosition
+
+                    cos_a = np.dot(norm_np(v_e),norm_np(v_r))
+                    print("d",d)
+                    print("cosa2", cos_a)
+                    progress = (sp * 100)*(cos_a - d)
+                    self.reward = progress / 10
+
+                    if np.any(cur_position != self.prevPosition):
+                        self.prevPosition = cur_position
+                
             else:
                 if self.prevPosition is not None:
                     ref_position = self.grid_line[1]
@@ -146,7 +172,7 @@ class PcarsEnv:
 
                     cos_a = np.dot(norm_np(v_e),norm_np(v_r))
                     print("d",d)
-                    print("cosa", cos_a)
+                    print("cosa3", cos_a)
                     progress = (sp * 100)*(cos_a - d)
                     self.reward = progress / 10
 
@@ -154,11 +180,16 @@ class PcarsEnv:
                     progress = sp * 100
                     self.reward = progress / 10
 
-            if np.all(cur_position != self.prevPosition):
+            if self.prevPosition is not None and np.any(cur_position != self.prevPosition):
                 self.prevPosition = cur_position
-            
-            if np.all(ref_position != self.ref_prevPosition):
-                self.ref_prevPosition = ref_position
+
+                if np.any(ref_position != self.ref_prevPosition):
+                    if self.distance > 1:
+                        ref_position_x = np.interp(self.distance-1, self.distance_ref, self.fp_x)
+                        ref_position_y = np.interp(self.distance-1, self.distance_ref, self.fp_y)
+                        ref_position_z = np.interp(self.distance-1, self.distance_ref, self.fp_z)
+
+                        self.ref_prevPosition = np.array([ref_position_x, ref_position_y, ref_position_z])
 
             self.prevLapDistance = self.distance
             self.time_step += 1
@@ -279,15 +310,27 @@ class PcarsEnv:
             #     self.reward = -200
 
             if raceState == 3:
-                self.reward = -300
+                # self.reward = -300
+                print("Restarting by finish")
+                self.brake_cnt = 0
+                self.stop_cnt = 0
+                self.backward_cnt = 0
+                self.tyre_out_cnt = 0
+                self.crash_cnt = 0
+                self.stay_cnt = 0
+
+                self.position = []
+                self.distance = 0
+                self.time_step = 0
+
+                self.r.hset('pcars_action'+target_ip, target_ip, False)
                 self.reset_pcars_2(target_ip)
                 terminate_status = True
-                self.r.hset('pcars_action'+target_ip, target_ip, False)
-
-            print("reward:86:",self.reward,target_ip)
+                
+            print("reward:",self.reward,target_ip)
 
             if self.reward <= -700 and terminate_status is False:
-                print("Restarting")
+                print("Restarting by finish")
                 self.brake_cnt = 0
                 self.stop_cnt = 0
                 self.backward_cnt = 0
