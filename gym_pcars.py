@@ -148,7 +148,7 @@ class PcarsEnv:
                 
                     if sp < 0.000001:
                        self.reward += -50
-                else:
+                elif self.ref_prevPosition is not None:
                     d = abs(get_distance(ref_position,cur_position)) / 6
                     v_e = cur_position - self.ref_prevPosition
                     v_r = ref_position - self.ref_prevPosition
@@ -161,7 +161,9 @@ class PcarsEnv:
 
                     if np.any(cur_position != self.prevPosition):
                         self.prevPosition = cur_position
-                
+                else:
+                    progress = sp * 100
+                    self.reward = progress / 10
             else:
                 if self.prevPosition is not None:
                     ref_position = self.grid_line[1]
