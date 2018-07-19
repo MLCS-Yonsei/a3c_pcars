@@ -423,7 +423,7 @@ class Worker:
                                             s = s1
                                             total_steps += 1
                                             episode_step_count += 1
-                                            print("episode ", episode_count, " step count :",episode_step_count)
+                                            print("episode ", episode_count, " step count :",episode_step_count, " Total Step :", total_steps)
                                             # If the episode hasn't ended, but the experience buffer is full, then we
                                             # make an update step using that experience rollout.
                                             if training and len(episode_buffer) == 100 and d is not True:  #batch to 100 30 before 
