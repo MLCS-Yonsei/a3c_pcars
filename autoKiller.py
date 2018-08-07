@@ -320,31 +320,34 @@ if __name__ == '__main__':
     pc = pCarsAutoKiller()
 
     while True:
-        message = r.hget('pcars_killer'+local_ip,local_ip)
-        
-        if message:
-            reset_status = eval(message)
-            print(reset_status)
-            if reset_status == 1:
-                pc.restart_type_1()
-                del_stat = True
-            elif reset_status == 2:
-                pc.restart_type_2()
-                del_stat = True
-            elif reset_status == 3:
-                pc.restart_type_3()
-                del_stat = True
-            elif reset_status == 4:
-                pc.restart_type_4()
-                del_stat = False
-                r.hset('pcars_killer'+local_ip,local_ip,"0")
-            elif reset_status == 0:
-                del_stat = False
-            else:
-                del_stat = True
+        try:
+            message = r.hget('pcars_killer'+local_ip,local_ip)
+            
+            if message:
+                reset_status = eval(message)
+                print(reset_status)
+                if reset_status == 1:
+                    pc.restart_type_1()
+                    del_stat = True
+                elif reset_status == 2:
+                    pc.restart_type_2()
+                    del_stat = True
+                elif reset_status == 3:
+                    pc.restart_type_3()
+                    del_stat = True
+                elif reset_status == 4:
+                    pc.restart_type_4()
+                    del_stat = False
+                    r.hset('pcars_killer'+local_ip,local_ip,"0")
+                elif reset_status == 0:
+                    del_stat = False
+                else:
+                    del_stat = True
 
-            if del_stat:
-                r.hdel('pcars_killer'+local_ip,local_ip)
+                if del_stat:
+                    r.hdel('pcars_killer'+local_ip,local_ip)
+        except:
+            pass
             
     # print("V esc")
     # time.sleep(3)
