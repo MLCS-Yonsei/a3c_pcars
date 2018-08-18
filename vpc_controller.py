@@ -112,8 +112,20 @@ class screen_capture_thread(Thread):
                         cur_position_z = msg["participants"][0]["worldPositionZ"]
                         
                         if self.listener.data is not False and self.listener.data is not None and self.img is not None:
-                            result = {'game_data':self.listener.data,'image_data':self.img,'current_time':datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")}
-                            print(result['current_time'])
+                            message = self.listener.data.decode("utf-8")
+                            message = message.replace('<','\'<')
+                            message = message.replace('>','>\'')
+
+                            msg = eval(message)
+
+                            gameState = [int(s) for s in ob["gameState"].split('>')[0].split() if s.isdigit()][0]
+                            raceState = [int(s) for s in ob["raceState"].split('>')[0].split() if s.isdigit()][0]
+
+                            current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
+                            print(current_time, gameState, raceState)
+                            if (gameState == 2 and raceState == 2):
+                                result = {'game_data':self.listener.data,'image_data':self.img,'current_time':current_time}
+                                
                 
         
             if result is not False:
