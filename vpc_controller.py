@@ -118,7 +118,7 @@ class screen_capture_thread(Thread):
 
                             # ob = eval(self.listener)
                             ob = self.listener.data
-                            print(ob["gameState"], type(ob["gameState"]))
+                            print(ob["gameState"].value)
                             gameState = [int(s) for s in ob["gameState"].split('>')[0].split() if s.isdigit()][0]
                             raceState = [int(s) for s in ob["raceState"].split('>')[0].split() if s.isdigit()][0]
 
