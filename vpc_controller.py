@@ -119,13 +119,14 @@ class screen_capture_thread(Thread):
                             # ob = eval(self.listener)
                             ob = self.listener.data
 
-                            gameState = ob["gameState"].value
-                            raceState = ob["raceState"].value
+                            if "gameState" in ob:
+                                gameState = ob["gameState"].value
+                                raceState = ob["raceState"].value
 
-                            current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
-                            print(current_time, gameState, raceState)
-                            if (gameState == 2 and raceState == 2):
-                                result = {'game_data':self.listener.data,'image_data':self.img,'current_time':current_time}
+                                current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
+                                print(current_time, gameState, raceState)
+                                if (gameState == 2 and raceState == 2):
+                                    result = {'game_data':self.listener.data,'image_data':self.img,'current_time':current_time}
                                 
                 
         
