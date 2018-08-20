@@ -201,7 +201,7 @@ if __name__ == '__main__':
 
         # sct = start_capture(listener)
         # time.sleep(interval)
-        sct = screen_capture_thread(listener, pkr)
+        sct = screen_capture_thread(listener)
         sct.daemon = True 
         sct.start()
         sct.join()
