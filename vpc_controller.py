@@ -118,9 +118,9 @@ class screen_capture_thread(Thread):
 
                             # ob = eval(self.listener)
                             ob = self.listener.data
-                            print(ob["gameState"].value)
-                            gameState = [int(s) for s in ob["gameState"].split('>')[0].split() if s.isdigit()][0]
-                            raceState = [int(s) for s in ob["raceState"].split('>')[0].split() if s.isdigit()][0]
+
+                            gameState = ob["gameState"].value
+                            raceState = ob["raceState"].value
 
                             current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
                             print(current_time, gameState, raceState)
