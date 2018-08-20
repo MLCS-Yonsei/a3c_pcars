@@ -51,10 +51,10 @@ class PCarsListener(object):
 
 class screen_capture_thread(Thread):        
 
-    def __init__(self, listener, pkr):
+    def __init__(self, listener):
         self.img = None
         self.listener = listener
-        self.pkr = pkr
+
         super(screen_capture_thread, self).__init__()
 
     def run(self):
@@ -129,7 +129,7 @@ class screen_capture_thread(Thread):
                                 if (gameState == 2 and raceState == 2):
                                     result = {'game_data':self.listener.data,'image_data':self.img,'current_time':current_time}
                                 elif gameState == 2 and raceState == 3:
-                                    self.pkr.restart_type_2()
+                                    r.hset('pcars_killer'+local_ip,local_ip,"2")
 
                                 
                 
@@ -188,8 +188,8 @@ if __name__ == '__main__':
     # pac = pCarsAutoController()
     # pac.run()
 
-    pkr = pCarsAutoKiller()
-    pkr.run()
+    # pkr = pCarsAutoKiller()
+    # pkr.run()
     while True:
         # Taking Screen Capture form Pcars
         '''
