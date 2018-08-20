@@ -19,7 +19,7 @@ from io import BytesIO
 from PIL import Image
 import time
 from datetime import datetime
-
+import argparse
 
 # Copies one set of variables to another.
 # Used to set worker network parameters to those of global network.
@@ -518,8 +518,9 @@ def play_training(training=True, load_model=True):
         worker_ips = [
                 # '192.168.0.2',
                 # '192.168.0.52',
-                '165.132.46.100',
+                # '165.132.46.100',
                 # '192.168.0.52'
+                '165.132.108.169'
         ]
 
         if training:
@@ -552,6 +553,10 @@ def play_training(training=True, load_model=True):
 
 
 if __name__ == "__main__":
+    # parser = argparse.ArgumentParser()
+    # parser.add_argument('-l', '--loadmodel', dest='load_model', type=bool,
+    #                     default=False, help='Score threshold for displaying bounding boxes')
+
     max_episode_length = 300
     gamma = .99  # discount rate for advantage estimation and reward discounting
     s_size = 30000#340464  # Observations are greyscale frames of 84 * 84 * 1
