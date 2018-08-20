@@ -116,7 +116,7 @@ class screen_capture_thread(Thread):
                             # message = message.replace('<','\'<')
                             # message = message.replace('>','>\'')
 
-                            ob = eval(message)
+                            ob = eval(self.listener)
 
                             gameState = [int(s) for s in ob["gameState"].split('>')[0].split() if s.isdigit()][0]
                             raceState = [int(s) for s in ob["raceState"].split('>')[0].split() if s.isdigit()][0]
