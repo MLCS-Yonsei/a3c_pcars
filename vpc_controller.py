@@ -112,11 +112,11 @@ class screen_capture_thread(Thread):
                         cur_position_z = msg["participants"][0]["worldPositionZ"]
                         
                         if self.listener.data is not False and self.listener.data is not None and self.img is not None:
-                            message = self.listener.data.decode("utf-8")
-                            message = message.replace('<','\'<')
-                            message = message.replace('>','>\'')
+                            # message = self.listener.data.decode("utf-8")
+                            # message = message.replace('<','\'<')
+                            # message = message.replace('>','>\'')
 
-                            msg = eval(message)
+                            ob = eval(message)
 
                             gameState = [int(s) for s in ob["gameState"].split('>')[0].split() if s.isdigit()][0]
                             raceState = [int(s) for s in ob["raceState"].split('>')[0].split() if s.isdigit()][0]
