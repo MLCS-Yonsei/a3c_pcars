@@ -202,7 +202,7 @@ class pCarsAutoController(mp.Process):
 
         w = w-16 # Margin for window border
         d = int(w/2 * n)
-        print("Steering:", n)
+        print("Steering:", n, "ACC", self.controlState['acc'], "Brake", self.controlState['brake'])
         t = [zero[0] + d, zero[1]]
 
         return t
