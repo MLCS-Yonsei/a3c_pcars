@@ -70,6 +70,7 @@ class PcarsEnv:
             # Send Action Signal
             self.r.hset('pcars_action'+target_ip, target_ip, this_action)
 
+            gameState = [int(s) for s in obs["gameState"].split('>')[0].split() if s.isdigit()][0]
             raceState = [int(s) for s in obs["raceState"].split('>')[0].split() if s.isdigit()][0]
 
             sp = obs["speed"]
@@ -313,7 +314,7 @@ class PcarsEnv:
 
             if raceState == 3:
                 # self.reward = -300
-                print("Restarting by finish")
+                print("Restarting by finish", gameState, raceState)
                 self.brake_cnt = 0
                 self.stop_cnt = 0
                 self.backward_cnt = 0
@@ -332,7 +333,7 @@ class PcarsEnv:
             print("reward:",self.reward,target_ip)
 
             if self.reward <= -500 and terminate_status is False:
-                print("Restarting by finish")
+                print("Restarting by finish", gameState, raceState)
                 self.brake_cnt = 0
                 self.stop_cnt = 0
                 self.backward_cnt = 0
