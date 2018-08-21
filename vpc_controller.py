@@ -130,6 +130,8 @@ class screen_capture_thread(Thread):
                                     result = {'game_data':self.listener.data,'image_data':self.img,'current_time':current_time}
                                 elif gameState == 2 and raceState == 3:
                                     r.hset('pcars_killer'+local_ip,local_ip,"2")
+                                elif gameState == 2 and raceState == 4:
+                                    r.hset('pcars_killer'+local_ip,local_ip,"2")
 
                                 
                 
