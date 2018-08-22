@@ -12,3 +12,6 @@ pcars.egg-info/
 *.data-00000-of-00001
 model/checkpoint
 *.gif
+
+seg/data/vgg
+seg/model/*

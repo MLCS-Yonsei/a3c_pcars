@@ -21,6 +21,11 @@ import time
 from datetime import datetime
 import argparse
 
+from seg.helper import *
+from seg.main import *
+
+import scipy.misc
+
 # Copies one set of variables to another.
 # Used to set worker network parameters to those of global network.
 def update_target_graph(from_scope, to_scope):
@@ -169,7 +174,7 @@ class Worker:
         if not continuous:
             self.actions = np.identity(a_size, dtype=bool).tolist()    #To have same format as doom
 
-        self.restarting = False
+        self.restarting = False      
 
     def train(self, rollout, sess, gamma, bootstrap_value):
         rollout = np.array(rollout)
@@ -232,11 +237,20 @@ class Worker:
         # Decode image within base64 
         s = base64.b64decode(s)
         s = Image.open(BytesIO(s))
+        s = s.resize((160,576), Image.ANTIALIAS)
         s = np.array(s)
-
+        print("Img shape", s.shape)
+        s = pred_img(self.rs_sess, self.rs_image_shape, self.rs_logits, self.rs_keep_prob, self.rs_input_image, s, False)
+        s = scipy.misc.imresize(s, (150,200))
         return ob, s
 
-    def work(self, max_episode_length, gamma, sess, coord, saver, training, target_ip):
+    def work(self, max_episode_length, gamma, sess, coord, saver, training, target_ip, rs_sess, rs_image_shape, rs_logits, rs_keep_prob, rs_input_image):
+        self.rs_sess = rs_sess
+        self.rs_image_shape = rs_image_shape
+        self.rs_logits = rs_logits
+        self.rs_keep_prob = rs_keep_prob
+        self.rs_input_image = rs_input_image
+
         episode_count = sess.run(self.global_episodes)
         total_steps = 0
         
@@ -509,6 +523,29 @@ def initialize_variables(saver, sess, load_model):
 
 
 def play_training(training=True, load_model=True):
+    # Session create for road segmentation
+    rs_num_classes = 2
+    rs_image_shape = (160, 576)
+
+    # Path to vgg model
+    vgg_path = os.path.join('./seg/data', 'vgg')
+
+    # Road Segmentation model path
+    rs_model_path='./seg/model/rs_model.ckpt'
+
+    # rs_sess = tf.Session()
+
+    rs_sess = tf.Session()
+    # Predict the logits
+    rs_input_image, rs_keep_prob, vgg_layer3_out, vgg_layer4_out, vgg_layer7_out = load_vgg(rs_sess, vgg_path)
+    nn_last_layer = layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, rs_num_classes)
+    rs_logits = tf.reshape(nn_last_layer, (-1, rs_num_classes))
+
+    # Restore the saved model
+    print("Road Segmentation : Restored the saved Model in file: %s" % rs_model_path)
+    saver = tf.train.Saver()
+    saver.restore(rs_sess, rs_model_path)
+
     with tf.device("/cpu:0"):
         global_episodes = tf.Variable(0, dtype=tf.int32, name='global_episodes', trainable=False)
         # trainer = tf.train.RMSPropOptimizer(learning_rate=1e-4, decay=0.99, epsilon=1)
@@ -544,13 +581,12 @@ def play_training(training=True, load_model=True):
         # Asynchronous magic happens: start the "work" process for each worker in a separate thread.
         worker_threads = []
         for i, worker in enumerate(workers):
-            worker_work = lambda: worker.work(max_episode_length, gamma, sess, coord, saver, training, worker_ips[i])
+            worker_work = lambda: worker.work(max_episode_length, gamma, sess, coord, saver, training, worker_ips[i], rs_sess, rs_image_shape, rs_logits, rs_keep_prob, rs_input_image)
             t = threading.Thread(target=worker_work)
             t.start()
             sleep(0.5)
             worker_threads.append(t)
         coord.join(worker_threads)  # waits until the specified threads have stopped.
-
 
 if __name__ == "__main__":
     # parser = argparse.ArgumentParser()
