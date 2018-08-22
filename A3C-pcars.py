@@ -44,7 +44,7 @@ def process_frame(frame):
     # img_gray = 0.2989 * r + 0.5870 * g + 0.1140 * b  # make rgb to grayscale
     # img_gray = rgb2gray(frame)
     img = Image.fromarray(frame, 'RGB')
-    img = img.convert("L")
+    # img = img.convert("L")
     
     s = np.asarray(img, dtype="uint8")
 
@@ -73,7 +73,7 @@ class AC_Network:
         with tf.variable_scope(scope):
             # Input and visual encoding layers
             self.inputs = tf.placeholder(shape=[None, s_size], dtype=tf.float32)
-            self.imageIn = tf.reshape(self.inputs, shape=[-1, 150, 200, 1])
+            self.imageIn = tf.reshape(self.inputs, shape=[-1, 150, 200, 3])
             self.conv1 = slim.conv2d(activation_fn=tf.nn.elu,
                                      inputs=self.imageIn, num_outputs=16,
                                      kernel_size=[4, 8], stride=[1, 4], padding='VALID')
@@ -275,7 +275,7 @@ class Worker:
                             s = process_frame(s)
                             
                             # For creating gifs
-                            to_gif = np.reshape(s, (150, 200)) * 255
+                            to_gif = np.reshape(s, (150, 200, 3)) * 255
                             episode_frames.append(to_gif)
                             
                             rnn_state = self.local_AC.state_init
@@ -319,8 +319,8 @@ class Worker:
                                     delta = t2 - t1
                                     if delta.seconds > 20:
                                         t1 = datetime.now()
-                                        print("Force reset 1")
-                                        self.r.hset('pcars_killer'+target_ip,target_ip,"1")
+                                        print("Force reset 1, type", 2)
+                                        self.r.hset('pcars_killer'+target_ip,target_ip,"2")
                                 t1 = datetime.now()
                                 while self.restarting:
                                     message = self.r.hget('pcars_data'+target_ip,target_ip)
@@ -409,7 +409,7 @@ class Worker:
                                                 else:
                                                     s1 = s
 
-                                                to_gif1 = np.reshape(s1, (150, 200)) * 255
+                                                to_gif1 = np.reshape(s1, (150, 200, 3)) * 255
 
                                                 episode_frames.append(to_gif1)
 
@@ -559,7 +559,7 @@ if __name__ == "__main__":
 
     max_episode_length = 300
     gamma = .99  # discount rate for advantage estimation and reward discounting
-    s_size = 30000#340464  # Observations are greyscale frames of 84 * 84 * 1
+    s_size = 90000#340464  # Observations are greyscale frames of 84 * 84 * 1
     a_size = 33  # Left, Right, Forward, Brake
     model_path = './model'
 

@@ -166,6 +166,7 @@ class PcarsEnv:
                     progress = sp * 100
                     self.reward = progress / 10
             else:
+                print("prevPosition",self.prevPosition)
                 if self.prevPosition is not None:
                     ref_position = self.grid_line[1]
                     
@@ -182,6 +183,9 @@ class PcarsEnv:
                 else : 
                     progress = sp * 100
                     self.reward = progress / 10
+
+            if self.prevPosition is None:
+                self.prevPosition = cur_position
 
             if self.prevPosition is not None and np.any(cur_position != self.prevPosition):
                 self.prevPosition = cur_position
@@ -288,7 +292,7 @@ class PcarsEnv:
             '''
             Minus Rewards
             '''
-            d_factor = 5
+            d_factor = 10
             if self.stay_cnt > 0:
                 self.reward += -3 * self.stay_cnt / d_factor
 
