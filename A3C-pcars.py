@@ -239,7 +239,7 @@ class Worker:
         s = Image.open(BytesIO(s))
         s = s.resize((160,576), Image.ANTIALIAS)
         s = np.array(s)
-        print("Img shape", s.shape)
+        # print("Img shape", s.shape)
         s = pred_img(self.rs_sess, self.rs_image_shape, self.rs_logits, self.rs_keep_prob, self.rs_input_image, s, False)
         s = scipy.misc.imresize(s, (150,200))
         return ob, s

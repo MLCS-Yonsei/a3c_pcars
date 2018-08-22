@@ -229,12 +229,12 @@ def gen_output_for_one_img(sess, logits, keep_prob, image_pl, image_shape, image
     endTime = time.clock()
     speed_ = (endTime - startTime)
 
-    print("Segmentation took :", speed_)
+    # print("Segmentation took :", speed_)
     return mask
 
 def pred_img(sess, image_shape, logits, keep_prob, input_image, image, print_speed=False):
     # Run NN on test images and save them to HD
-    print('Predicting image...')
+    # print('Predicting image...')
     # start epoch training timer
 
     image_output = gen_output_for_one_img(
