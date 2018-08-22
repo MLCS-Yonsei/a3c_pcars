@@ -106,14 +106,6 @@ class PcarsEnv:
             else:
                 ref_position = self.grid_line[1]
 
-            
-                
-        
-            race_action = self.one_hot(a_t, 33)
-            race_action = np.append(race_action, sp)
-            race_action.astype(np.float32)
-            race_action = race_action[np.newaxis,:]
-
             def norm_np(n):
                 n0 = n[0]
                 n1 = n[1]
@@ -235,12 +227,14 @@ class PcarsEnv:
                     self.tyre_out_cnt += 1
                     self.tyre_out_time = datetime.now()
                             
-            if crashState > 1:
+            if crashState >= 1:
                 print("Crash!", target_ip)
-                if crashState > 2:
+                if crashState == 1:
+                    self.crash_cnt += 1
+                elif crashState > 2:
                     self.crash_cnt += 3
                 else : 
-                    self.crash_cnt += 1
+                    self.crash_cnt += 2
 
                 self.crash_time = datetime.now()
 
@@ -315,6 +309,17 @@ class PcarsEnv:
             # if self.distance == 65535:
             #     print("Bad Distance", target_ip)
             #     self.reward = -200
+
+            race_action = self.one_hot(a_t, 33)
+            race_action = np.append(race_action, sp)
+            race_action = np.append(race_action, self.backward_cnt)
+            race_action = np.append(race_action, self.tyre_out_cnt)
+            race_action = np.append(race_action, self.crash_cnt)
+            race_action.astype(np.float32)
+            race_action = race_action[np.newaxis,:]
+
+            print("###", self.backward_cnt, self.tyre_out_cnt, self.crash_cnt)
+            # print("Race Action 2:",race_action)
 
             if raceState == 3:
                 # self.reward = -300

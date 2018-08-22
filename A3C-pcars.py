@@ -84,7 +84,7 @@ class AC_Network:
                                      inputs=self.conv1, num_outputs=32,
                                      kernel_size=[2, 4], stride=[1, 6], padding='VALID')
             hidden = slim.fully_connected(slim.flatten(self.conv3), 256, activation_fn=tf.nn.elu)
-            self.racing_action = tf.placeholder(shape=[None, a_size+1], dtype=tf.float32, name="Racing_action")
+            self.racing_action = tf.placeholder(shape=[None, a_size+4], dtype=tf.float32, name="Racing_action")
             hidden = tf.concat([hidden, self.racing_action], 1)
 
             # Recurrent network for temporal dependencies
@@ -279,7 +279,7 @@ class Worker:
                             episode_frames.append(to_gif)
                             
                             rnn_state = self.local_AC.state_init
-                            race_action = np.zeros((1, 34), np.float32)
+                            race_action = np.zeros((1, 37), np.float32)
 
                             while not d:
                                 # 자동 재시작 프로세스 중 머무르는 루프
