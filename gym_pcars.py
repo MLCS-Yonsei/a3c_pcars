@@ -286,7 +286,7 @@ class PcarsEnv:
             '''
             Minus Rewards
             '''
-            d_factor = 1
+            d_factor = 10
             if self.stay_cnt > 0:
                 self.reward += -3 * self.stay_cnt / d_factor
 
