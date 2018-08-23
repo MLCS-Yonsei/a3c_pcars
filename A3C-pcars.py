@@ -237,11 +237,11 @@ class Worker:
         # Decode image within base64 
         s = base64.b64decode(s)
         s = Image.open(BytesIO(s))
-        s = s.resize((160,576), Image.ANTIALIAS)
+        # s = s.resize((160,576), Image.ANTIALIAS)
         s = np.array(s)
         # print("Img shape", s.shape)
-        s = pred_img(self.rs_sess, self.rs_image_shape, self.rs_logits, self.rs_keep_prob, self.rs_input_image, s, False)
-        s = scipy.misc.imresize(s, (150,200))
+        # s = pred_img(self.rs_sess, self.rs_image_shape, self.rs_logits, self.rs_keep_prob, self.rs_input_image, s, False)
+        # s = scipy.misc.imresize(s, (150,200))
         return ob, s
 
     def work(self, max_episode_length, gamma, sess, coord, saver, training, target_ip, rs_sess, rs_image_shape, rs_logits, rs_keep_prob, rs_input_image):
