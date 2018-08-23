@@ -312,13 +312,13 @@ class PcarsEnv:
 
             race_action = self.one_hot(a_t, 33)
             race_action = np.append(race_action, sp)
-            race_action = np.append(race_action, self.backward_cnt)
-            race_action = np.append(race_action, self.tyre_out_cnt)
-            race_action = np.append(race_action, self.crash_cnt)
+            race_action = np.append(race_action, self.backward_cnt / 100)
+            race_action = np.append(race_action, self.tyre_out_cnt / 30)
+            race_action = np.append(race_action, self.crash_cnt / 10)
             race_action.astype(np.float32)
             race_action = race_action[np.newaxis,:]
 
-            print("###", self.backward_cnt, self.tyre_out_cnt, self.crash_cnt)
+            print("###", self.backward_cnt / 100, self.tyre_out_cnt / 30, self.crash_cnt / 10)
             # print("Race Action 2:",race_action)
 
             if raceState == 3:
