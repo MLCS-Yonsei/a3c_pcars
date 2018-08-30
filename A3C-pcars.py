@@ -527,22 +527,7 @@ def initialize_variables(saver, sess, load_model):
 
 def play_training(training=True, load_model=True):
     # Session create for road segmentation
-    rs_num_classes = 2
-    rs_image_shape = (160, 576)
-
-    # Path to vgg model
-    vgg_path = os.path.join('./seg/data', 'vgg')
-
-    # Road Segmentation model path
-    rs_model_path='./seg/model/rs_model.ckpt'
-
-    # rs_sess = tf.Session()
-
-    rs_sess = tf.Session()
-    # Predict the logits
-    rs_input_image, rs_keep_prob, vgg_layer3_out, vgg_layer4_out, vgg_layer7_out = load_vgg(rs_sess, vgg_path)
-    nn_last_layer = layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, rs_num_classes)
-    rs_logits = tf.reshape(nn_last_layer, (-1, rs_num_classes))
+    rs_sess, rs_input_tensor, rs_output_tensor = model_init()
 
     # Restore the saved model
     print("Road Segmentation : Restored the saved Model in file: %s" % rs_model_path)
@@ -586,7 +571,7 @@ def play_training(training=True, load_model=True):
         # Asynchronous magic happens: start the "work" process for each worker in a separate thread.
         worker_threads = []
         for i, worker in enumerate(workers):
-            worker_work = lambda: worker.work(max_episode_length, gamma, sess, coord, saver, training, worker_ips[i], rs_sess, rs_image_shape, rs_logits, rs_keep_prob, rs_input_image)
+            worker_work = lambda: worker.work(max_episode_length, gamma, sess, coord, saver, training, worker_ips[i], rs_sess, rs_input_tensor, rs_output_tensor)
             t = threading.Thread(target=worker_work)
             t.start()
             sleep(0.5)
