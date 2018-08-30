@@ -13,5 +13,3 @@ pcars.egg-info/
 model/checkpoint
 *.gif
 
-seg/data/vgg
-seg/model/*
