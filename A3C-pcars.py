@@ -236,7 +236,7 @@ class Worker:
         # Decode image within base64 
         s = base64.b64decode(s)
         s = Image.open(BytesIO(s))
-        print("#1", s.shape)
+        
         s = s.resize((576,160), Image.ANTIALIAS)
         s = np.array(s)
         print("#2", s.shape)
