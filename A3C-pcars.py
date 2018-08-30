@@ -236,15 +236,18 @@ class Worker:
         # Decode image within base64 
         s = base64.b64decode(s)
         s = Image.open(BytesIO(s))
+        print("#1", s.shape)
         s = s.resize((576,160), Image.ANTIALIAS)
         s = np.array(s)
+        print("#2", s.shape)
         pimg = np.expand_dims(s, axis=0)
         # print("Img shape", s.shape)
         pred = pred_img(self.rs_sess, self.rs_input_tensor, self.rs_output_tensor, pimg)
         pred = np.expand_dims(pred, axis=2)
-
+        print("#3", pred.shape)
         s = np.concatenate((s, pred), axis=2)
         s = resize(s, (200, 150), anti_aliasing=True)
+        print("#4", s.shape)
         
         return ob, s
 
