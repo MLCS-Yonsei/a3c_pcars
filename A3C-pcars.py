@@ -529,11 +529,6 @@ def play_training(training=True, load_model=True):
     # Session create for road segmentation
     rs_sess, rs_input_tensor, rs_output_tensor = model_init()
 
-    # Restore the saved model
-    print("Road Segmentation : Restored the saved Model in file: %s" % rs_model_path)
-    saver = tf.train.Saver()
-    saver.restore(rs_sess, rs_model_path)
-
     with tf.device("/cpu:0"):
         global_episodes = tf.Variable(0, dtype=tf.int32, name='global_episodes', trainable=False)
         # trainer = tf.train.RMSPropOptimizer(learning_rate=1e-4, decay=0.99, epsilon=1)
