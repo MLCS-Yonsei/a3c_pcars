@@ -556,11 +556,13 @@ def play_training(training=True, load_model=True):
         master_network = AC_Network(s_size, a_size, 'global', None, False)
 	
         worker_ips = [
-                # '192.168.0.2',
-                # '192.168.0.52',
+                '192.168.0.2',
+                '192.168.0.3',
+                '192.168.0.4',
+                '192.168.0.5',
                 # '165.132.46.100',
                 # '192.168.0.52'
-                '165.132.108.169'
+                # '165.132.108.169'
         ]
 
         if training:
