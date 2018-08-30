@@ -21,9 +21,10 @@ import time
 from datetime import datetime
 import argparse
 
-from seg.pred_road import *
-from skimage.transform import resize
-np.set_printoptions(threshold=np.inf)
+from seg.helper import *
+from seg.main import *
+
+import scipy.misc
 
 # Copies one set of variables to another.
 # Used to set worker network parameters to those of global network.
@@ -77,7 +78,7 @@ class AC_Network:
         with tf.variable_scope(scope):
             # Input and visual encoding layers
             self.inputs = tf.placeholder(shape=[None, s_size], dtype=tf.float32)
-            self.imageIn = tf.reshape(self.inputs, shape=[-1, 150, 200, 4])
+            self.imageIn = tf.reshape(self.inputs, shape=[-1, 150, 200, 3])
             self.conv1 = slim.conv2d(activation_fn=tf.nn.elu,
                                      inputs=self.imageIn, num_outputs=16,
                                      kernel_size=[4, 8], stride=[1, 4], padding='VALID')
@@ -236,22 +237,19 @@ class Worker:
         # Decode image within base64 
         s = base64.b64decode(s)
         s = Image.open(BytesIO(s))
-        s = s.resize((160,576), Image.ANTIALIAS)
+        # s = s.resize((160,576), Image.ANTIALIAS)
         s = np.array(s)
-        pimg = np.expand_dims(s, axis=0)
         # print("Img shape", s.shape)
-        pred = pred_img(self.rs_sess, self.rs_input_tensor, self.rs_output_tensor, pimg)
-        pred = np.expand_dims(pred, aixs=2)
-
-        s = np.concatenate((s, pred), axis=2)
-        s = s(concat, (150, 200), anti_aliasing=True)
-        
+        # s = pred_img(self.rs_sess, self.rs_image_shape, self.rs_logits, self.rs_keep_prob, self.rs_input_image, s, False)
+        # s = scipy.misc.imresize(s, (150,200))
         return ob, s
 
-    def work(self, max_episode_length, gamma, sess, coord, saver, training, target_ip, rs_sess, rs_input_tensor, rs_output_tensor):
+    def work(self, max_episode_length, gamma, sess, coord, saver, training, target_ip, rs_sess, rs_image_shape, rs_logits, rs_keep_prob, rs_input_image):
         self.rs_sess = rs_sess
-        self.rs_input_tensor = rs_input_tensor
-        self.rs_output_tensor = rs_output_tensor
+        self.rs_image_shape = rs_image_shape
+        self.rs_logits = rs_logits
+        self.rs_keep_prob = rs_keep_prob
+        self.rs_input_image = rs_input_image
 
         episode_count = sess.run(self.global_episodes)
         total_steps = 0
@@ -291,7 +289,7 @@ class Worker:
                             s = process_frame(s)
                             
                             # For creating gifs
-                            to_gif = np.reshape(s, (150, 200, 4)) * 255
+                            to_gif = np.reshape(s, (150, 200, 3)) * 255
                             episode_frames.append(to_gif)
                             
                             rnn_state = self.local_AC.state_init
@@ -425,7 +423,7 @@ class Worker:
                                                 else:
                                                     s1 = s
 
-                                                to_gif1 = np.reshape(s1, (150, 200, 4)) * 255
+                                                to_gif1 = np.reshape(s1, (150, 200, 3)) * 255
 
                                                 episode_frames.append(to_gif1)
 
@@ -479,8 +477,7 @@ class Worker:
                             if episode_count % 5 == 0 and episode_count != 0:
                                 if training and self.name == 'worker_0' and episode_count % 50 == 0:
                                     time_per_step = 0.05
-                                    # images = np.array(episode_frames)
-                                    images = np.array(np.delete(episode_frames,obj=3, axis=3))
+                                    images = np.array(episode_frames)
                                     make_gif(images, './frames/image' + str(episode_count) +'_reward_' + str(episode_reward) + '.gif',
                                                 duration=len(images) * time_per_step, true_image=True, salience=False)
                                 if training and episode_count % 5 == 0 and self.name == 'worker_0':
