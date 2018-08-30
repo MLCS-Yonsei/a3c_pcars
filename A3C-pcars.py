@@ -241,7 +241,7 @@ class Worker:
         pimg = np.expand_dims(s, axis=0)
         # print("Img shape", s.shape)
         pred = pred_img(self.rs_sess, self.rs_input_tensor, self.rs_output_tensor, pimg)
-        pred = np.expand_dims(pred, aixs=2)
+        pred = np.expand_dims(pred, axis=2)
 
         s = np.concatenate((s, pred), axis=2)
         s = resize(s, (200, 150), anti_aliasing=True)
