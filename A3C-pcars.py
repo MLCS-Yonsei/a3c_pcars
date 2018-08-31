@@ -482,13 +482,13 @@ class Worker:
 
                             # Periodically save gifs of episodes, model parameters, and summary statistics.
                             if episode_count % 5 == 0 and episode_count != 0:
-                                if training and self.name == 'worker_0' and episode_count % 50 == 0:
+                                if training and episode_count % 50 == 0: # and self.name == 'worker_0' 
                                     time_per_step = 0.05
                                     # images = np.array(episode_frames)
                                     images = np.array(np.delete(episode_frames,obj=3, axis=3))
                                     make_gif(images, './frames/image' + str(episode_count) +'_reward_' + str(episode_reward) + '.gif',
                                                 duration=len(images) * time_per_step, true_image=True, salience=False)
-                                if training and episode_count % 5 == 0 and self.name == 'worker_0':
+                                if training and episode_count % 5 == 0: # and self.name == 'worker_0'
                                     saver.save(sess, self.model_path + '/model-' + str(episode_count) + '.ckpt')
                                     print("Saved Model")
 
