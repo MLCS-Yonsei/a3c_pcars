@@ -321,23 +321,23 @@ class PcarsEnv:
             print("###", self.backward_cnt / 100, self.tyre_out_cnt / 30, self.crash_cnt / 10)
             # print("Race Action 2:",race_action)
 
-            if raceState == 3:
-                # self.reward = -300
-                print("Restarting by finish", gameState, raceState)
-                self.brake_cnt = 0
-                self.stop_cnt = 0
-                self.backward_cnt = 0
-                self.tyre_out_cnt = 0
-                self.crash_cnt = 0
-                self.stay_cnt = 0
+            # if raceState == 3:
+            #     # self.reward = -300
+            #     print("Restarting by finish", gameState, raceState)
+            #     self.brake_cnt = 0
+            #     self.stop_cnt = 0
+            #     self.backward_cnt = 0
+            #     self.tyre_out_cnt = 0
+            #     self.crash_cnt = 0
+            #     self.stay_cnt = 0
 
-                self.position = []
-                self.distance = 0
-                self.time_step = 0
+            #     self.position = []
+            #     self.distance = 0
+            #     self.time_step = 0
 
-                self.r.hset('pcars_action'+target_ip, target_ip, False)
-                self.reset_pcars_2(target_ip)
-                terminate_status = True
+            #     self.r.hset('pcars_action'+target_ip, target_ip, False)
+            #     self.reset_pcars_2(target_ip)
+            #     terminate_status = True
                 
             print("reward:",self.reward,target_ip)
 

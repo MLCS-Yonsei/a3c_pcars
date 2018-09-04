@@ -185,7 +185,7 @@ class pCarsAutoKiller(mp.Process):
 
         self.ard.close()
         self.connect_arduino()
-
+        print("RST 1 finished")
         return True
 
     def restart_type_2(self):
@@ -212,7 +212,7 @@ class pCarsAutoKiller(mp.Process):
 
         cmd = '{ENTER}'
         SendKeys(cmd)
-
+        print("RST 2 finished")
         return True
 
     def restart_type_3(self):
@@ -236,7 +236,7 @@ class pCarsAutoKiller(mp.Process):
 
         cmd = '{ENTER}'
         SendKeys(cmd)
-
+        print("RST 3 finished")
         return True
 
     def restart_type_4(self):
@@ -313,7 +313,7 @@ class pCarsAutoKiller(mp.Process):
                     # self.trigger_arduino_enter()
 
                     
-
+        print("RST 4 finished")
         return True
 
 if __name__ == '__main__':
@@ -325,7 +325,7 @@ if __name__ == '__main__':
             
             if message:
                 reset_status = eval(message)
-                print(reset_status)
+                print("reset status", reset_status)
                 if reset_status == 1:
                     pc.restart_type_1()
                     del_stat = True
