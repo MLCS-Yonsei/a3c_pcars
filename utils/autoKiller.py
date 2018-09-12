@@ -25,7 +25,7 @@ import signal
 import redis
 import socket
 
-from autoController import pCarsAutoController
+from utils.autoController import pCarsAutoController
 
 class pCarsAutoKiller(mp.Process):
     def __init__(self):
