@@ -234,21 +234,38 @@ class pCarsAutoController(mp.Process):
 
     def run(self):
         while True:
-            message = self.r.hget('pcars_action',self.local_ip)
+            try:
+                message = self.r.hget('pcars_action'+local_ip,self.local_ip)
+                force_acc = self.r.hget('pcars_force_acc', self.local_ip)
 
-            if message:
-                action = eval(message)
-                self.action_parser(action)
+                if force_acc:
 
-                self.r.hdel('pcars_action',self.local_ip)
+                    if eval(force_acc) == True:
+                        self.accOn()
+                        
+                        self.r.hdel('pcars_force_acc',self.local_ip)
 
-''' Getting Local IP of this Computer '''
-local_ip = [ip for ip in socket.gethostbyname_ex(socket.gethostname())[2] if not ip.startswith("127.")][:1][0]
+                if message:
+                    action = eval(message)
+                    if action is False:
+                        print("Control OFF")
+                        self.move_steer(0)
+                        self.brakeOff()
+                        self.accOff()
+                    else:
+                        self.action_parser(action)
 
-''' Init Redis '''
-r = redis.StrictRedis(host='redis.hwanmoo.kr', port=6379, db=1)
+                    self.r.hdel('pcars_action'+self.local_ip,self.local_ip)
+            except:
+                pass
 
 if __name__ == '__main__':
+    ''' Getting Local IP of this Computer '''
+    local_ip = [ip for ip in socket.gethostbyname_ex(socket.gethostname())[2] if not ip.startswith("127.")][:1][0]
+
+    ''' Init Redis '''
+    r = redis.StrictRedis(host='redis.hwanmoo.kr', port=6379, db=1)
+    
     pc = pCarsAutoController()
     while True:
         try:

@@ -1,9 +1,9 @@
 import threading
 import scipy.signal
 import sys
-from helper import *
+from utils.helper import *
 from time import sleep
-from gym_pcars import PcarsEnv
+from utils.gym_pcars import PcarsEnv
 import numpy as np
 import tensorflow as tf
 import scipy.misc
@@ -21,7 +21,7 @@ import time
 from datetime import datetime
 import argparse
 
-from seg.pred_road import *
+from utils.seg.pred_road import *
 from skimage.transform import resize
 np.set_printoptions(threshold=np.inf)
 
@@ -160,8 +160,8 @@ class Worker:
         self.episode_rewards = []
         self.episode_lengths = []
         self.episode_mean_values = []
-        self.summary_writer_train = tf.summary.FileWriter("train_" + str(self.number))
-        self.summary_writer_play = tf.summary.FileWriter("play_" + str(self.number))
+        self.summary_writer_train = tf.summary.FileWriter("./train/train_" + str(self.number))
+        self.summary_writer_play = tf.summary.FileWriter("./play/play_" + str(self.number))
 
         ''' Init Redis '''
         self.r = redis.StrictRedis(host='redis.hwanmoo.kr', port=6379, db=1)

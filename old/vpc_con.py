@@ -20,14 +20,15 @@ import base64
 import numpy as np
 
 from threading import Thread
+from multiprocessing import Process
 
-from pcars_stream.src.pcars.stream import PCarsStreamReceiver
+from utils.pcars_stream.src.pcars.stream import PCarsStreamReceiver
+from utils.autoController import pCarsAutoController
+from utils.autoKiller import pCarsAutoKiller
 
 import http.client
 import socket 
 
-from autoController import pCarsAutoController
-from autoKiller import pCarsAutoKiller
 from datetime import datetime
 
 ''' Getting Local IP of this Computer '''
@@ -174,6 +175,66 @@ def start_capture(listener):
 
     return sct
 
+def run_pac(r, local_ip):
+    pc = pCarsAutoController()
+    while True:
+        try:
+            message = r.hget('pcars_action'+local_ip,local_ip)
+            force_acc = r.hget('pcars_force_acc', local_ip)
+
+            if force_acc:
+
+                if eval(force_acc) == True:
+                    pc.accOn()
+                    
+                    r.hdel('pcars_force_acc',local_ip)
+
+            if message:
+                action = eval(message)
+                if action is False:
+                    print("Control OFF")
+                    pc.move_steer(0)
+                    pc.brakeOff()
+                    pc.accOff()
+                else:
+                    pc.action_parser(action)
+
+                r.hdel('pcars_action'+local_ip,local_ip)
+        except:
+            pass
+
+def run_pkr(r, local_ip):
+    pc = pCarsAutoKiller()
+    while True:
+        try:
+            message = r.hget('pcars_killer'+local_ip,local_ip)
+            
+            if message:
+                reset_status = eval(message)
+                print(reset_status)
+                if reset_status == 1:
+                    pc.restart_type_1()
+                    del_stat = True
+                elif reset_status == 2:
+                    pc.restart_type_2()
+                    del_stat = True
+                elif reset_status == 3:
+                    pc.restart_type_3()
+                    del_stat = True
+                elif reset_status == 4:
+                    pc.restart_type_4()
+                    del_stat = False
+                    r.hset('pcars_killer'+local_ip,local_ip,"0")
+                elif reset_status == 0:
+                    del_stat = False
+                else:
+                    del_stat = True
+
+                if del_stat:
+                    r.hdel('pcars_killer'+local_ip,local_ip)
+        except:
+            pass
+
 if __name__ == '__main__':
     print('Starting Data Sender.. [A3C on Project Cars]')
     ''' 
@@ -186,12 +247,12 @@ if __name__ == '__main__':
     stream.addListener(listener)
     stream.start()
 
+    pac = Process(target=run_pac, args=(r,local_ip,))
+    pac.start()
 
-    # pac = pCarsAutoController()
-    # pac.run()
+    pkr = Process(target=run_pkr, args=(r,local_ip,))
+    pkr.start()
 
-    # pkr = pCarsAutoKiller()
-    # pkr.run()
     while True:
         # Taking Screen Capture form Pcars
         '''
