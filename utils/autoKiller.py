@@ -49,6 +49,8 @@ class pCarsAutoKiller(mp.Process):
         self.r = redis.StrictRedis(host='redis.hwanmoo.kr', port=6379, db=1)
         print("Redis connected for AutoKiller: ",self.r)
 
+        self.pac = pCarsAutoController()
+
     def connect_arduino(self):
         # Scan for arduino ports
         ports = list(serial.tools.list_ports.comports())
@@ -233,7 +235,7 @@ class pCarsAutoKiller(mp.Process):
         return True
 
     def restart_type_4(self):
-        pac = pCarsAutoController()
+        pac = self.pac
         pac.move_steer(0)
         pac.brakeOff()
         pac.accOff()
@@ -316,7 +318,7 @@ class pCarsAutoKiller(mp.Process):
                 
                 if message:
                     reset_status = eval(message)
-                    print(reset_status)
+                    # print(reset_status)
                     if reset_status == 1:
                         self.restart_type_1()
                         del_stat = True

@@ -29,7 +29,9 @@ from skimage.transform import resize
 from utils.helper import *
 from utils.gym_pcars import PcarsEnv
 from utils.seg.pred_road import *
-from utils.pycurses import draw_menu
+from utils.pycurses import Screen
+
+import curses
 
 # Copies one set of variables to another.
 # Used to set worker network parameters to those of global network.
@@ -246,26 +248,23 @@ class Worker:
         
         return ob, s
 
-    def work(self, max_episode_length, gamma, sess, coord, saver, training, target_ip, rs_sess, rs_input_tensor, rs_output_tensor):
-        self.rs_sess = rs_sess
-        self.rs_input_tensor = rs_input_tensor
-        self.rs_output_tensor = rs_output_tensor
+    def work(self, max_episode_length, gamma, sess, coord, saver, training, target_ip, screen):
+        # self.rs_sess = rs_sess
+        # self.rs_input_tensor = rs_input_tensor
+        # self.rs_output_tensor = rs_output_tensor
 
         episode_count = sess.run(self.global_episodes)
         total_steps = 0
-        
-        begin_x = self.number * 30
-        begin_y = 7
 
-        msg = "Starting worker " + str(self.number)
-        # print(msg)
+        msg = "Worker " + str(self.number)
+        screen.update(msg, self.number, 'worker_header')
         # self.r.hset('pcars_killer'+target_ip,target_ip,"3")
         with sess.as_default(), sess.graph.as_default():
+            
             while not coord.should_stop():
                 message = self.r.hget('pcars_data'+target_ip,target_ip)
 
                 if message:
-
                     self.r.hdel('pcars_data'+target_ip,target_ip)
                     ob, s = self.parse_message(message)
                     
@@ -275,7 +274,8 @@ class Worker:
                         raceState = [int(s) for s in ob["raceState"].split('>')[0].split() if s.isdigit()][0]
 
                         if raceState == 2 and gameState == 2:
-                            # print("Starting Episode", episode_count, target_ip)
+                            msg = "Starting Episode" + str(episode_count) + target_ip
+                            # screen.update(msg, self.number, "print")
 
                             # Set control OFF
                             self.r.hset('pcars_action'+target_ip, target_ip, False)
@@ -300,6 +300,73 @@ class Worker:
                             race_action = np.zeros((1, 34), np.float32)
 
                             while not d:
+                                t1 = datetime.now()
+                                while self.restarting:
+                                    message = self.r.hget('pcars_killer'+target_ip,target_ip)
+
+                                    if message:
+                                        t0 = datetime.now()
+                                        
+                                        reset_status = eval(message)
+                                        # print(t0, reset_status)
+                                        # autoKiller에서 처리중
+                                        if reset_status == 1:
+                                            pass
+                                        elif reset_status == 2:
+                                            pass
+                                        elif reset_status == 3:
+                                            pass
+                                        elif reset_status == 4:
+                                            pass
+                                        elif reset_status == 0:
+                                            # print("out of First loop")
+                                            self.restarting = False
+                                            self.r.hdel('pcars_killer'+target_ip,target_ip)
+                                            break
+                                        else:
+                                            # print("out of First loop")
+                                            break
+                                    else: 
+                                        break
+
+                                    t2 = datetime.now()
+                                    delta = t2 - t1
+                                    if delta.seconds > 20:
+                                        t1 = datetime.now()
+                                        # print("Force reset 1, type", 2)
+                                        self.r.hset('pcars_killer'+target_ip,target_ip,"2")
+                                t1 = datetime.now()
+                                while self.restarting:
+                                    message = self.r.hget('pcars_data'+target_ip,target_ip)
+
+                                    if message:
+                                        
+                                        self.r.hdel('pcars_data'+target_ip,target_ip)
+                                        ob, s = self.parse_message(message)
+
+                                        if 'raceState' in ob and 'gameState' in ob and 'participants' in ob:
+
+                                            gameState = [int(s) for s in ob["gameState"].split('>')[0].split() if s.isdigit()][0]
+                                            raceState = [int(s) for s in ob["raceState"].split('>')[0].split() if s.isdigit()][0]
+                                            sessionState = [int(s) for s in ob["sessionState"].split('>')[0].split() if s.isdigit()][0]
+                                            lap_distance = ob["participants"][0]["currentLapDistance"]
+                                            raceStateFlags = ob['raceStateFlags']
+                                            # print("Restarting")
+                                            # print(gameState, raceState, raceStateFlags)
+                                            # print("R",gameState, raceState, sessionState, raceStateFlags)
+                                            if gameState != 2 or (gameState == 2 and raceState == 2):
+                                                self.r.hdel('pcars_force_acc', target_ip)
+                                                self.restarting = False
+                                                self.r.hset('pcars_action'+target_ip, target_ip, False)
+                                                break
+                                    
+                                    t2 = datetime.now()
+                                    delta = t2 - t1
+                                    if delta.seconds > 20:
+                                        t1 = datetime.now()
+                                        # print("Force reset 2")
+                                        self.r.hset('pcars_killer'+target_ip,target_ip,"1")
+
                                 # Get recent data
                                 message = self.r.hget('pcars_data'+target_ip,target_ip)
 
@@ -329,7 +396,7 @@ class Worker:
                                             a_t = np.random.choice(a_dist[0], p=a_dist[0])  # a random sample is generated given probabs
                                             a_t = np.argmax(a_dist == a_t)
                                             
-                                            _, reward, info, d, race_action = self.env.step_discrete(self.actions[a_t], a_t, ob, target_ip)
+                                            _, reward, info, d, race_action = self.env.step_discrete(self.actions[a_t], a_t, ob, target_ip, screen, self.number)
 
                                             # r = reward/1000
                                             r = reward
@@ -359,6 +426,9 @@ class Worker:
                                             total_steps += 1
                                             episode_step_count += 1
                                             # print("episode ", episode_count, " step count :",episode_step_count, " Total Step :", total_steps)
+                                            screen.update("Episode : " + str(episode_count), self.number, "episode")
+                                            screen.update("Step : " + str(episode_step_count) + " (" + str(total_steps) + ")", self.number, "step")
+
                                             # If the episode hasn't ended, but the experience buffer is full, then we
                                             # make an update step using that experience rollout.
                                             if training and len(episode_buffer) == 100 and d is not True:  #batch to 100 30 before 
@@ -388,13 +458,13 @@ class Worker:
 
                             # Periodically save gifs of episodes, model parameters, and summary statistics.
                             if episode_count % 5 == 0 and episode_count != 0:
-                                if training and episode_count % 50 == 0: # and self.name == 'worker_0' 
+                                if training and episode_count % 50 == 0 and self.name == 'worker_0':
                                     time_per_step = 0.05
                                     images = np.array(episode_frames)
                                     # images = np.array(np.delete(episode_frames,obj=3, axis=3))
                                     make_gif(images, './frames/image' + str(episode_count) +'_reward_' + str(episode_reward) + '.gif',
                                                 duration=len(images) * time_per_step, true_image=True, salience=False)
-                                if training and episode_count % 5 == 0: # and self.name == 'worker_0'
+                                if training and episode_count % 5 == 0 and self.name == 'worker_0':
                                     saver.save(sess, self.model_path + '/model-' + str(episode_count) + '.ckpt')
                                     # print("Saved Model")
 
@@ -419,8 +489,8 @@ class Worker:
                                     self.summary_writer_play.add_summary(summary, episode_count)
                                     self.summary_writer_play.flush()
 
-                            # if self.name == 'worker_0':
-                            sess.run(self.increment)
+                            if self.name == 'worker_0':
+                                sess.run(self.increment)
                             episode_count += 1
 
 def initialize_variables(saver, sess, load_model):
@@ -434,7 +504,8 @@ def initialize_variables(saver, sess, load_model):
 
 def play_training(training=True, load_model=True):
     # Session create for road segmentation
-    rs_sess, rs_input_tensor, rs_output_tensor = model_init()
+    # rs_sess, rs_input_tensor, rs_output_tensor = model_init()
+    screen = Screen()
 
     with tf.device("/cpu:0"):
         global_episodes = tf.Variable(0, dtype=tf.int32, name='global_episodes', trainable=False)
@@ -443,13 +514,12 @@ def play_training(training=True, load_model=True):
         master_network = AC_Network(s_size, a_size, 'global', None, False)
 	
         worker_ips = [
-                '192.168.0.2',
-                '192.168.0.3',
-                '192.168.0.4',
-                '192.168.0.5',
-                # '165.132.46.100',
-                # '192.168.0.52'
-                # '165.132.108.169'
+                # '192.168.0.2',
+                # '192.168.0.3',
+                # '192.168.0.4',
+                # '192.168.0.5',
+                '165.132.108.169',
+
         ]
 
         if training:
@@ -473,7 +543,7 @@ def play_training(training=True, load_model=True):
         # Asynchronous magic happens: start the "work" process for each worker in a separate thread.
         worker_threads = []
         for i, worker in enumerate(workers):
-            worker_work = lambda: worker.work(max_episode_length, gamma, sess, coord, saver, training, worker_ips[i], rs_sess, rs_input_tensor, rs_output_tensor)
+            worker_work = lambda: worker.work(max_episode_length, gamma, sess, coord, saver, training, worker_ips[i], screen)
             t = threading.Thread(target=worker_work)
             t.start()
             sleep(0.5)
@@ -484,7 +554,7 @@ if __name__ == "__main__":
     # parser = argparse.ArgumentParser()
     # parser.add_argument('-l', '--loadmodel', dest='load_model', type=bool,
     #                     default=False, help='Score threshold for displaying bounding boxes')
-
+    
     max_episode_length = 300
     gamma = .99  # discount rate for advantage estimation and reward discounting
     s_size = 90000#340464  # Observations are greyscale frames of 84 * 84 * 1

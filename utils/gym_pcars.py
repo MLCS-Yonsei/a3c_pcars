@@ -45,8 +45,8 @@ class PcarsEnv:
         self.stay_time = None
 
         # Grid Line
-        self.grid_line = np.load('grid_line.npz')['results'][:,1:4]
-        self.distance_ref = np.load('grid_line.npz')['results'][:,0]
+        self.grid_line = np.load('./utils/grid_line/grid_line.npz')['results'][:,1:4]
+        self.distance_ref = np.load('./utils/grid_line/grid_line.npz')['results'][:,0]
 
         self.fp_x = self.grid_line[:,0].astype(float)
         self.fp_y = self.grid_line[:,1].astype(float)
@@ -54,13 +54,13 @@ class PcarsEnv:
 
         self.reward = 0
         self.reset_amt = 0
-   
+
     def one_hot(self, label, n_classes):
         a = np.zeros(n_classes)
         a[label] = 1
         return a
 
-    def step_discrete(self, u, a_t, obs, target_ip):
+    def step_discrete(self, u, a_t, obs, target_ip, screen, worker_number):
         if 'raceState' in obs:
 
             j=0
@@ -97,7 +97,7 @@ class PcarsEnv:
                 # print("REF:",ref_position)
                 # print("CUR:",cur_position)
 
-                if self.ref_prevPosition is None and self.distance > 1:
+                if self.ref_prevPosition is None and self.distance >= 1:
                     ref_position_x = np.interp(self.distance-1, self.distance_ref, self.fp_x)
                     ref_position_y = np.interp(self.distance-1, self.distance_ref, self.fp_y)
                     ref_position_z = np.interp(self.distance-1, self.distance_ref, self.fp_z)
@@ -123,20 +123,22 @@ class PcarsEnv:
                 r = p1-p2
                 return math.sqrt(r[0]*r[0]+r[1]*r[1]+r[2]*r[2])
 
-            # print("Distance",self.distance)
+            # print("Distance",)
+            screen.update("Distance : "+str(self.distance), worker_number, 'distance')
             # Reward 
             if self.distance != 0 and self.distance != 65535:
                 # print(ref_position)
                 # print(self.ref_prevPosition)
                 # print(np.any(ref_position != self.ref_prevPosition))
-                if self.prevPosition is not None and np.any(cur_position != self.prevPosition):
+                if self.prevPosition is not None and self.ref_prevPosition is not None and np.any(cur_position != self.prevPosition):
                     d = abs(get_distance(ref_position,cur_position)) / 6
                     v_e = cur_position - self.prevPosition
                     v_r = ref_position - self.ref_prevPosition
 
                     cos_a = np.dot(norm_np(v_e),norm_np(v_r))
-                    # print("d",d)
-                    # print("cosa1", cos_a)
+                    screen.update("d : "+str(d), worker_number, 'd')
+                    screen.update("cos_a_1 : "+str(cos_a), worker_number, 'cos_a')
+
                     progress = (sp * 100)*(cos_a - d)
                     self.reward = progress / 10
                 
@@ -146,8 +148,8 @@ class PcarsEnv:
                     v_r = ref_position - self.ref_prevPosition
 
                     cos_a = np.dot(norm_np(v_e),norm_np(v_r))
-                    # print("d",d)
-                    # print("cosa2", cos_a)
+                    screen.update("d : "+str(d), worker_number, 'd')
+                    screen.update("cos_a_2 : "+str(cos_a), worker_number, 'cos_a')
                     progress = (sp * 100)*(cos_a - d)
                     self.reward = progress / 10
 
@@ -166,8 +168,8 @@ class PcarsEnv:
                     v_r = ref_position - self.prevPosition
 
                     cos_a = np.dot(norm_np(v_e),norm_np(v_r))
-                    # print("d",d)
-                    # print("cosa3", cos_a)
+                    screen.update("d : "+str(d), worker_number, 'd')
+                    screen.update("cos_a_3 : "+str(cos_a), worker_number, 'cos_a')
                     progress = (sp * 100)*(cos_a - d)
                     self.reward = progress / 10
 
@@ -322,8 +324,11 @@ class PcarsEnv:
             # print("Race Action 2:",race_action)
                 
             # print("reward:", self.reward, target_ip)
+            screen.update("reward : "+str(self.reward), worker_number, 'reward')
+            screen.update("reset_ : "+str(self.reset_amt), worker_number, 'reset_amt')
+            screen.update("B / T / C : "+str(self.backward_cnt / 100) + ', '+str(self.tyre_out_cnt / 100) + ', '+str(self.crash_cnt / 100), worker_number, 'reset_cnt')
 
-            if self.reset_amt <= -300 and terminate_status is False:
+            if self.reset_amt <= -10 and terminate_status is False:
                 # print("Restarting by finish", gameState, raceState)
                 self.brake_cnt = 0
                 self.stop_cnt = 0

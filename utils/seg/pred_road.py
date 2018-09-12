@@ -12,7 +12,7 @@ DATA_FOLDER = './data/data_road/testing/image_2_pcars'
 def model_init(device='/gpu:0'):
     INPUT_TENSOR_NAME = 'image_input'
     FINAL_TENSOR_NAME = 'lambda_4/resize_images/ResizeBilinear'
-    FREEZED_PATH = './seg/model/frozen.pb'
+    FREEZED_PATH = './model/frozen.pb'
     IMAGE_SHAPE = (160, 576)
 
     tf.reset_default_graph()
