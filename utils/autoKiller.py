@@ -235,6 +235,7 @@ class pCarsAutoKiller(mp.Process):
         return True
 
     def restart_type_4(self):
+        print("Rst type 4 start")
         pac = self.pac
         pac.move_steer(0)
         pac.brakeOff()
