@@ -318,16 +318,16 @@ class pCarsAutoKiller(mp.Process):
                     reset_status = eval(message)
                     print(reset_status)
                     if reset_status == 1:
-                        self..restart_type_1()
+                        self.restart_type_1()
                         del_stat = True
                     elif reset_status == 2:
-                        self..restart_type_2()
+                        self.restart_type_2()
                         del_stat = True
                     elif reset_status == 3:
-                        self..restart_type_3()
+                        self.restart_type_3()
                         del_stat = True
                     elif reset_status == 4:
-                        self..restart_type_4()
+                        self.restart_type_4()
                         del_stat = False
                         self.r.hset('pcars_killer'+self.local_ip,self.local_ip,"0")
                     elif reset_status == 0:
