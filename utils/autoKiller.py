@@ -245,6 +245,7 @@ class pCarsAutoKiller(mp.Process):
             kill_message = r.hget('pcars_killer'+local_ip,local_ip)
             if kill_message:
                 km = eval(kill_message)
+                print("Kill msg", km)
                 if km != 4:
                     break
 
