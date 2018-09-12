@@ -234,10 +234,10 @@ if __name__ == '__main__':
     stream.addListener(listener)
     stream.start()
 
-    pac = Process(target=run_pac, args=(r,local_ip,))
+    pac = Thread(target=run_pac, args=(r,local_ip,))
     pac.start()
 
-    pkr = Process(target=run_pkr, args=(r,local_ip,))
+    pkr = Thread(target=run_pkr, args=(r,local_ip,))
     pkr.start()
 
     while True:
