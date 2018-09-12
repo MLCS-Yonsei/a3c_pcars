@@ -242,18 +242,18 @@ class pCarsAutoKiller(mp.Process):
         pac.accOff()
         cnt = 0
         while True:
-            kill_message = r.hget('pcars_killer'+local_ip,local_ip)
+            kill_message = r.hget('pcars_killer'+self.local_ip,self.local_ip)
             if kill_message:
                 km = eval(kill_message)
                 print("Kill msg", km)
                 if km != 4:
                     break
 
-            message = self.r.hget('pcars_data'+local_ip,local_ip)
+            message = self.r.hget('pcars_data'+self.local_ip,self.local_ip)
 
             if message:
                                             
-                self.r.hdel('pcars_data'+local_ip,local_ip)
+                self.r.hdel('pcars_data'+self.local_ip,self.local_ip)
                 message = message.decode("utf-8")
                 message = message.replace('<','\'<')
                 message = message.replace('>','>\'')
