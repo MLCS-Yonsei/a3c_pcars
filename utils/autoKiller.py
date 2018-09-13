@@ -235,19 +235,13 @@ class pCarsAutoKiller(mp.Process):
     def restart_type_4(self):
         print("Rst type 4 start")
         pac = self.pac
-        print("1")
+
         pac.move_steer(0)
-        print("12")
         pac.brakeOff()
-        print("123")
         pac.accOff()
-        print("1234")
         cnt = 0
-        print("12345")
         while True:
-            print("6")
-            kill_message = r.hget('pcars_killer'+self.local_ip,self.local_ip)
-            print("7")
+            kill_message = self.r.hget('pcars_killer'+self.local_ip,self.local_ip)
             if kill_message:
                 km = eval(kill_message)
                 print("Kill msg", km)
@@ -255,7 +249,7 @@ class pCarsAutoKiller(mp.Process):
                     break
 
             message = self.r.hget('pcars_data'+self.local_ip,self.local_ip)
-            print("RST 4 : ", message)
+            # print("RST 4 : ", message)
             if message:
                                             
                 self.r.hdel('pcars_data'+self.local_ip,self.local_ip)
