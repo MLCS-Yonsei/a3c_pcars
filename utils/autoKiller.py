@@ -35,8 +35,6 @@ class pCarsAutoKiller(mp.Process):
         self.get_focus()
         self.status = 'active'
 
-        self.local_ip = 'localhost:8080'
-        
         self.connect_arduino()
         self.prevLapDistance = 0
 
@@ -250,7 +248,7 @@ class pCarsAutoKiller(mp.Process):
                     break
 
             message = self.r.hget('pcars_data'+self.local_ip,self.local_ip)
-
+            print("RST 4 : ", message)
             if message:
                                             
                 self.r.hdel('pcars_data'+self.local_ip,self.local_ip)
