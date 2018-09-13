@@ -235,12 +235,19 @@ class pCarsAutoKiller(mp.Process):
     def restart_type_4(self):
         print("Rst type 4 start")
         pac = self.pac
+        print("1")
         pac.move_steer(0)
+        print("12")
         pac.brakeOff()
+        print("123")
         pac.accOff()
+        print("1234")
         cnt = 0
+        print("12345")
         while True:
+            print("6")
             kill_message = r.hget('pcars_killer'+self.local_ip,self.local_ip)
+            print("7")
             if kill_message:
                 km = eval(kill_message)
                 print("Kill msg", km)
