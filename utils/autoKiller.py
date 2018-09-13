@@ -96,13 +96,13 @@ class pCarsAutoKiller(mp.Process):
         while True:
             # Send Signal
             self.ard.write(b"enter")
-            print("Ard wait 1")
+            # print("Ard wait 1")
             time.sleep(0.3)
             msg = self.ard.readline()
-            print("Ard wait 2")
+            # print("Ard wait 2")
             # Finish if sec signal succeed
             if msg == b'enter\r\n':
-                print("Ard wait done")
+                # print("Ard wait done")
                 break
 
         return True
@@ -268,11 +268,12 @@ class pCarsAutoKiller(mp.Process):
                     #     break
 
                     sp = ob["speed"]
-                    if sp < 0.2:
+                    if sp < 0.3:
                         # self.trigger_virtual_enter()
-                        print("speed almost 0")
                         self.trigger_arduino_enter()
-                        break
+                        if sp < 0.1:
+                            print("speed almost 0")
+                            break
                         
                     if self.prev_sp is None:
                         self.prev_sp = sp
@@ -304,7 +305,7 @@ class pCarsAutoKiller(mp.Process):
 
                             self.prev_action = 'brake'
 
-                    time.sleep(0.5)
+                    time.sleep(0.2)
                     pac.brakeOff()
                     pac.accOff()
                     # self.trigger_virtual_enter()
