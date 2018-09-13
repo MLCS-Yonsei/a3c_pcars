@@ -126,7 +126,7 @@ class PcarsEnv:
             # print("Distance",)
             screen.update("Distance : "+str(self.distance), worker_number, 'distance')
             # Reward 
-            if self.distance != 0 and self.distance != 65535:
+            if self.distance != 0 and self.distance < 64000:
                 # print(ref_position)
                 # print(self.ref_prevPosition)
                 # print(np.any(ref_position != self.ref_prevPosition))
@@ -180,7 +180,7 @@ class PcarsEnv:
             if self.prevPosition is None:
                 self.prevPosition = cur_position
 
-            if self.prevPosition is not None and np.any(cur_position != self.prevPosition):
+            if self.prevPosition is not None and np.all(cur_position != self.prevPosition):
                 self.prevPosition = cur_position
 
                 if np.any(ref_position != self.ref_prevPosition):
@@ -328,7 +328,7 @@ class PcarsEnv:
             screen.update("reset_ : "+str(self.reset_amt), worker_number, 'reset_amt')
             screen.update("B / T / C : "+str(self.backward_cnt / 100) + ', '+str(self.tyre_out_cnt / 100) + ', '+str(self.crash_cnt / 100), worker_number, 'reset_cnt')
 
-            if self.reset_amt <= -100 and terminate_status is False:
+            if self.reset_amt <= -150 and terminate_status is False:
                 # print("Restarting by finish", gameState, raceState)
                 self.brake_cnt = 0
                 self.stop_cnt = 0
