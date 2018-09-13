@@ -96,11 +96,13 @@ class pCarsAutoKiller(mp.Process):
         while True:
             # Send Signal
             self.ard.write(b"enter")
+            print("Ard wait 1")
             time.sleep(0.3)
             msg = self.ard.readline()
-
+            print("Ard wait 2")
             # Finish if sec signal succeed
             if msg == b'enter\r\n':
+                print("Ard wait done")
                 break
 
         return True
