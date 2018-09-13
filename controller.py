@@ -235,11 +235,11 @@ if __name__ == '__main__':
     stream.addListener(listener)
     stream.start()
 
-    pac = Thread(target=run_pac, args=(r,local_ip,))
-    pac.start()
+    # pac = Thread(target=run_pac, args=(r,local_ip,))
+    # pac.start()
 
-    pkr = Thread(target=run_pkr, args=(r,local_ip,))
-    pkr.start()
+    # pkr = Thread(target=run_pkr, args=(r,local_ip,))
+    # pkr.start()
 
     while True:
         # Taking Screen Capture form Pcars
