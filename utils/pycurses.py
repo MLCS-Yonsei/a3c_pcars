@@ -71,7 +71,7 @@ class Screen:
 
         self.stdscr.addstr(y, x, _empty_str[:max_width-1], curses.color_pair(1))
 
-        return [y, x, _str[:_w-2]]
+        return [y + 20, x, _str[:_w-2]]
 
     def update(self, _str, num, flag):
         # Initialization

@@ -23,8 +23,6 @@ class pCarsAutoController(mp.Process):
         self.get_focus()
         self.status = 'active'
 
-        self.target_ip = 'localhost:8080'
-
         self.controlState = {
             'acc': False,
             'brake': False,
