@@ -178,9 +178,10 @@ class pCarsAutoKiller(mp.Process):
                     if sp < 0.1:
                         self.trigger_virtual_enter()
                         pac.handBrakeOff()   
+                        print("Loop escaped")
                         break
                                    
-        print("Loop escaped")
+        
         return True
 
 
