@@ -70,6 +70,7 @@ class pCarsAutoKiller(mp.Process):
         py = 380
 
         self.press_vkey("RETURN")
+        print("RETURN PRESSED")
 
     def send_enter(self):
         cmd = '{ENTER}'
@@ -163,7 +164,7 @@ class pCarsAutoKiller(mp.Process):
         pac.move_steer(0)
         pac.brakeOff()
         pac.accOff()
-        cnt = 0
+        pac.handBrakeOn()
         while True:
             kill_message = self.r.hget('pcars_killer'+self.local_ip,self.local_ip)
             if kill_message:
@@ -186,16 +187,18 @@ class pCarsAutoKiller(mp.Process):
 
                 if "speed" in ob:
                     sp = ob["speed"]
+                    print("Speed : ", sp)
                     if sp < 0.3:
                         self.trigger_virtual_enter()
                         if sp < 0.1:
+                            pac.handBrakeOff()   
                             print("speed almost 0")
                             break
                         
-                    pac.handBrakeOn()
-                    print("Hand Brake On")
-                    time.sleep(0.2)
-                    pac.handBrakeOff()                  
+                    # pac.handBrakeOn()
+                    # print("Hand Brake On")
+                    # time.sleep(0.2)
+                                   
 
         return True
 
