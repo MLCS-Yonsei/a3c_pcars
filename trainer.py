@@ -308,7 +308,7 @@ class Worker:
                                         t0 = datetime.now()
                                         
                                         reset_status = eval(message)
-                                        print(t0, reset_status)
+                                        # print(t0, reset_status)
                                         # autoKiller에서 처리중
                                         if reset_status == 1:
                                             pass

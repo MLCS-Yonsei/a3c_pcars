@@ -198,7 +198,7 @@ def run_pkr(r, local_ip):
             
             if message:
                 reset_status = eval(message)
-                print(reset_status == 0)
+                # print(reset_status == 0)
                 if reset_status == 1:
                     pc.restart_type_1()
                     del_stat = True
@@ -220,6 +220,7 @@ def run_pkr(r, local_ip):
                     del_stat = True
 
                 if del_stat:
+                    
                     r.hdel('pcars_killer'+local_ip,local_ip)
                     print("killer code removed")
         except Exception as ex:
