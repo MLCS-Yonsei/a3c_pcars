@@ -22,6 +22,8 @@ import socket
 
 from utils.autoController import pCarsAutoController
 
+from utils.keys import Keys
+
 class pCarsAutoKiller(mp.Process):
     def __init__(self):
         super(pCarsAutoKiller,self).__init__()

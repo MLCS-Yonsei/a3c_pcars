@@ -514,10 +514,10 @@ def play_training(training=True, load_model=True):
         master_network = AC_Network(s_size, a_size, 'global', None, False)
 	
         worker_ips = [
-                '192.168.0.2',
-                '192.168.0.3',
-                '192.168.0.4',
-                '192.168.0.5',
+                # '192.168.0.2',
+                # '192.168.0.3',
+                # '192.168.0.4',
+                # '192.168.0.5',
                 '165.132.108.169',
 
         ]
