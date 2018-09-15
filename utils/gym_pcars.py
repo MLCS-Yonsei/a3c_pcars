@@ -328,7 +328,7 @@ class PcarsEnv:
             screen.update("reset_ : "+str(self.reset_amt), worker_number, 'reset_amt')
             screen.update("B / T / C : "+str(self.backward_cnt / 100) + ', '+str(self.tyre_out_cnt / 100) + ', '+str(self.crash_cnt / 100), worker_number, 'reset_cnt')
 
-            if self.reset_amt <= -300 and terminate_status is False:
+            if self.reset_amt <= -10 and terminate_status is False:
                 # print("Restarting by finish", gameState, raceState)
                 self.brake_cnt = 0
                 self.stop_cnt = 0
