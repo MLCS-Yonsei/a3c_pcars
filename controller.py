@@ -198,7 +198,7 @@ def run_pkr(r, local_ip):
             
             if message:
                 reset_status = eval(message)
-                print(reset_status)
+                print(reset_status == 0)
                 if reset_status == 1:
                     pc.restart_type_1()
                     del_stat = True
@@ -212,7 +212,7 @@ def run_pkr(r, local_ip):
                     pc.restart_type_4()
                     print("RST 4 done")
                     del_stat = False
-                    r.hset('pcars_killer'+local_ip,local_ip,0)
+                    r.hset('pcars_killer'+local_ip,local_ip,"0")
                 elif reset_status == 0:
                     del_stat = False
                     # time.sleep(0.3)
