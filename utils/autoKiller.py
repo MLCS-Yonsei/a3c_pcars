@@ -165,6 +165,7 @@ class pCarsAutoKiller(mp.Process):
         pac.brakeOff()
         pac.accOff()
         pac.handBrakeOn()
+        print("Loop start")
         while True:
             kill_message = self.r.hget('pcars_killer'+self.local_ip,self.local_ip)
             if kill_message:
@@ -187,7 +188,7 @@ class pCarsAutoKiller(mp.Process):
 
                 if "speed" in ob:
                     sp = ob["speed"]
-                    print("Speed : ", sp)
+                    print("Speed : ", sp, sp == 0.0)
                     if sp == 0.0:
                         self.trigger_virtual_enter()
                         pac.handBrakeOff()   
