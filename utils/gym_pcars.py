@@ -312,7 +312,7 @@ class PcarsEnv:
             #     print("Bad Distance", target_ip)
             #     self.reset_amt = -200
 
-            race_action = self.one_hot(a_t, 33)
+            race_action = self.one_hot(a_t, 31)
             race_action = np.append(race_action, sp)
             # race_action = np.append(race_action, self.backward_cnt / 100)
             # race_action = np.append(race_action, self.tyre_out_cnt / 30)
@@ -394,8 +394,6 @@ class PcarsEnv:
         torcs_action.update({'28': u[28]})
         torcs_action.update({'29': u[29]})
         torcs_action.update({'30': u[30]})
-        torcs_action.update({'31': u[31]})
-        torcs_action.update({'32': u[32]})
 
         # else:
         #     for i in range(23):

@@ -558,7 +558,7 @@ if __name__ == "__main__":
     max_episode_length = 300
     gamma = .99  # discount rate for advantage estimation and reward discounting
     s_size = 90000#340464  # Observations are greyscale frames of 84 * 84 * 1
-    a_size = 33  # Left, Right, Forward, Brake
+    a_size = 31  # Left, Right, Forward, Brake
     model_path = './model'
 
     tf.reset_default_graph()

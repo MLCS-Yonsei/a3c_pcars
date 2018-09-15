@@ -16,6 +16,8 @@ import json
 import redis
 import socket
 
+from utils.keys import Keys
+
 class pCarsAutoController(mp.Process):
     def __init__(self):
         super(pCarsAutoController,self).__init__()
@@ -26,8 +28,11 @@ class pCarsAutoController(mp.Process):
         self.controlState = {
             'acc': False,
             'brake': False,
+            'hand_brake': False,
             'steer': 0
         }
+
+        self.keys = Keys()
 
         ''' Getting Local IP of this Computer '''
         self.local_ip = [ip for ip in socket.gethostbyname_ex(socket.gethostname())[2] if not ip.startswith("127.")][:1][0]
@@ -35,6 +40,8 @@ class pCarsAutoController(mp.Process):
         ''' Init Redis '''
         self.r = redis.StrictRedis(host='redis.hwanmoo.kr', port=6379, db=1)
         print("Redis connected for AutoController: ",self.r)
+
+        
 
     def get_focus(self):
         # Make Pcars window focused
@@ -50,139 +57,161 @@ class pCarsAutoController(mp.Process):
     def action_parser(self, this_action):
         if this_action['0'] == True:
             self.brakeOff()
+            self.handBrakeOff()
             self.move_steer(-1)
             self.accOn()
         elif this_action['1'] == True:
             self.brakeOff()
+            self.handBrakeOff()
             self.move_steer(-1)
             self.accOff()
         elif this_action['2'] == True:
             self.brakeOff()
+            self.handBrakeOff()
             self.move_steer(-0.75)
             self.accOn()
         elif this_action['3'] == True:
             self.brakeOff()
+            self.handBrakeOff()
             self.move_steer(-0.75)
             self.accOff()
         elif this_action['4'] == True:
             self.brakeOff()
+            self.handBrakeOff()
             self.move_steer(-0.5)
             self.accOn()
         elif this_action['5'] == True:
             self.brakeOff()
+            self.handBrakeOff()
             self.move_steer(-0.5)
             self.accOff()
         elif this_action['6'] == True:
             self.brakeOff()
+            self.handBrakeOff()
             self.move_steer(-0.35)
             self.accOn()
         elif this_action['7'] == True:
             self.brakeOff()
+            self.handBrakeOff()
             self.move_steer(-0.35)
             self.accOff()
         elif this_action['8'] == True:
             self.brakeOff()
+            self.handBrakeOff()
             self.move_steer(-0.2)
             self.accOn()
         elif this_action['9'] == True:
             self.brakeOff()
+            self.handBrakeOff()
             self.move_steer(-0.2)
             self.accOff()
         elif this_action['10'] == True:
             self.brakeOff()
+            self.handBrakeOff()
             self.move_steer(-0.1)
             self.accOn()
         elif this_action['11'] == True:
             self.brakeOff()
+            self.handBrakeOff()
             self.move_steer(-0.1)
             self.accOff()
         elif this_action['12'] == True:
             self.brakeOff()
+            self.handBrakeOff()
             self.move_steer(0)
             self.accOn()
         elif this_action['13'] == True:
             self.brakeOff()
+            self.handBrakeOff()
             self.move_steer(0)
             self.accOff()
         elif this_action['14'] == True:
             self.brakeOff()
+            self.handBrakeOff()
             self.move_steer(0.1)
             self.accOn()
         elif this_action['15'] == True:
             self.brakeOff()
+            self.handBrakeOff()
             self.move_steer(0.1)
             self.accOff()
         elif this_action['16'] == True:
             self.brakeOff()
+            self.handBrakeOff()
             self.move_steer(0.2)
             self.accOn()
         elif this_action['17'] == True:
             self.brakeOff()
+            self.handBrakeOff()
             self.move_steer(0.2)
             self.accOff()
         elif this_action['18'] == True:
             self.brakeOff()
+            self.handBrakeOff()
             self.move_steer(0.35)
             self.accOn()
         elif this_action['19'] == True:
             self.brakeOff()
+            self.handBrakeOff()
             self.move_steer(0.35)
             self.accOff()
         elif this_action['20'] == True:
             self.brakeOff()
+            self.handBrakeOff()
             self.move_steer(0.5)
             self.accOn()
         elif this_action['21'] == True:
             self.brakeOff()
+            self.handBrakeOff()
             self.move_steer(0.5)
             self.accOff()
         elif this_action['22'] == True:
             self.brakeOff()
+            self.handBrakeOff()
             self.move_steer(0.75)
             self.accOn()
         elif this_action['23'] == True:
             self.brakeOff()
+            self.handBrakeOff()
             self.move_steer(0.75)
             self.accOff()
         elif this_action['24'] == True:
             self.brakeOff()
+            self.handBrakeOff()
             self.move_steer(1)
             self.accOn()
         elif this_action['25'] == True:
             self.brakeOff()
+            self.handBrakeOff()
             self.move_steer(1)
             self.accOff()
-        
+        # 가속 클래스 끝
+        # 핸드브레이크 시작
         elif this_action['26'] == True:
             self.accOff()
-            self.brakeOn()
+            self.brakeOff()
+            self.handBrakeOn()
             self.move_steer(-1)
         elif this_action['27'] == True:
             self.accOff()
-            self.brakeOn()
+            self.brakeOff()
+            self.handBrakeOn()
             self.move_steer(-0.5)
         elif this_action['28'] == True:
             self.accOff()
-            self.brakeOn()
-            self.move_steer(-0.15)
+            self.brakeOff()
+            self.handBrakeOn()
+            self.move_steer(0.5)
         elif this_action['29'] == True:
             self.accOff()
-            self.brakeOn()
-            self.move_steer(0)
+            self.brakeOff()
+            self.handBrakeOn()
+            self.move_steer(1)
         elif this_action['30'] == True:
             self.accOff()
+            self.handBrakeOff()
             self.brakeOn()
-            self.move_steer(0.15)
-        elif this_action['31'] == True:
-            self.accOff()
-            self.brakeOn()
-            self.move_steer(0.5)
-        elif this_action['32'] == True:
-            self.accOff()
-            self.brakeOn()
-            self.move_steer(1)
-
-            
+            self.move_steer(0)          
 
     def steer_converter(self, n):
         # if n > 1:
@@ -213,22 +242,32 @@ class pCarsAutoController(mp.Process):
     def accOn(self):
         self.controlState['acc'] = True
         t = self.steer_converter(self.controlState['steer'])
-        pywinauto.mouse.press(button='left', coords=(t[0], t[1]))
+        self.keys.directKey("a")
 
     def accOff(self):
         self.controlState['acc'] = False
         t = self.steer_converter(self.controlState['steer'])
-        pywinauto.mouse.release(button='left', coords=(t[0], t[1]))
+        self.keys.directKey("a", self.keys.key_release)
 
     def brakeOn(self):
         self.controlState['brake'] = True
         t = self.steer_converter(self.controlState['steer'])
-        pywinauto.mouse.press(button='right', coords=(t[0], t[1]))
+        self.keys.directKey("s")
 
     def brakeOff(self):
         self.controlState['brake'] = False
         t = self.steer_converter(self.controlState['steer'])
-        pywinauto.mouse.release(button='right', coords=(t[0], t[1]))
+        self.keys.directKey("s", self.keys.key_release)
+
+    def handBrakeOn(self):
+        self.controlState['hand_brake'] = True
+        t = self.steer_converter(self.controlState['steer'])
+        self.keys.directKey("d")
+
+    def handBrakeOff(self):
+        self.controlState['hand_brake'] = False
+        t = self.steer_converter(self.controlState['steer'])
+        self.keys.directKey("d", self.keys.key_release)
 
     def run(self):
         while True:
