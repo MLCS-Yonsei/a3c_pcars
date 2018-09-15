@@ -128,6 +128,8 @@ class pCarsAutoKiller(mp.Process):
         cmd = '{ENTER}'
         SendKeys(cmd)
 
+        self.trigger_virtual_esc()
+
         return True
 
     def restart_type_3(self):
@@ -171,7 +173,7 @@ class pCarsAutoKiller(mp.Process):
                     break
 
             message = self.r.hget('pcars_data'+self.local_ip,self.local_ip)
-            print("RST 4 : ", message)
+            # print("RST 4 : ", message)
             if message:
                                             
                 self.r.hdel('pcars_data'+self.local_ip,self.local_ip)
@@ -191,7 +193,7 @@ class pCarsAutoKiller(mp.Process):
                             break
                         
                     pac.handBrakeOn()
-                        
+                    print("Hand Brake On")
                     time.sleep(0.2)
                     pac.handBrakeOff()                  
 
