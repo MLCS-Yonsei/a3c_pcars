@@ -211,15 +211,17 @@ def run_pkr(r, local_ip):
                 elif reset_status == 4:
                     pc.restart_type_4()
                     print("RST 4 done")
-                    del_stat = True
-                    # r.hset('pcars_killer'+local_ip,local_ip,"0")
+                    del_stat = False
+                    r.hset('pcars_killer'+local_ip,local_ip,"0")
                 elif reset_status == 0:
                     del_stat = False
+                    time.sleep(0.3)
                 else:
                     del_stat = True
 
                 if del_stat:
                     r.hdel('pcars_killer'+local_ip,local_ip)
+                    print("killer code removed")
         except:
             pass
 
