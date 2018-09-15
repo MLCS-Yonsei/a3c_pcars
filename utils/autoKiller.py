@@ -55,7 +55,7 @@ class pCarsAutoKiller(mp.Process):
         self.get_focus()
 
         self.keys.directKey(key)
-        sleep(0.04)
+        time.sleep(0.04)
         self.keys.directKey(key, keys.key_release)
 
     def trigger_virtual_esc(self):
