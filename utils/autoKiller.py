@@ -166,44 +166,47 @@ class pCarsAutoKiller(mp.Process):
         pac.accOff()
         pac.handBrakeOn()
         print("Loop start")
-        while True:
-            kill_message = self.r.hget('pcars_killer'+self.local_ip,self.local_ip)
-            if kill_message:
-                km = eval(kill_message)
-                print("Kill msg", km)
-                if km != 4:
-                    break
+        time.sleep(5)
+        self.trigger_virtual_enter()
+        pac.handBrakeOff()   
+        # while True:
+        #     kill_message = self.r.hget('pcars_killer'+self.local_ip,self.local_ip)
+        #     if kill_message:
+        #         km = eval(kill_message)
+        #         print("Kill msg", km)
+        #         if km != 4:
+        #             break
 
-            message = self.r.hget('pcars_data'+self.local_ip,self.local_ip)
-            # print("RST 4 : ", message)
-            if message:
+        #     message = self.r.hget('pcars_data'+self.local_ip,self.local_ip)
+        #     # print("RST 4 : ", message)
+        #     if message:
                                             
-                self.r.hdel('pcars_data'+self.local_ip,self.local_ip)
-                message = message.decode("utf-8")
-                message = message.replace('<','\'<')
-                message = message.replace('>','>\'')
+        #         self.r.hdel('pcars_data'+self.local_ip,self.local_ip)
+        #         message = message.decode("utf-8")
+        #         message = message.replace('<','\'<')
+        #         message = message.replace('>','>\'')
 
-                msg = eval(message)
-                ob = msg['game_data']
+        #         msg = eval(message)
+        #         ob = msg['game_data']
 
-                if "speed" in ob:
-                    sp = ob["speed"]
-                    print("Speed : ", sp, sp == 0.0)
-                    if sp == 0.0:
-                        self.trigger_virtual_enter()
-                        pac.handBrakeOff()   
-                        break
+        #         if "speed" in ob:
+        #             sp = ob["speed"]
+        #             print("Speed : ", sp, sp == 0.0)
+        #             if sp == 0.0:
+        #                 self.trigger_virtual_enter()
+        #                 pac.handBrakeOff()   
+        #                 break
 
-                    if sp < 0.3:
-                        self.trigger_virtual_enter()
-                        if sp < 0.1:
-                            pac.handBrakeOff()   
-                            print("speed almost 0")
-                            break
+        #             if sp < 0.3:
+        #                 self.trigger_virtual_enter()
+        #                 if sp < 0.1:
+        #                     pac.handBrakeOff()   
+        #                     print("speed almost 0")
+        #                     break
                         
-                    # pac.handBrakeOn()
-                    # print("Hand Brake On")
-                    # time.sleep(0.2)
+        #             # pac.handBrakeOn()
+        #             # print("Hand Brake On")
+        #             # time.sleep(0.2)
                                    
         print("Loop escaped")
         return True
