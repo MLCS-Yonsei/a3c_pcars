@@ -171,7 +171,7 @@ class pCarsAutoKiller(mp.Process):
                     break
 
             message = self.r.hget('pcars_data'+self.local_ip,self.local_ip)
-            # print("RST 4 : ", message)
+            print("RST 4 : ", message)
             if message:
                                             
                 self.r.hdel('pcars_data'+self.local_ip,self.local_ip)
@@ -184,7 +184,7 @@ class pCarsAutoKiller(mp.Process):
 
                 if "speed" in ob:
                     sp = ob["speed"]
-                    if sp < 0.2:
+                    if sp < 0.3:
                         self.trigger_virtual_enter()
                         if sp < 0.1:
                             print("speed almost 0")

@@ -297,7 +297,7 @@ class Worker:
                             episode_frames.append(to_gif)
                             
                             rnn_state = self.local_AC.state_init
-                            race_action = np.zeros((1, 34), np.float32)
+                            race_action = np.zeros((1, 32), np.float32)
 
                             while not d:
                                 t1 = datetime.now()
