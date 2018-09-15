@@ -188,6 +188,11 @@ class pCarsAutoKiller(mp.Process):
                 if "speed" in ob:
                     sp = ob["speed"]
                     print("Speed : ", sp)
+                    if sp == 0.0:
+                        self.trigger_virtual_enter()
+                        pac.handBrakeOff()   
+                        break
+
                     if sp < 0.3:
                         self.trigger_virtual_enter()
                         if sp < 0.1:
@@ -199,7 +204,7 @@ class pCarsAutoKiller(mp.Process):
                     # print("Hand Brake On")
                     # time.sleep(0.2)
                                    
-
+        print("Loop escaped")
         return True
 
 if __name__ == '__main__':
