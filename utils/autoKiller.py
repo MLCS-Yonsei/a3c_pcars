@@ -129,7 +129,7 @@ class pCarsAutoKiller(mp.Process):
         cmd = '{ENTER}'
         SendKeys(cmd)
 
-        self.trigger_virtual_esc()
+        self.trigger_virtual_enter()
 
         return True
 
