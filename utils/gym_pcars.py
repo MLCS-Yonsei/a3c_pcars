@@ -290,7 +290,7 @@ class PcarsEnv:
             self.reset_amt = 0
             d_factor = 10
             if self.stay_cnt > 0:
-                self.reset_amt += -3 * self.stay_cnt / d_factor
+                self.reset_amt += -0.5 * self.stay_cnt / d_factor
 
             if self.backward_cnt > 0:
                 self.reset_amt += -10 * self.backward_cnt / d_factor
