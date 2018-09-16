@@ -74,7 +74,7 @@ class AC_Network:
         with tf.variable_scope(scope):
             # Input and visual encoding layers
             self.inputs = tf.placeholder(shape=[None, s_size], dtype=tf.float32)
-            self.imageIn = tf.reshape(self.inputs, shape=[-1, 200, 150, 3])
+            self.imageIn = tf.reshape(self.inputs, shape=[-1, 150, 200, 3])
             self.conv1 = slim.conv2d(activation_fn=tf.nn.elu,
                                      inputs=self.imageIn, num_outputs=16,
                                      kernel_size=[4, 8], stride=[1, 4], padding='VALID')
@@ -243,7 +243,7 @@ class Worker:
         # pred = np.expand_dims(pred, axis=2)
         # print("#3", pred.shape)
         # s = np.concatenate((s, pred), axis=2)
-        # s = resize(s, (200, 150), anti_aliasing=True)
+        # s = resize(s, (150, 200), anti_aliasing=True)
         # print("#4", s.shape)
         
         return ob, s
@@ -293,7 +293,7 @@ class Worker:
                             s = process_frame(s)
                             
                             # For creating gifs
-                            to_gif = np.reshape(s, (200, 150, 3)) * 255
+                            to_gif = np.reshape(s, (150, 200, 3)) * 255
                             episode_frames.append(to_gif)
                             
                             rnn_state = self.local_AC.state_init
@@ -410,8 +410,8 @@ class Worker:
                                                 else:
                                                     s1 = s
 
-                                                # to_gif1 = np.reshape(s1, (200, 150, 4)) * 255
-                                                to_gif1 = np.reshape(s1, (200, 150, 3)) * 255
+                                                # to_gif1 = np.reshape(s1, (150, 200, 4)) * 255
+                                                to_gif1 = np.reshape(s1, (150, 200, 3)) * 255
 
                                                 episode_frames.append(to_gif1)
 
