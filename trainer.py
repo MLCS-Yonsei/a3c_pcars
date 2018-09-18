@@ -521,12 +521,20 @@ def play_training(training=True, load_model=True):
                 '192.168.0.5',
         ]
 
+        # worker_maps = [
+        #     'Hockenheim_Short',
+        #     'California_Highway_3',
+        #     'Brands_Hatch_Indy',
+        #     'Nurburgring_Sprint',
+        #     'OultonPark_Island'
+        # ]
+
         worker_maps = [
-            'Hockenheim_Short',
             'California_Highway_3',
-            'Brands_Hatch_Indy',
-            'Nurburgring_Sprint',
-            'OultonPark_Island'
+            'California_Highway_3',
+            'California_Highway_3',
+            'California_Highway_3',
+            'California_Highway_3'
         ]
 
         if training:
