@@ -135,11 +135,14 @@ class PcarsEnv:
                     v_e = cur_position - self.prevPosition
                     v_r = ref_position - self.ref_prevPosition
 
+                    if d > 1:
+                        d = 1
+
                     cos_a = np.dot(norm_np(v_e),norm_np(v_r))
                     screen.update("d : "+str(d), worker_number, 'd')
                     screen.update("cos_a_1 : "+str(cos_a), worker_number, 'cos_a')
 
-                    progress = (sp * 100)*(cos_a - d)
+                    progress = (sp * 100)*(cos_a + 1 - d)
                     self.reward = progress / 10
                 
                 elif self.ref_prevPosition is not None:
@@ -147,10 +150,13 @@ class PcarsEnv:
                     v_e = cur_position - self.ref_prevPosition
                     v_r = ref_position - self.ref_prevPosition
 
+                    if d > 1:
+                        d = 1
+
                     cos_a = np.dot(norm_np(v_e),norm_np(v_r))
                     screen.update("d : "+str(d), worker_number, 'd')
                     screen.update("cos_a_2 : "+str(cos_a), worker_number, 'cos_a')
-                    progress = (sp * 100)*(cos_a - d)
+                    progress = (sp * 100)*(cos_a + 1 - d)
                     self.reward = progress / 10
 
                     if np.any(cur_position != self.prevPosition):
@@ -167,10 +173,13 @@ class PcarsEnv:
                     v_e = cur_position - self.prevPosition
                     v_r = ref_position - self.prevPosition
 
+                    if d > 1:
+                        d = 1
+
                     cos_a = np.dot(norm_np(v_e),norm_np(v_r))
                     screen.update("d : "+str(d), worker_number, 'd')
                     screen.update("cos_a_3 : "+str(cos_a), worker_number, 'cos_a')
-                    progress = (sp * 100)*(cos_a - d)
+                    progress = (sp * 100)*(cos_a + 1 - d)
                     self.reward = progress / 10
 
                 else : 
@@ -293,7 +302,7 @@ class PcarsEnv:
                 self.reset_amt += -0.1 * self.stay_cnt / d_factor
 
             if self.backward_cnt > 0:
-                self.reset_amt += -10 * self.backward_cnt / d_factor
+                self.reset_amt += -1 * self.backward_cnt / d_factor
 
             if self.brake_cnt > 0:
                 self.reset_amt += -1 * self.brake_cnt / d_factor
