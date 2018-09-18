@@ -143,6 +143,10 @@ class PcarsEnv:
                     screen.update("cos_a_1 : "+str(cos_a), worker_number, 'cos_a')
 
                     progress = (sp * 100)*(cos_a + 1 - d)
+                    
+                    if progress < 0:
+                        progress = 0
+
                     self.reward = progress / 10
                 
                 elif self.ref_prevPosition is not None:
@@ -157,12 +161,20 @@ class PcarsEnv:
                     screen.update("d : "+str(d), worker_number, 'd')
                     screen.update("cos_a_2 : "+str(cos_a), worker_number, 'cos_a')
                     progress = (sp * 100)*(cos_a + 1 - d)
+
+                    if progress < 0:
+                        progress = 0
+                        
                     self.reward = progress / 10
 
                     if np.any(cur_position != self.prevPosition):
                         self.prevPosition = cur_position
                 else:
                     progress = sp * 100
+
+                    if progress < 0:
+                        progress = 0
+                        
                     self.reward = progress / 10
             else:
                 # print("prevPosition",self.prevPosition)
