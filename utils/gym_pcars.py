@@ -309,7 +309,7 @@ class PcarsEnv:
             Minus Rewards
             '''
             self.reset_amt = 0
-            d_factor = 10
+            d_factor = 1
             if self.stay_cnt > 0:
                 self.reset_amt += -0.1 * self.stay_cnt / d_factor
 
