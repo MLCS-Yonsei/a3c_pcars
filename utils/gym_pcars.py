@@ -142,7 +142,7 @@ class PcarsEnv:
                     screen.update("d : "+str(d), worker_number, 'd')
                     screen.update("cos_a_1 : "+str(cos_a), worker_number, 'cos_a')
 
-                    progress = (sp * 100)*(cos_a + 1 - d)
+                    progress = (sp * 100)*(cos_a - d)
                     
                     if progress < 0:
                         progress = 0
@@ -160,7 +160,7 @@ class PcarsEnv:
                     cos_a = np.dot(norm_np(v_e),norm_np(v_r))
                     screen.update("d : "+str(d), worker_number, 'd')
                     screen.update("cos_a_2 : "+str(cos_a), worker_number, 'cos_a')
-                    progress = (sp * 100)*(cos_a + 1 - d)
+                    progress = (sp * 100)*(cos_a - d)
 
                     if progress < 0:
                         progress = 0
@@ -191,7 +191,7 @@ class PcarsEnv:
                     cos_a = np.dot(norm_np(v_e),norm_np(v_r))
                     screen.update("d : "+str(d), worker_number, 'd')
                     screen.update("cos_a_3 : "+str(cos_a), worker_number, 'cos_a')
-                    progress = (sp * 100)*(cos_a + 1 - d)
+                    progress = (sp * 100)*(cos_a - d)
                     self.reward = progress / 10
 
                 else : 
