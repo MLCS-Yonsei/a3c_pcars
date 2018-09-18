@@ -2,10 +2,9 @@ import pandas as pd
 import numpy as np
 
 
-df = pd.read_csv('output2.csv',sep=',',header=None)
+df = pd.read_csv('./csv/oultonPark Island.csv',sep=',',header=None)
 data = df.values #(4537,76)
 
-'''
 lapDistance = []
 for k in range(1):
     for i in range(len(data)):
@@ -82,6 +81,6 @@ results = np.transpose(results, (1,0,2))
 print(results.shape, len(unique_lapDistance))
 # results = np.nanmean(results,axis=1)
 # print(results[192])
-'''
-np.savez_compressed('grid_line',results=data)
+
+np.savez_compressed('OultonPark_Island',results=data)
 

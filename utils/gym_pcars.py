@@ -18,7 +18,7 @@ class PcarsEnv:
     initial_reset = True
     time_step = 0
 
-    def __init__(self):
+    def __init__(self, _map):
         self.torcs_proc = None
         self.initial_run = True
         self.r = redis.StrictRedis(host='redis.hwanmoo.kr', port=6379, db=1)
@@ -45,8 +45,8 @@ class PcarsEnv:
         self.stay_time = None
 
         # Grid Line
-        self.grid_line = np.load('./utils/grid_line/grid_line.npz')['results'][:,1:4]
-        self.distance_ref = np.load('./utils/grid_line/grid_line.npz')['results'][:,0]
+        self.grid_line = np.load('./utils/grid_line/'+_map+'.npz')['results'][:,1:4]
+        self.distance_ref = np.load('./utils/grid_line/'+_map+'.npz')['results'][:,0]
 
         self.fp_x = self.grid_line[:,0].astype(float)
         self.fp_y = self.grid_line[:,1].astype(float)

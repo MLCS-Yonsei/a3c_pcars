@@ -519,8 +519,14 @@ def play_training(training=True, load_model=True):
                 '192.168.0.3',
                 '192.168.0.4',
                 '192.168.0.5',
-                
+        ]
 
+        worker_maps = [
+            'Hockenheim_Short',
+            'California_Highway_3',
+            'Brands_Hatch_Indy',
+            'Nurburgring_Sprint',
+            'OultonPark_Island'
         ]
 
         if training:
@@ -534,7 +540,7 @@ def play_training(training=True, load_model=True):
             workers.append(
                 # Worker(PcarsEnv(vision=True, throttle=False, gear_change=False, port=3101 + i), i, s_size, a_size,
                 #        trainer, model_path, global_episodes, False))
-                Worker(PcarsEnv(), i, s_size, a_size,
+                Worker(PcarsEnv(worker_maps[i]), i, s_size, a_size,
                        trainer, model_path, global_episodes, False))
         saver = tf.train.Saver()
 
