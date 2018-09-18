@@ -220,7 +220,7 @@ class PcarsEnv:
                     del self.position[0]
                     self.position.append(self.distance)
                     
-                    if abs(self.position[19]-self.position[0]) < 10:
+                    if abs(self.position[19]-self.position[0]) < 5:
                         self.backward_cnt += 1
                         self.backward_time = datetime.now()
                         
@@ -349,7 +349,7 @@ class PcarsEnv:
             screen.update("reset_ : "+str(self.reset_amt), worker_number, 'reset_amt')
             screen.update("B / T / C : "+str(self.backward_cnt / 100) + ', '+str(self.tyre_out_cnt / 100) + ', '+str(self.crash_cnt / 100), worker_number, 'reset_cnt')
 
-            if self.reset_amt <= -200 and terminate_status is False:
+            if self.reset_amt <= -100 and terminate_status is False:
                 # print("Restarting by finish", gameState, raceState)
                 self.brake_cnt = 0
                 self.stop_cnt = 0
