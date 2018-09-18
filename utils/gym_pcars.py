@@ -220,7 +220,7 @@ class PcarsEnv:
                     del self.position[0]
                     self.position.append(self.distance)
                     
-                    if abs(self.position[19]-self.position[0]) < 5:
+                    if abs(self.position[19]-self.position[0]) < 10:
                         self.backward_cnt += 1
                         self.backward_time = datetime.now()
                         
@@ -314,7 +314,7 @@ class PcarsEnv:
                 self.reset_amt += -0.1 * self.stay_cnt / d_factor
 
             if self.backward_cnt > 0:
-                self.reset_amt += -1 * self.backward_cnt / d_factor
+                self.reset_amt += -10 * self.backward_cnt / d_factor
 
             if self.brake_cnt > 0:
                 self.reset_amt += -1 * self.brake_cnt / d_factor
