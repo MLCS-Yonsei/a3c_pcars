@@ -266,7 +266,10 @@ class Worker:
 
                 if message:
                     self.r.hdel('pcars_data'+target_ip,target_ip)
-                    ob, s = self.parse_message(message)
+                    try:
+                        ob, s = self.parse_message(message)
+                    except:
+                        pass
                     
                     if 'raceState' in ob and 'gameState' in ob:
 
