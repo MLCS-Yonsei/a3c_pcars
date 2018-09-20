@@ -123,6 +123,11 @@ class PcarsEnv:
                 r = p1-p2
                 return math.sqrt(r[0]*r[0]+r[1]*r[1]+r[2]*r[2])
 
+            # SP rectify
+            max_sp = 26
+            if sp > max_sp:
+                sp = max_sp * 2 - sp
+
             # print("Distance",)
             screen.update("Distance : "+str(self.distance), worker_number, 'distance')
             # Reward 
