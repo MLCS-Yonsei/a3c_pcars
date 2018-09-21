@@ -257,6 +257,10 @@ class PcarsEnv:
                 if _out_tyres >= 2:
                     self.tyre_out_cnt += 1
                     self.tyre_out_time = datetime.now()
+
+                if _out_tyres == 0:
+                    self.tyre_out_cnt = 0
+                    self.tyre_out_time = datetime.now()
                             
             if crashState >= 1:
                 # print("Crash!", target_ip)
