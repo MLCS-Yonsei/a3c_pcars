@@ -123,6 +123,11 @@ class PcarsEnv:
                 r = p1-p2
                 return math.sqrt(r[0]*r[0]+r[1]*r[1]+r[2]*r[2])
 
+            # SP rectify
+            max_sp = 26
+            if sp > max_sp:
+                sp = max_sp * 2 - sp
+
             # print("Distance",)
             screen.update("Distance : "+str(self.distance), worker_number, 'distance')
             # Reward 
@@ -136,18 +141,19 @@ class PcarsEnv:
                     v_r = ref_position - self.ref_prevPosition
 
                     if d > 1:
-                        d = 1
+                        d = 1 + (d-1) * 0.1
 
                     cos_a = np.dot(norm_np(v_e),norm_np(v_r))
                     screen.update("d : "+str(d), worker_number, 'd')
                     screen.update("cos_a_1 : "+str(cos_a), worker_number, 'cos_a')
 
-                    progress = (sp * 100)*(cos_a - d)
+                    # progress = (sp * 10)*(cos_a - d)
+                    progress = (sp * 10)*(cos_a)
                     
-                    if progress < 0:
-                        progress = 0
+                    # if progress < 0:
+                    #     progress = 0
 
-                    self.reward = progress / 10
+                    self.reward = progress
                 
                 elif self.ref_prevPosition is not None:
                     d = abs(get_distance(ref_position,cur_position)) / 6
@@ -155,27 +161,28 @@ class PcarsEnv:
                     v_r = ref_position - self.ref_prevPosition
 
                     if d > 1:
-                        d = 1
+                        d = 1 + (d-1) * 0.1
 
                     cos_a = np.dot(norm_np(v_e),norm_np(v_r))
                     screen.update("d : "+str(d), worker_number, 'd')
                     screen.update("cos_a_2 : "+str(cos_a), worker_number, 'cos_a')
-                    progress = (sp * 100)*(cos_a - d)
+                    # progress = (sp * 10)*(cos_a - d)
+                    progress = (sp * 10)*(cos_a)
 
-                    if progress < 0:
-                        progress = 0
+                    # if progress < 0:
+                    #     progress = 0
                         
-                    self.reward = progress / 10
+                    self.reward = progress
 
                     if np.any(cur_position != self.prevPosition):
                         self.prevPosition = cur_position
                 else:
-                    progress = sp * 100
+                    progress = sp * 10
 
-                    if progress < 0:
-                        progress = 0
+                    # if progress < 0:
+                    #     progress = 0
                         
-                    self.reward = progress / 10
+                    self.reward = progress
             else:
                 # print("prevPosition",self.prevPosition)
                 if self.prevPosition is not None:
@@ -186,17 +193,19 @@ class PcarsEnv:
                     v_r = ref_position - self.prevPosition
 
                     if d > 1:
-                        d = 1
+                        d = 1 + (d-1) * 0.1
 
                     cos_a = np.dot(norm_np(v_e),norm_np(v_r))
                     screen.update("d : "+str(d), worker_number, 'd')
                     screen.update("cos_a_3 : "+str(cos_a), worker_number, 'cos_a')
-                    progress = (sp * 100)*(cos_a - d)
-                    self.reward = progress / 10
+                    # progress = (sp * 10)*(cos_a - d)
+                    progress = (sp * 10)*(cos_a)
+
+                    self.reward = progress
 
                 else : 
-                    progress = sp * 100
-                    self.reward = progress / 10
+                    progress = sp * 10
+                    self.reward = progress
 
             if self.prevPosition is None:
                 self.prevPosition = cur_position
@@ -247,6 +256,10 @@ class PcarsEnv:
 
                 if _out_tyres >= 2:
                     self.tyre_out_cnt += 1
+                    self.tyre_out_time = datetime.now()
+
+                if _out_tyres == 0:
+                    self.tyre_out_cnt = 0
                     self.tyre_out_time = datetime.now()
                             
             if crashState >= 1:
@@ -325,6 +338,8 @@ class PcarsEnv:
 
             if self.tyre_out_cnt > 0:
                 self.reset_amt += -2 * self.tyre_out_cnt / d_factor
+                # 타이어 나갈 시 리워드 감소.
+                self.reward -= (sp * 10)(self.tyre_out_cnt * 0.01)
 
             if self.crash_cnt > 0:
                 self.reset_amt += -1 * self.crash_cnt / d_factor
