@@ -1,6 +1,6 @@
 from utils.keys import Keys
 from time import sleep
-import datetime
+from datetime import datetime
 keys = Keys()
 
 reboot_time = 600 # in seconds
@@ -66,9 +66,9 @@ key_input("Return")
 
 import os
 
-stime = datetime.datetime.now()
+stime = datetime.now()
 while True:
-    ctime = datetime.datetime.now()
+    ctime = datetime.now()
     delta = ctime - stime
     
     if delta.seconds > reboot_time:

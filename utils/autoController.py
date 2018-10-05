@@ -269,6 +269,12 @@ class pCarsAutoController(mp.Process):
         t = self.steer_converter(self.controlState['steer'])
         self.keys.directKey("d", self.keys.key_release)
 
+    def reset_control(self):
+        self.move_steer(0)
+        self.accOff()
+        self.brakeOff()
+        self.handBrakeOff()
+
     def run(self):
         while True:
             try:
@@ -320,9 +326,7 @@ if __name__ == '__main__':
                 action = eval(message)
                 if action is False:
                     print("Control OFF")
-                    pc.move_steer(0)
-                    pc.brakeOff()
-                    pc.accOff()
+                    pc.reset_control()
                 else:
                     pc.action_parser(action)
 
