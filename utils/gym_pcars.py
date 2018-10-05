@@ -147,11 +147,11 @@ class PcarsEnv:
                     screen.update("d : "+str(d), worker_number, 'd')
                     screen.update("cos_a_1 : "+str(cos_a), worker_number, 'cos_a')
 
-                    # progress = (sp * 10)*(cos_a - d)
-                    progress = (sp * 10)*(cos_a)
+                    progress = (sp * 10)*(cos_a - d)
+                    # progress = (sp * 10)*(cos_a)
                     
-                    # if progress < 0:
-                    #     progress = 0
+                    if progress < 0:
+                        progress = 0
 
                     self.reward = progress
                 
@@ -166,11 +166,11 @@ class PcarsEnv:
                     cos_a = np.dot(norm_np(v_e),norm_np(v_r))
                     screen.update("d : "+str(d), worker_number, 'd')
                     screen.update("cos_a_2 : "+str(cos_a), worker_number, 'cos_a')
-                    # progress = (sp * 10)*(cos_a - d)
-                    progress = (sp * 10)*(cos_a)
+                    progress = (sp * 10)*(cos_a - d)
+                    # progress = (sp * 10)*(cos_a)
 
-                    # if progress < 0:
-                    #     progress = 0
+                    if progress < 0:
+                        progress = 0
                         
                     self.reward = progress
 
@@ -179,8 +179,8 @@ class PcarsEnv:
                 else:
                     progress = sp * 10
 
-                    # if progress < 0:
-                    #     progress = 0
+                    if progress < 0:
+                        progress = 0
                         
                     self.reward = progress
             else:
@@ -198,8 +198,8 @@ class PcarsEnv:
                     cos_a = np.dot(norm_np(v_e),norm_np(v_r))
                     screen.update("d : "+str(d), worker_number, 'd')
                     screen.update("cos_a_3 : "+str(cos_a), worker_number, 'cos_a')
-                    # progress = (sp * 10)*(cos_a - d)
-                    progress = (sp * 10)*(cos_a)
+                    progress = (sp * 10)*(cos_a - d)
+                    # progress = (sp * 10)*(cos_a)
 
                     self.reward = progress
 
