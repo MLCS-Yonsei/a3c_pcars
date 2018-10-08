@@ -18,6 +18,12 @@ import socket
 
 from utils.keys import Keys
 
+from control import *
+from control.matlab import *
+import matplotlib.pyplot as plt 
+import numpy as np
+from datetime import datetime
+
 class pCarsAutoController(mp.Process):
     def __init__(self):
         super(pCarsAutoController,self).__init__()
@@ -224,11 +230,6 @@ class pCarsAutoController(mp.Process):
             self.move_steer(0)          
 
     def get_transfer_function(self):
-        from control import *
-        from control.matlab import *
-        import matplotlib.pyplot as plt 
-        import numpy as np
-        from datetime import datetime
 
         zeta = 0.707
         w0 = 1
