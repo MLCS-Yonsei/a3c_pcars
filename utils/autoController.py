@@ -25,6 +25,16 @@ class pCarsAutoController(mp.Process):
         self.get_focus()
         self.status = 'active'
 
+        self.get_transfer_function()
+
+        self.transfer_function_value = {
+            'theta_k_2' : 0
+            'theta_k_1' : 0
+
+            'u_k_2' : 0
+            'u_k_1' : 0
+        }
+
         self.controlState = {
             'acc': False,
             'brake': False,
@@ -212,6 +222,50 @@ class pCarsAutoController(mp.Process):
             self.handBrakeOff()
             self.brakeOn()
             self.move_steer(0)          
+
+    def get_transfer_function(self):
+        from control import *
+        from control.matlab import *
+        import matplotlib.pyplot as plt 
+        import numpy as np
+        from datetime import datetime
+
+        zeta = 0.707
+        w0 = 1
+        ts = 0.1
+
+        t1 = datetime.now()
+        g = tf(w0*w0, [1,2*zeta,w0*w0])
+        gz = c2d(g,ts)
+
+        coeffs = tfdata(gz)
+
+        self.co = {
+            'a1':coeffs[1][0][0][1],
+            'a2':coeffs[1][0][0][2],
+            'b1':coeffs[0][0][0][0],
+            'b2':coeffs[0][0][0][1],
+            'dt':gz.dt
+        }
+
+    def compute_angle_displacement(self, u_k):
+        theta_k = self.co['a1'] * self.transfer_function_value['theta_k_1'] \
+                 + self.co['a2'] * self.transfer_function_value['theta_k_2'] \
+                 + self.co['b1'] * self.transfer_function_value['u_k_1'] \
+                 + self.co['b2'] * self.transfer_function_value['u_k_2']
+
+        if theta_k > 1:
+            theta_k = 1
+        elif theta_k < -1:
+            theta_k = -1
+
+        self.transfer_function_value['theta_k_2'] = self.transfer_function_value['theta_k_1']
+        self.transfer_function_value['theta_k_1'] = theta_k
+
+        self.transfer_function_value['u_k_2'] = self.transfer_function_value['u_k_1']
+        self.transfer_function_value['u_k_1'] = u_k
+
+        return self.steer_converter(theta_k)
 
     def steer_converter(self, n):
         # if n > 1:

@@ -6,7 +6,7 @@ from datetime import datetime
 
 zeta = 0.707
 w0 = 1
-ts = 0.01
+ts = 0.1
 
 t1 = datetime.now()
 g = tf(w0*w0, [1,2*zeta,w0*w0])
@@ -21,7 +21,6 @@ co = {
     'b2':coeffs[0][0][0][1],
     'dt':gz.dt
 }
-
 
 theta_k_2 = 0.8
 theta_k_1 = 0.78
@@ -38,10 +37,10 @@ print(theta_k)
 t2 = datetime.now()
 print(t2-t1)
 
-# t = np.arange(0, 16, 0.1)
-# y,t1 = step(gz,t)
-# plt.step(t,y)
-# plt.grid()
-# plt.xlabel('t') 
-# plt.ylabel('y')
-# plt.show()
+t = np.arange(0, 16, 0.1)
+y,t1 = step(gz,t)
+plt.step(t,y)
+plt.grid()
+plt.xlabel('t') 
+plt.ylabel('y')
+plt.show()
