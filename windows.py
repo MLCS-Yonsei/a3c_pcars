@@ -3,7 +3,7 @@ from time import sleep
 from datetime import datetime
 keys = Keys()
 
-reboot_time = 18000 # in seconds
+reboot_time = 3600 # in seconds
 print("Reboot in " + str(reboot_time) + "s.")
 print("Project Cars will be launched in 10s.")
 sleep(10)
