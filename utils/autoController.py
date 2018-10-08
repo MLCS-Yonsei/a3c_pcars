@@ -28,11 +28,11 @@ class pCarsAutoController(mp.Process):
         self.get_transfer_function()
 
         self.transfer_function_value = {
-            'theta_k_2' : 0
-            'theta_k_1' : 0
+            'theta_k_2' : 0,
+            'theta_k_1' : 0,
 
-            'u_k_2' : 0
-            'u_k_1' : 0
+            'u_k_2' : 0,
+            'u_k_1' : 0,
         }
 
         self.controlState = {
