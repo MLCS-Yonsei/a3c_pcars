@@ -238,7 +238,7 @@ def run_pkr(r, local_ip):
         except Exception as ex:
             print(ex)
             time.sleep(3)
-reboot_time = 600 # in seconds
+reboot_time = 3600 # in seconds
 def reboot_protocol():
     keys = Keys()
 
