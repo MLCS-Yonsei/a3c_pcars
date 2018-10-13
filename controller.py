@@ -278,6 +278,15 @@ def reboot_protocol():
 
         return PyCWnd1
 
+    rect = win32gui.GetWindowRect(win32gui.FindWindow( None, "Project CARS™" ))
+    x = rect[0]
+    y = rect[1]
+    w = rect[2] - x
+    h = rect[3] - y
+    zero = [x + int(w/2), y + int(15 * int(h) / 16)]
+
+    pywinauto.mouse.click(button='left', coords=(zero[0], zero[1]))
+
     get_focus()
     key_input("j")
 
@@ -296,6 +305,7 @@ def reboot_protocol():
 
     key_input("Return")
     get_focus()
+    
 
 
 if __name__ == '__main__':
