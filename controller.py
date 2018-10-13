@@ -242,17 +242,18 @@ reboot_time = 3600 # in seconds
 def reboot_protocol():
     keys = Keys()
 
-    print("Reboot in 600s.")
+    print("Reboot in 3600s.")
     print("Project Cars will be launched in 10s.")
     sleep(10)
     # mouse movement
-    for i in range(100):
-        keys.directMouse(-1*i, -1*i)
-        # sleep(0.004)
+    # for i in range(100):
+    #     keys.directMouse(-1*i, -1*i)
+    #     # sleep(0.004)
+    pywinauto.mouse.click(button='left', coords=(0, 0))
 
-    keys.directMouse(buttons=keys.mouse_lb_press)
-    sleep(0.1)
-    keys.directMouse(buttons=keys.mouse_lb_release)
+    # keys.directMouse(buttons=keys.mouse_lb_press)
+    # sleep(0.1)
+    # keys.directMouse(buttons=keys.mouse_lb_release)
 
     def key_input(key):
         keys.directKey(key)
@@ -294,6 +295,7 @@ def reboot_protocol():
         key_input("Up")
 
     key_input("Return")
+    get_focus()
 
 
 if __name__ == '__main__':
