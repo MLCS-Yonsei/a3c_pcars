@@ -11,6 +11,7 @@ import time
 import signal
 from numpy import linalg as la
 from datetime import datetime
+from numpy import linalg as ln
 
 class PcarsEnv:
     default_speed = 50
@@ -29,6 +30,7 @@ class PcarsEnv:
         self.prevPosition = None
         self.ref_prevPosition = None
         self.distance = 0
+        self.v_ref = 50
 
         self.brake_cnt = 0
         self.stop_cnt = 0
@@ -136,41 +138,48 @@ class PcarsEnv:
                 # print(self.ref_prevPosition)
                 # print(np.any(ref_position != self.ref_prevPosition))
                 if self.prevPosition is not None and self.ref_prevPosition is not None and np.any(cur_position != self.prevPosition):
-                    d = abs(get_distance(ref_position,cur_position)) / 6
-                    v_e = cur_position - self.prevPosition
-                    v_r = ref_position - self.ref_prevPosition
+                    # d = abs(get_distance(ref_position,cur_position)) / 6
+                    # v_e = cur_position - self.prevPosition
+                    # v_r = ref_position - self.ref_prevPosition
 
-                    if d > 1:
-                        d = 1 + (d-1) * 0.1
+                    # if d > 1:
+                    #     d = 1 + (d-1) * 0.1
 
-                    cos_a = np.dot(norm_np(v_e),norm_np(v_r))
-                    screen.update("d : "+str(d), worker_number, 'd')
-                    screen.update("cos_a_1 : "+str(cos_a), worker_number, 'cos_a')
+                    # cos_a = np.dot(norm_np(v_e),norm_np(v_r))
 
-                    progress = (sp * 10)*(cos_a - d)
+                    # screen.update("d : "+str(d), worker_number, 'd')
+                    # screen.update("cos_a_1 : "+str(cos_a), worker_number, 'cos_a')
+
+                    # progress = (sp * 10)*(cos_a - d)
                     # progress = (sp * 10)*(cos_a)
+                    p_ref = np.append(ref_position, self.ref_prevPosition)
+                    p = np.append(cur_position, self.prevPosition)
+                    progress = -abs(self.v_ref - sp)-ln.norm(p_ref - p)
                     
-                    if progress < 0:
-                        progress = 0
+                    # if progress < 0:
+                    #     progress = 0
 
                     self.reward = progress
                 
                 elif self.ref_prevPosition is not None:
-                    d = abs(get_distance(ref_position,cur_position)) / 6
-                    v_e = cur_position - self.ref_prevPosition
-                    v_r = ref_position - self.ref_prevPosition
+                    # d = abs(get_distance(ref_position,cur_position)) / 6
+                    # v_e = cur_position - self.ref_prevPosition
+                    # v_r = ref_position - self.ref_prevPosition
 
-                    if d > 1:
-                        d = 1 + (d-1) * 0.1
+                    # if d > 1:
+                    #     d = 1 + (d-1) * 0.1
 
-                    cos_a = np.dot(norm_np(v_e),norm_np(v_r))
-                    screen.update("d : "+str(d), worker_number, 'd')
-                    screen.update("cos_a_2 : "+str(cos_a), worker_number, 'cos_a')
-                    progress = (sp * 10)*(cos_a - d)
+                    # cos_a = np.dot(norm_np(v_e),norm_np(v_r))
+                    # screen.update("d : "+str(d), worker_number, 'd')
+                    # screen.update("cos_a_2 : "+str(cos_a), worker_number, 'cos_a')
+                    # progress = (sp * 10)*(cos_a - d)
                     # progress = (sp * 10)*(cos_a)
+                    p_ref = np.append(ref_position, self.ref_prevPosition)
+                    p = np.append(cur_position, self.prevPosition)
+                    progress = -abs(self.v_ref - sp)-ln.norm(p_ref - p)
 
-                    if progress < 0:
-                        progress = 0
+                    # if progress < 0:
+                    #     progress = 0
                         
                     self.reward = progress
 
@@ -188,18 +197,21 @@ class PcarsEnv:
                 if self.prevPosition is not None:
                     ref_position = self.grid_line[1]
                     
-                    d = abs(get_distance(ref_position,cur_position)) / 6
-                    v_e = cur_position - self.prevPosition
-                    v_r = ref_position - self.prevPosition
+                    # d = abs(get_distance(ref_position,cur_position)) / 6
+                    # v_e = cur_position - self.prevPosition
+                    # v_r = ref_position - self.prevPosition
 
-                    if d > 1:
-                        d = 1 + (d-1) * 0.1
+                    # if d > 1:
+                    #     d = 1 + (d-1) * 0.1
 
-                    cos_a = np.dot(norm_np(v_e),norm_np(v_r))
-                    screen.update("d : "+str(d), worker_number, 'd')
-                    screen.update("cos_a_3 : "+str(cos_a), worker_number, 'cos_a')
-                    progress = (sp * 10)*(cos_a - d)
+                    # cos_a = np.dot(norm_np(v_e),norm_np(v_r))
+                    # screen.update("d : "+str(d), worker_number, 'd')
+                    # screen.update("cos_a_3 : "+str(cos_a), worker_number, 'cos_a')
+                    # progress = (sp * 10)*(cos_a - d)
                     # progress = (sp * 10)*(cos_a)
+                    p_ref = np.append(ref_position, self.ref_prevPosition)
+                    p = np.append(cur_position, self.prevPosition)
+                    progress = -abs(self.v_ref - sp)-ln.norm(p_ref - p)
 
                     self.reward = progress
 
