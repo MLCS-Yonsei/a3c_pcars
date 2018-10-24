@@ -263,8 +263,9 @@ class Worker:
             
             while not coord.should_stop():
                 message = self.r.hget('pcars_data'+target_ip,target_ip)
-
+                screen.update(message, self.number, 'print')
                 if message:
+                    
                     self.r.hdel('pcars_data'+target_ip,target_ip)
                     try:
                         ob, s = self.parse_message(message)
@@ -519,7 +520,7 @@ def play_training(training=True, load_model=True):
         master_network = AC_Network(s_size, a_size, 'global', None, False)
 	
         worker_ips = [
-                '165.132.108.169'#,
+                '165.132.108.169',
                 # '192.168.0.2',
                 # '192.168.0.3',
                 # '192.168.0.4',
@@ -535,11 +536,11 @@ def play_training(training=True, load_model=True):
         # ]
 
         worker_maps = [
+            'California_Highway_3',
             # 'California_Highway_3',
-            'California_Highway_3',
-            'California_Highway_3',
-            'California_Highway_3',
-            'California_Highway_3'
+            # 'California_Highway_3',
+            # 'California_Highway_3',
+            # 'California_Highway_3'
         ]
 
         if training:

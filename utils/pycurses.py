@@ -74,6 +74,7 @@ class Screen:
         return [y + 20, x, _str[:_w-2]]
 
     def update(self, _str, num, flag):
+        _str = str(_str)
         # Initialization
         # self.stdscr.clear()
         height, width = self.stdscr.getmaxyx()

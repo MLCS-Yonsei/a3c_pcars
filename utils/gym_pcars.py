@@ -30,7 +30,7 @@ class PcarsEnv:
         self.prevPosition = None
         self.ref_prevPosition = None
         self.distance = 0
-        self.v_ref = 50
+        self.v_ref = 26
 
         self.brake_cnt = 0
         self.stop_cnt = 0
@@ -126,9 +126,9 @@ class PcarsEnv:
                 return math.sqrt(r[0]*r[0]+r[1]*r[1]+r[2]*r[2])
 
             # SP rectify
-            max_sp = 26
-            if sp > max_sp:
-                sp = max_sp * 2 - sp
+            # max_sp = 26
+            # if sp > max_sp:
+            #     sp = max_sp * 2 - sp
 
             # print("Distance",)
             screen.update("Distance : "+str(self.distance), worker_number, 'distance')

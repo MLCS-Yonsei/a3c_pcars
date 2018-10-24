@@ -75,7 +75,7 @@ class screen_capture_thread(Thread):
             import win32gui
             # import win32ui
             # import win32con
-
+            print("Screen Capture")
             # Get Focus on project cars window
             windowname = "Project CARS™"
             hwnd = win32gui.FindWindow(None, windowname)
