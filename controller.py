@@ -75,7 +75,7 @@ class screen_capture_thread(Thread):
             import win32gui
             # import win32ui
             # import win32con
-            print("Screen Capture")
+            
             # Get Focus on project cars window
             windowname = "Project CARS™"
             hwnd = win32gui.FindWindow(None, windowname)
@@ -137,6 +137,7 @@ class screen_capture_thread(Thread):
                                     r.hset('pcars_killer'+local_ip,local_ip,"2")                            
         
             if result is not False:
+                print("Screen Capture")
                 r.hset('pcars_data'+local_ip,local_ip,result)
             exit(0)
             

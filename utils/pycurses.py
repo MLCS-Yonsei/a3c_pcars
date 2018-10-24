@@ -1,6 +1,10 @@
 import sys,os
 import curses
 import math
+import redis
+
+''' Init Redis '''
+r = redis.StrictRedis(host='redis.hwanmoo.kr', port=6379, db=1)
 
 class Screen:
     def __init__(self):
@@ -73,11 +77,28 @@ class Screen:
 
         return [y + 20, x, _str[:_w-2]]
 
+    def clear(self, num, max_height, max_width):
+        _w = 30
+        _h = 15
+
+        for x in range(20):
+            for y in range(2,30):
+                _raw_x = x + _w*(num)
+                y = y + _h*(math.floor(_raw_x/max_width))
+                x = _raw_x - max_width*(math.floor(_raw_x / max_width)) - (_raw_x % max_width) % _w
+                
+                self.stdscr.delch(y+20,x)
+
+
     def update(self, _str, num, flag):
+        r.hset('log-'+str(num),flag,_str)
+
         _str = str(_str)
         # Initialization
         # self.stdscr.clear()
         height, width = self.stdscr.getmaxyx()
+        # self.clear(num, height, width)
+        self.stdscr.refresh()
 
         if self.k == curses.KEY_DOWN:
             self.cursor_y = self.cursor_y + 1
